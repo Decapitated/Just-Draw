@@ -9,10 +9,8 @@ func _unhandled_input(event):
         # Zoom increment
         if event.button_index == MOUSE_BUTTON_MIDDLE:
             panning = event.pressed
-        elif event.button_index == MOUSE_BUTTON_WHEEL_UP:
-            zoom += Vector2.ONE * zoom_speed
-        elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-            zoom -= Vector2.ONE * zoom_speed
+        elif event.button_index == MOUSE_BUTTON_WHEEL_UP || event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+            zoom += Vector2.ONE * zoom_speed * (1.0 if event.button_index == MOUSE_BUTTON_WHEEL_UP else -1.0)
 
     elif event is InputEventMouseMotion:
         if panning:
