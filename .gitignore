@@ -1,1 +1,5 @@
 .sconsign.dblite
+*.dll
+*.exp
+*.lib
+*.obj
