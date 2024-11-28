@@ -1,3 +1,4 @@
+.vscode
 .sconsign.dblite
 *.dll
 *.exp

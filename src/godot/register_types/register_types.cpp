@@ -2,14 +2,16 @@
 
 #include <godot_cpp/classes/engine.hpp>
 
-using namespace godot;
+#include "godot/draw_layer/draw_layer.hpp"
 
+using namespace godot;
 
 void initialize_justdraw_module(ModuleInitializationLevel p_level) {
 	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
 		return;
 	}
-
+    
+    GDREGISTER_CLASS(JustDraw::DrawLayer);
 }
 
 void uninitialize_justdraw_module(ModuleInitializationLevel p_level) {
