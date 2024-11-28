@@ -20,14 +20,14 @@ sources = sources + Glob("src/*/*/*.cpp") # src/folder/subfolder/file.cpp
 
 if env["platform"] == "macos":
     library = env.SharedLibrary(
-        "demo/addons/JustDraw/bin/libjustdraw.{}.{}.framework/libjustdraw.{}.{}".format(
+        "app/addons/JustDraw/bin/libjustdraw.{}.{}.framework/libjustdraw.{}.{}".format(
             env["platform"], env["target"], env["platform"], env["target"]
         ),
         source=sources,
     )
 else:
     library = env.SharedLibrary(
-        "demo/addons/JustDraw/bin/libjustdraw{}{}".format(env["suffix"], env["SHLIBSUFFIX"]),
+        "app/addons/JustDraw/bin/libjustdraw{}{}".format(env["suffix"], env["SHLIBSUFFIX"]),
         source=sources,
     )
 
