@@ -33,6 +33,8 @@ class DrawLayer : public Control {
 
         bool is_drawing = false;
 
+        Vector2 ToCanvasItemPosition(const Vector2 &position);
+
         void HandleMouseButton(const InputEventMouseButton &event);
         void HandleMouseMotion(const InputEventMouseMotion &event);
         void HandleKey(const InputEventKey &event);

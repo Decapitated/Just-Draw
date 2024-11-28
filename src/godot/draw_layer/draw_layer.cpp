@@ -21,7 +21,6 @@ void DrawLayer::_unhandled_input(const Ref<InputEvent> &p_event)
         if(lines->size() > 0)
         {
             auto line = (*lines)[0];
-            UtilityFunctions::print("mouse motion", line->line);
         }
         HandleMouseMotion(*e);
     }
@@ -39,8 +38,10 @@ void DrawLayer::HandleMouseButton(const InputEventMouseButton &event)
         {
             is_drawing = true;
             auto line = make_shared<PenLine>();
-            line->line.append(event.get_global_position());
+            auto canvas_position = ToCanvasItemPosition(event.get_position());
+            line->line.append(canvas_position);
             lines->push_back(line);
+            queue_redraw();
         } 
         else
         {
@@ -54,7 +55,9 @@ void DrawLayer::HandleMouseMotion(const InputEventMouseMotion &event)
     if(is_drawing)
     {
         auto line = (*lines)[lines->size() - 1];
-        line->line.append(event.get_global_position());
+        auto canvas_position = ToCanvasItemPosition(event.get_position());
+        line->line.append(canvas_position);
+        queue_redraw();
     }
 }
 
@@ -69,4 +72,9 @@ void DrawLayer::_draw()
     {
         draw_polyline(line->line, line->color, line->width);
     }
+}
+
+Vector2 DrawLayer::ToCanvasItemPosition(const Vector2 &position)
+{
+    return get_global_transform_with_canvas().xform_inv(position);
 }
