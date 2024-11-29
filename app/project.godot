@@ -14,6 +14,10 @@ config/name="Just Draw"
 config/features=PackedStringArray("4.3", "GL Compatibility")
 config/icon="res://icon.svg"
 
+[autoload]
+
+FPSCounter="*res://debug/FPSCounter/FPSCounter.tscn"
+
 [rendering]
 
 renderer/rendering_method="gl_compatibility"
