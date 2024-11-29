@@ -94,7 +94,7 @@ void DrawLayer::HandleMouseMotion(const InputEventMouseMotion &event)
                 Vector2 prev = line[line.size() - 2], curr = prev_pos, next = current_pos;
                 float curr_dot = (curr - prev).normalized().dot((next - curr).normalized());
                 curr_dot = (1.0f - (curr_dot * 0.5f + 0.5f)) * 180.0f;
-                if(curr_dot > 175.0f)
+                if(curr_dot > 135.0f)
                 {
                     // Create a new pen line, and set line properties.
                     auto new_line = CappedPenLine();
@@ -118,7 +118,7 @@ void DrawLayer::HandleMouseMotion(const InputEventMouseMotion &event)
                 const int smooth_iterations = 5;
                 for(int i = 0; i < smooth_iterations; i++)
                 {
-                    SmoothLine(line, 1.0f / 3.0f, 0.1f, smooth_start);
+                    SmoothLine(line, 1.0f / 3.0f, 1.0f, smooth_start);
                 }
             }
             queue_redraw();
