@@ -7,6 +7,8 @@
 using namespace JustDraw;
 using namespace godot;
 
+void SmoothLine(Line &line, float ratio, float min_dist);
+
 void DrawLayer::_bind_methods()
 {
 	ClassDB::bind_method(D_METHOD("set_line_width", "p_width"), &DrawLayer::set_line_width);
@@ -58,6 +60,12 @@ void DrawLayer::HandleMouseButton(const InputEventMouseButton &event)
         else
         {
             is_drawing = false;
+            auto line = lines->back();
+            for(int i = 0; i < 3; i++)
+            {
+                SmoothLine(*line, 0.333333f, 0.1f);
+            }
+            queue_redraw();
         }
     }
 }
@@ -91,10 +99,31 @@ void DrawLayer::_draw()
     {
         if(line->size() >= 2)
         {
-            auto capped_line = dynamic_cast<CappedPenLine*>(line.get());
-            draw_circle((*capped_line)[0], capped_line->cap_radius, line->color);
+            draw_circle((*line)[0], line->cap_radius, line->color);
             draw_polyline(*line, line->color, line->width);
-            draw_circle((*capped_line)[line->size() - 1], capped_line->cap_radius, line->color);
+            draw_circle((*line)[line->size() - 1], line->cap_radius, line->color);
         }
     }
+}
+
+void SmoothLine(Line &line, float ratio, float min_dist)
+{
+    // Clamp ratio, then minus one so it doesn't go past midpoint.
+    ratio = fmaxf(0.0, fminf(1.0, ratio));
+    if (ratio > 0.5f) ratio = 1.0f - ratio;
+    auto smoothed_line = std::make_shared<Line>();
+    smoothed_line->push_back(line[0]); // Add first point to new line.
+    for (int i = 1; i < line.size() - 1; i++)
+    {
+        Vector2 prev = line[i - 1], curr = line[i], next = line[i + 1];
+        if (prev.distance_squared_to(next) < powf(min_dist, 2.0f))
+        {
+            smoothed_line->push_back(curr);
+            continue;
+        }
+        smoothed_line->push_back(curr.lerp(prev, ratio));
+        smoothed_line->push_back(curr.lerp(next, ratio));
+    }
+    smoothed_line->push_back(line[line.size() - 1]); // Add last point to new line.
+    line = *smoothed_line;
 }

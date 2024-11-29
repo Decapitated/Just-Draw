@@ -35,7 +35,7 @@ class CappedPenLine : public PenLine {
 class DrawLayer : public Control {
     GDCLASS(DrawLayer, Control);
     private:
-        typedef list<shared_ptr<PenLine>> PenLines;
+        typedef list<shared_ptr<CappedPenLine>> PenLines;
         shared_ptr<PenLines> lines = make_shared<PenLines>();
 
         bool is_drawing = false;

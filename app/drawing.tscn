@@ -23,8 +23,6 @@ grow_vertical = 2
 mouse_filter = 2
 
 [node name="DrawLayer" type="DrawLayer" parent="Canvas"]
-line_width = 5.0
-cap_scale = 2.0
 clip_contents = true
 layout_mode = 1
 anchors_preset = 15
