@@ -1,6 +1,8 @@
 .vscode
+.vs
 .sconsign.dblite
 *.dll
 *.exp
 *.lib
 *.obj
+*.pdb
