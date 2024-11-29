@@ -21,24 +21,28 @@ typedef PackedVector2Array Line;
 class PenLine : public Line {
     public:
         Color color = Color();
-        float width = 10.0f;
+        float width = 5.0f;
 
-        PenLine() {};
-        virtual ~PenLine(){};
+        PenLine() {}
+        PenLine(const Line &line) : Line(line) {}
+        virtual ~PenLine(){}
 };
 
 class CappedPenLine : public PenLine {
     public:
         float cap_radius = 0.0f;
+
+        CappedPenLine() {};
+        CappedPenLine(const Line &line) : PenLine(line) {}
 };
 
 class DrawLayer : public Control {
     GDCLASS(DrawLayer, Control);
     private:
-        typedef list<shared_ptr<CappedPenLine>> PenLines;
-        shared_ptr<PenLines> lines = make_shared<PenLines>();
+        list<CappedPenLine> lines = list<CappedPenLine>();
 
-        bool is_drawing = false;
+        enum PenMode { NONE, DRAW, ERASE };
+        PenMode mode = NONE;
 
         void HandleMouseButton(const InputEventMouseButton &event);
         void HandleMouseMotion(const InputEventMouseMotion &event);
@@ -62,6 +66,8 @@ class DrawLayer : public Control {
 
         void _unhandled_input(const Ref<InputEvent> &p_event) override;
         void _draw() override;
+
+        void Erase(Vector2 pos);
 };
 
 }
