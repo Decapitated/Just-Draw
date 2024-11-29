@@ -7,7 +7,7 @@
 using namespace JustDraw;
 using namespace godot;
 
-void SmoothLine(Line &line, float ratio, float min_dist);
+void SmoothLine(Line &line, float ratio, float min_dist, int smooth_start);
 
 void DrawLayer::_bind_methods()
 {
@@ -60,12 +60,6 @@ void DrawLayer::HandleMouseButton(const InputEventMouseButton &event)
         else if(mode == DRAW && !event.is_pressed())
         {
             mode = NONE;
-            CappedPenLine& line = lines.back();
-            for(int i = 0; i < 3; i++)
-            {
-                SmoothLine(line, 0.333333f, 0.1f);
-            }
-            queue_redraw();
         }
     }
     else if(event.get_button_index() == MouseButton::MOUSE_BUTTON_RIGHT)
@@ -95,7 +89,38 @@ void DrawLayer::HandleMouseMotion(const InputEventMouseMotion &event)
         auto dist = prev_pos.distance_squared_to(current_pos);
         if(dist >= powf(min_dist, 2.0))
         {
+            if(line.size() >= 2)
+            {
+                Vector2 prev = line[line.size() - 2], curr = prev_pos, next = current_pos;
+                float curr_dot = (curr - prev).normalized().dot((next - curr).normalized());
+                curr_dot = (1.0f - (curr_dot * 0.5f + 0.5f)) * 180.0f;
+                if(curr_dot > 175.0f)
+                {
+                    // Create a new pen line, and set line properties.
+                    auto new_line = CappedPenLine();
+                    new_line.cap_radius = line.cap_radius;
+                    new_line.width = line.width;
+                    new_line.color = line.color;
+                    new_line.append(line[line.size() - 1]);
+                    // Add the mouse position as the second point of the line.
+                    new_line.append(get_local_mouse_position());
+                    // Add the line to the list.
+                    lines.push_back(new_line);
+                    queue_redraw();
+                    return;
+                }
+            }
             line.append(get_local_mouse_position());
+            // If the line has 3 or more points, smooth it.
+            if(line.size() >= 3)
+            {
+                int smooth_start = line.size() - 2;
+                const int smooth_iterations = 5;
+                for(int i = 0; i < smooth_iterations; i++)
+                {
+                    SmoothLine(line, 1.0f / 3.0f, 0.1f, smooth_start);
+                }
+            }
             queue_redraw();
         }
     }
@@ -106,10 +131,7 @@ void DrawLayer::HandleMouseMotion(const InputEventMouseMotion &event)
     }
 }
 
-void DrawLayer::HandleKey(const InputEventKey &event)
-{
-
-}
+void DrawLayer::HandleKey(const InputEventKey &event) {}
 
 void DrawLayer::_draw()
 {
@@ -152,7 +174,7 @@ void DrawLayer::Erase(Vector2 pos)
                 slice_start = i + 1;
             }
         }
-        if(sliced)
+        if(sliced || line_it->size() == 0)
         {
             line_it = lines.erase(line_it);
         }
@@ -163,24 +185,30 @@ void DrawLayer::Erase(Vector2 pos)
     }
 }
 
-void SmoothLine(Line &line, float ratio, float min_dist)
+void SmoothLine(Line &line, float ratio, float min_dist, int smooth_start = 0)
 {
     // Clamp ratio, then minus one so it doesn't go past midpoint.
     ratio = fmaxf(0.0, fminf(1.0, ratio));
     if (ratio > 0.5f) ratio = 1.0f - ratio;
-    auto smoothed_line = std::make_shared<Line>();
-    smoothed_line->push_back(line[0]); // Add first point to new line.
+    auto smoothed_line = Line();
+    smoothed_line.push_back(line[0]); // Add first point to new line.
     for (int i = 1; i < line.size() - 1; i++)
     {
-        Vector2 prev = line[i - 1], curr = line[i], next = line[i + 1];
-        if (prev.distance_squared_to(next) < powf(min_dist, 2.0f))
+        if (i < smooth_start)
         {
-            smoothed_line->push_back(curr);
+            smoothed_line.push_back(line[i]);
             continue;
         }
-        smoothed_line->push_back(curr.lerp(prev, ratio));
-        smoothed_line->push_back(curr.lerp(next, ratio));
+        Vector2 prev = line[i - 1], curr = line[i], next = line[i + 1];
+        float dist_squared = prev.distance_squared_to(curr);
+        if(dist_squared < powf(min_dist, 2.0f))
+        {
+            smoothed_line.push_back(curr);
+            continue;
+        }
+        smoothed_line.push_back(curr.lerp(prev, ratio));
+        smoothed_line.push_back(curr.lerp(next, ratio));
     }
-    smoothed_line->push_back(line[line.size() - 1]); // Add last point to new line.
-    line = *smoothed_line;
+    smoothed_line.push_back(line[line.size() - 1]); // Add last point to new line.
+    line = smoothed_line;
 }

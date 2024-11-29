@@ -52,7 +52,7 @@ class DrawLayer : public Control {
         static void _bind_methods();
 
     public:
-        float line_width = 10.0f;
+        float line_width = 5.0f;
         float cap_scale = 1.0f;
 
         DrawLayer();
