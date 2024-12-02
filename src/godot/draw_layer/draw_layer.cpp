@@ -26,15 +26,16 @@ DrawLayer::~DrawLayer() {}
 
 void DrawLayer::_unhandled_input(const Ref<InputEvent> &p_event)
 {
-    if(auto e = dynamic_cast<InputEventMouseButton*>(*p_event))
+    const Ref<InputEvent> event = make_input_local(*p_event);
+    if(auto e = dynamic_cast<InputEventMouseButton*>(*event))
     {
         HandleMouseButton(*e);
     }
-    else if(auto e = dynamic_cast<InputEventMouseMotion*>(*p_event))
+    else if(auto e = dynamic_cast<InputEventMouseMotion*>(*event))
     {
         HandleMouseMotion(*e);
     }
-    else if(auto e = dynamic_cast<InputEventKey*>(*p_event))
+    else if(auto e = dynamic_cast<InputEventKey*>(*event))
     {
         HandleKey(*e);
     }
@@ -79,24 +80,24 @@ void DrawLayer::HandleMouseButton(const InputEventMouseButton &event)
 
 void DrawLayer::HandleMouseMotion(const InputEventMouseMotion &event)
 {
-    UtilityFunctions::print("DrawLayer::HandleMouseMotion");
-    UtilityFunctions::print("Pressure: ", event.get_pressure());
-    UtilityFunctions::print("Inverted: ", event.get_pen_inverted());
-    UtilityFunctions::print("Position: ", event.get_position());
+    const bool is_left_button_pressed = (event.get_button_mask() & MOUSE_BUTTON_MASK_RIGHT) == MOUSE_BUTTON_MASK_RIGHT;
+    const float pen_pressure = event.get_pressure() || is_left_button_pressed;
+    const float is_pen_inverted = event.get_pen_inverted() || is_left_button_pressed;
+    const Vector2 pen_position = event.get_position();
+    UtilityFunctions::print("Pressure: ", pen_pressure);
+    UtilityFunctions::print("Inverted: ", is_pen_inverted);
+    UtilityFunctions::print("Position: ", pen_position);
     auto cam = get_viewport()->get_camera_2d();
-    auto trans_pos = get_global_transform_with_canvas().inverse().xform(event.get_global_position()) * (Vector2(1.0f, 1.0f) / cam->get_zoom());
     UtilityFunctions::print("Zoom: ", cam->get_zoom(), ", ", Vector2(1.0f, 1.0f) / cam->get_zoom());
-    UtilityFunctions::print("Transformed Position: ", trans_pos);
-    UtilityFunctions::print("Mouse Position: ", get_local_mouse_position());
     if(mode == NONE)
     {
-        if(event.get_pressure() > 0.0f)
+        if(pen_pressure > 0.0f)
         {
             // If eraser.
-            if(event.get_pen_inverted())
+            if(is_pen_inverted)
             {
                 mode = ERASE;
-                Erase(trans_pos);
+                Erase(pen_position);
                 queue_redraw();
             }
             else
@@ -107,7 +108,7 @@ void DrawLayer::HandleMouseMotion(const InputEventMouseMotion &event)
                 line.cap_radius = (line_width / 2.0f) * cap_scale;
                 line.width = line_width;
                 // Add the mouse position as the first point of the line.
-                line.append(trans_pos);
+                line.append(pen_position);
                 // Add the line to the list.
                 lines.push_back(line);
                 queue_redraw();
@@ -116,26 +117,25 @@ void DrawLayer::HandleMouseMotion(const InputEventMouseMotion &event)
     }
     else if(mode == ERASE)
     {
-        if(event.get_pen_inverted() && event.get_pressure() > 0.0f)
+        if(is_pen_inverted && pen_pressure > 0.0f)
         {
-            Erase(trans_pos);
+            Erase(pen_position);
             queue_redraw();
         } else { mode = NONE; }
     }
     else if(mode == DRAW)
     {
-        if(!event.get_pen_inverted() && event.get_pressure() > 0.0f)
+        if(!is_pen_inverted && pen_pressure > 0.0f)
         {
             const float min_dist = 5.0f * (1.0f / cam->get_zoom().x);
             CappedPenLine& line = lines.back();
-            auto current_pos = trans_pos;
             auto prev_pos = line[line.size() - 1];
-            auto dist = prev_pos.distance_squared_to(current_pos);
+            auto dist = prev_pos.distance_squared_to(pen_position);
             if(dist >= powf(min_dist, 2.0))
             {
                 if(line.size() >= 2)
                 {
-                    Vector2 prev = line[line.size() - 2], curr = prev_pos, next = current_pos;
+                    Vector2 prev = line[line.size() - 2], curr = prev_pos, next = pen_position;
                     float curr_dot = (curr - prev).normalized().dot((next - curr).normalized());
                     curr_dot = (1.0f - (curr_dot * 0.5f + 0.5f)) * 180.0f;
                     if(curr_dot > 135.0f)
@@ -147,14 +147,14 @@ void DrawLayer::HandleMouseMotion(const InputEventMouseMotion &event)
                         new_line.color = line.color;
                         new_line.append(line[line.size() - 1]);
                         // Add the mouse position as the second point of the line.
-                        new_line.append(trans_pos);
+                        new_line.append(next);
                         // Add the line to the list.
                         lines.push_back(new_line);
                         queue_redraw();
                         return;
                     }
                 }
-                line.append(trans_pos);
+                line.append(pen_position);
                 // If the line has 3 or more points, smooth it.
                 if(line.size() >= 3)
                 {
