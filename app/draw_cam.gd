@@ -4,6 +4,10 @@ extends Camera2D
 
 var panning := false
 
+func _ready():
+	position = get_viewport().size / 2.0
+
+
 func _unhandled_input(event):
 	if event is InputEventMouseButton:
 		# Zoom increment
