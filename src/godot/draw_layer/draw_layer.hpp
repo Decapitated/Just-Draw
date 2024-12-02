@@ -36,6 +36,8 @@ class CappedPenLine : public PenLine {
         CappedPenLine(const Line &line) : PenLine(line) {}
 };
 
+typedef list<CappedPenLine>::iterator LineIterator;
+
 class DrawLayer : public Control {
     GDCLASS(DrawLayer, Control);
     private:
@@ -55,6 +57,8 @@ class DrawLayer : public Control {
         float line_width = 5.0f;
         float cap_scale = 1.0f;
 
+        float eraser_size = 50.0f;
+
         DrawLayer();
         ~DrawLayer();
 
@@ -68,6 +72,7 @@ class DrawLayer : public Control {
         void _draw() override;
 
         void Erase(Vector2 pos);
+        bool Erase(Vector2 pos, LineIterator line_it);
 };
 
 }

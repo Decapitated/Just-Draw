@@ -123,7 +123,7 @@ void DrawLayer::HandleMouseMotion(const InputEventMouseMotion &event)
                     const int smooth_iterations = 5;
                     for(int i = 0; i < smooth_iterations; i++)
                     {
-                        SmoothLine(line, 1.0f / 3.0f, 1.0f, smooth_start);
+                        SmoothLine(line, 1.0f / 3.0f, 0.1f, smooth_start);
                     }
                 }
                 queue_redraw();
@@ -151,31 +151,44 @@ void DrawLayer::_draw()
     }
 }
 
+typedef list<CappedPenLine>::iterator LineIterator;
+
+bool DrawLayer::Erase(Vector2 pos, LineIterator line_it)
+{
+    bool sliced = false;
+    int slice_start = 0;
+    for(int i = 0; i < line_it->size(); i++)
+    {
+        auto curr = (*line_it)[i];
+        bool is_last_slice = slice_start > 0 && i == line_it->size() - 1;
+        if(is_last_slice || (curr.distance_squared_to(pos) < powf(eraser_size, 2.0f)))
+        {
+            sliced = true;
+            int end = is_last_slice ? i + 1 : i;
+            auto new_line = CappedPenLine(line_it->slice(slice_start, end));
+            new_line.cap_radius = line_it->cap_radius;
+            new_line.width = line_it->width;
+            new_line.color = line_it->color;
+            auto new_line_it = lines.insert(line_it, new_line);
+            bool should_erase = Erase(pos, new_line_it);
+            if(should_erase)
+            {
+                lines.erase(new_line_it);
+            }
+            slice_start = i + 1;
+        }
+    }
+    return sliced || line_it->size() == 0;
+}
+
 void DrawLayer::Erase(Vector2 pos)
 {
-    list<CappedPenLine>::iterator line_it = lines.begin();
+    LineIterator line_it = lines.begin();
     int loop_count = 0;
     while(line_it != lines.end())
     {
-        bool sliced = false;
-        int slice_start = 0;
-        for(int i = 0; i < line_it->size(); i++)
-        {
-            auto curr = (*line_it)[i];
-            bool is_last_slice = slice_start > 0 && i == line_it->size() - 1;
-            if(is_last_slice || (curr.distance_squared_to(pos) < powf(10.0f, 2.0f)))
-            {
-                sliced = true;
-                int end = is_last_slice ? i + 1 : i;
-                auto new_line = CappedPenLine(line_it->slice(slice_start, end));
-                new_line.cap_radius = line_it->cap_radius;
-                new_line.width = line_it->width;
-                new_line.color = line_it->color;
-                lines.insert(line_it, new_line);
-                slice_start = i + 1;
-            }
-        }
-        if(sliced || line_it->size() == 0)
+        bool should_erase = Erase(pos, line_it);
+        if(should_erase)
         {
             line_it = lines.erase(line_it);
         }
