@@ -41,42 +41,7 @@ void DrawLayer::_unhandled_input(const Ref<InputEvent> &p_event)
     }
 }
 
-void DrawLayer::HandleMouseButton(const InputEventMouseButton &event)
-{
-    // if(event.get_button_index() == MouseButton::MOUSE_BUTTON_LEFT)
-    // {
-    //     if(mode == NONE && event.is_pressed())
-    //     {
-    //         mode = DRAW;
-    //         // Create a new pen line, and set line properties.
-    //         auto line = CappedPenLine();
-    //         line.cap_radius = (line_width / 2.0f) * cap_scale;
-    //         line.width = line_width;
-    //         // Add the mouse position as the first point of the line.
-    //         line.append(get_local_mouse_position());
-    //         // Add the line to the list.
-    //         lines.push_back(line);
-    //         queue_redraw();
-    //     } 
-    //     else if(mode == DRAW && !event.is_pressed())
-    //     {
-    //         mode = NONE;
-    //     }
-    // }
-    // else if(event.get_button_index() == MouseButton::MOUSE_BUTTON_RIGHT)
-    // {
-    //     if(mode == NONE && event.is_pressed())
-    //     {
-    //         mode = ERASE;
-    //         Erase(get_local_mouse_position());
-    //         queue_redraw();
-    //     } 
-    //     else if(mode == ERASE && !event.is_pressed())
-    //     {
-    //         mode = NONE;
-    //     }
-    // }
-}
+void DrawLayer::HandleMouseButton(const InputEventMouseButton &event) {}
 
 void DrawLayer::HandleMouseMotion(const InputEventMouseMotion &event)
 {
@@ -84,11 +49,7 @@ void DrawLayer::HandleMouseMotion(const InputEventMouseMotion &event)
     const float pen_pressure = event.get_pressure() || is_left_button_pressed;
     const float is_pen_inverted = event.get_pen_inverted() || is_left_button_pressed;
     const Vector2 pen_position = event.get_position();
-    UtilityFunctions::print("Pressure: ", pen_pressure);
-    UtilityFunctions::print("Inverted: ", is_pen_inverted);
-    UtilityFunctions::print("Position: ", pen_position);
     auto cam = get_viewport()->get_camera_2d();
-    UtilityFunctions::print("Zoom: ", cam->get_zoom(), ", ", Vector2(1.0f, 1.0f) / cam->get_zoom());
     if(mode == NONE)
     {
         if(pen_pressure > 0.0f)
