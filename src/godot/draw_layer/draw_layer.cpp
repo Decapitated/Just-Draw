@@ -11,6 +11,8 @@ void SmoothLine(Line &line, float ratio, float min_dist, int smooth_start);
 
 void DrawLayer::_bind_methods()
 {
+    #pragma region Getters and Setters
+
 	ClassDB::bind_method(D_METHOD("set_line_width", "p_width"), &DrawLayer::set_line_width);
     ClassDB::bind_method(D_METHOD("get_line_width"), &DrawLayer::get_line_width);
     ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "line_width"), "set_line_width", "get_line_width");
@@ -18,6 +20,32 @@ void DrawLayer::_bind_methods()
 	ClassDB::bind_method(D_METHOD("set_cap_scale", "p_width"), &DrawLayer::set_cap_scale);
     ClassDB::bind_method(D_METHOD("get_cap_scale"), &DrawLayer::get_cap_scale);
     ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "cap_scale"), "set_cap_scale", "get_cap_scale");
+
+    ClassDB::bind_method(D_METHOD("set_eraser_size", "p_width"), &DrawLayer::set_eraser_size);
+    ClassDB::bind_method(D_METHOD("get_eraser_size"), &DrawLayer::get_eraser_size);
+    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "eraser_size"), "set_eraser_size", "get_eraser_size");
+
+    ClassDB::bind_method(D_METHOD("set_min_draw_distance", "p_distance"), &DrawLayer::set_min_draw_distance);
+    ClassDB::bind_method(D_METHOD("get_min_draw_distance"), &DrawLayer::get_min_draw_distance);
+    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "minimum_draw_distance"), "set_min_draw_distance", "get_min_draw_distance");
+
+    ClassDB::bind_method(D_METHOD("set_max_draw_angle", "p_angle"), &DrawLayer::set_max_draw_angle);
+    ClassDB::bind_method(D_METHOD("get_max_draw_angle"), &DrawLayer::get_max_draw_angle);
+    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "maximum_draw_angle"), "set_max_draw_angle", "get_max_draw_angle");
+
+    ClassDB::bind_method(D_METHOD("set_smooth_steps", "p_steps"), &DrawLayer::set_smooth_steps);
+    ClassDB::bind_method(D_METHOD("get_smooth_steps"), &DrawLayer::get_smooth_steps);
+    ADD_PROPERTY(PropertyInfo(Variant::INT, "smooth_steps"), "set_smooth_steps", "get_smooth_steps");
+
+    ClassDB::bind_method(D_METHOD("set_smooth_ratio", "p_ratio"), &DrawLayer::set_smooth_ratio);
+    ClassDB::bind_method(D_METHOD("get_smooth_ratio"), &DrawLayer::get_smooth_ratio);
+    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "smooth_ratio"), "set_smooth_ratio", "get_smooth_ratio");
+
+    ClassDB::bind_method(D_METHOD("set_smooth_min_distance", "p_distance"), &DrawLayer::set_smooth_min_distance);
+    ClassDB::bind_method(D_METHOD("get_smooth_min_distance"), &DrawLayer::get_smooth_min_distance);
+    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "smooth_min_distance"), "set_smooth_min_distance", "get_smooth_min_distance");
+
+    #pragma endregion
 }
 
 DrawLayer::DrawLayer() {}
@@ -88,7 +116,7 @@ void DrawLayer::HandleMouseMotion(const InputEventMouseMotion &event)
     {
         if(!is_pen_inverted && pen_pressure > 0.0f)
         {
-            const float min_dist = 5.0f * (1.0f / cam->get_zoom().x);
+            const float min_dist = min_draw_distance * (1.0f / cam->get_zoom().x);
             CappedPenLine& line = lines.back();
             auto prev_pos = line[line.size() - 1];
             auto dist = prev_pos.distance_squared_to(pen_position);
@@ -99,7 +127,7 @@ void DrawLayer::HandleMouseMotion(const InputEventMouseMotion &event)
                     Vector2 prev = line[line.size() - 2], curr = prev_pos, next = pen_position;
                     float curr_dot = (curr - prev).normalized().dot((next - curr).normalized());
                     curr_dot = (1.0f - (curr_dot * 0.5f + 0.5f)) * 180.0f;
-                    if(curr_dot > 135.0f)
+                    if(curr_dot > max_draw_angle)
                     {
                         // Create a new pen line, and set line properties.
                         auto new_line = CappedPenLine();
@@ -120,10 +148,9 @@ void DrawLayer::HandleMouseMotion(const InputEventMouseMotion &event)
                 if(line.size() >= 3)
                 {
                     int smooth_start = line.size() - 2;
-                    const int smooth_iterations = 5;
-                    for(int i = 0; i < smooth_iterations; i++)
+                    for(int i = 0; i < smooth_steps; i++)
                     {
-                        SmoothLine(line, 1.0f / 3.0f, 1.0f, smooth_start);
+                        SmoothLine(line, smooth_ratio, smooth_min_distance, smooth_start);
                     }
                 }
                 queue_redraw();
@@ -151,31 +178,44 @@ void DrawLayer::_draw()
     }
 }
 
+typedef list<CappedPenLine>::iterator LineIterator;
+
+bool DrawLayer::Erase(Vector2 pos, LineIterator line_it)
+{
+    bool sliced = false;
+    int slice_start = 0;
+    for(int i = 0; i < line_it->size(); i++)
+    {
+        auto curr = (*line_it)[i];
+        bool is_last_slice = slice_start > 0 && i == line_it->size() - 1;
+        if(is_last_slice || (curr.distance_squared_to(pos) < powf(eraser_size, 2.0f)))
+        {
+            sliced = true;
+            int end = is_last_slice ? i + 1 : i;
+            auto new_line = CappedPenLine(line_it->slice(slice_start, end));
+            new_line.cap_radius = line_it->cap_radius;
+            new_line.width = line_it->width;
+            new_line.color = line_it->color;
+            auto new_line_it = lines.insert(line_it, new_line);
+            bool should_erase = Erase(pos, new_line_it);
+            if(should_erase)
+            {
+                lines.erase(new_line_it);
+            }
+            slice_start = i + 1;
+        }
+    }
+    return sliced || line_it->size() == 0;
+}
+
 void DrawLayer::Erase(Vector2 pos)
 {
-    list<CappedPenLine>::iterator line_it = lines.begin();
+    LineIterator line_it = lines.begin();
     int loop_count = 0;
     while(line_it != lines.end())
     {
-        bool sliced = false;
-        int slice_start = 0;
-        for(int i = 0; i < line_it->size(); i++)
-        {
-            auto curr = (*line_it)[i];
-            bool is_last_slice = slice_start > 0 && i == line_it->size() - 1;
-            if(is_last_slice || (curr.distance_squared_to(pos) < powf(10.0f, 2.0f)))
-            {
-                sliced = true;
-                int end = is_last_slice ? i + 1 : i;
-                auto new_line = CappedPenLine(line_it->slice(slice_start, end));
-                new_line.cap_radius = line_it->cap_radius;
-                new_line.width = line_it->width;
-                new_line.color = line_it->color;
-                lines.insert(line_it, new_line);
-                slice_start = i + 1;
-            }
-        }
-        if(sliced || line_it->size() == 0)
+        bool should_erase = Erase(pos, line_it);
+        if(should_erase)
         {
             line_it = lines.erase(line_it);
         }
