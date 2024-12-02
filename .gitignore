@@ -6,3 +6,5 @@
 *.lib
 *.obj
 *.pdb
+*.o
+*.a

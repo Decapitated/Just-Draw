@@ -26,108 +26,109 @@ DrawLayer::~DrawLayer() {}
 
 void DrawLayer::_unhandled_input(const Ref<InputEvent> &p_event)
 {
-    if(auto e = dynamic_cast<InputEventMouseButton*>(*p_event))
+    const Ref<InputEvent> event = make_input_local(*p_event);
+    if(auto e = dynamic_cast<InputEventMouseButton*>(*event))
     {
         HandleMouseButton(*e);
     }
-    else if(auto e = dynamic_cast<InputEventMouseMotion*>(*p_event))
+    else if(auto e = dynamic_cast<InputEventMouseMotion*>(*event))
     {
         HandleMouseMotion(*e);
     }
-    else if(auto e = dynamic_cast<InputEventKey*>(*p_event))
+    else if(auto e = dynamic_cast<InputEventKey*>(*event))
     {
         HandleKey(*e);
     }
 }
 
-void DrawLayer::HandleMouseButton(const InputEventMouseButton &event)
-{
-    if(event.get_button_index() == MouseButton::MOUSE_BUTTON_LEFT)
-    {
-        if(mode == NONE && event.is_pressed())
-        {
-            mode = DRAW;
-            // Create a new pen line, and set line properties.
-            auto line = CappedPenLine();
-            line.cap_radius = (line_width / 2.0f) * cap_scale;
-            line.width = line_width;
-            // Add the mouse position as the first point of the line.
-            line.append(get_local_mouse_position());
-            // Add the line to the list.
-            lines.push_back(line);
-            queue_redraw();
-        } 
-        else if(mode == DRAW && !event.is_pressed())
-        {
-            mode = NONE;
-        }
-    }
-    else if(event.get_button_index() == MouseButton::MOUSE_BUTTON_RIGHT)
-    {
-        if(mode == NONE && event.is_pressed())
-        {
-            mode = ERASE;
-            Erase(get_local_mouse_position());
-            queue_redraw();
-        } 
-        else if(mode == ERASE && !event.is_pressed())
-        {
-            mode = NONE;
-        }
-    }
-}
+void DrawLayer::HandleMouseButton(const InputEventMouseButton &event) {}
 
 void DrawLayer::HandleMouseMotion(const InputEventMouseMotion &event)
 {
+    const bool is_left_button_pressed = (event.get_button_mask() & MOUSE_BUTTON_MASK_RIGHT) == MOUSE_BUTTON_MASK_RIGHT;
+    const float pen_pressure = event.get_pressure() || is_left_button_pressed;
+    const float is_pen_inverted = event.get_pen_inverted() || is_left_button_pressed;
+    const Vector2 pen_position = event.get_position();
     auto cam = get_viewport()->get_camera_2d();
-    const float min_dist = 5.0f * (1.0f / cam->get_zoom().x);
-    if(mode == DRAW)
+    if(mode == NONE)
     {
-        CappedPenLine& line = lines.back();
-        auto current_pos = get_local_mouse_position();
-        auto prev_pos = line[line.size() - 1];
-        auto dist = prev_pos.distance_squared_to(current_pos);
-        if(dist >= powf(min_dist, 2.0))
+        if(pen_pressure > 0.0f)
         {
-            if(line.size() >= 2)
+            // If eraser.
+            if(is_pen_inverted)
             {
-                Vector2 prev = line[line.size() - 2], curr = prev_pos, next = current_pos;
-                float curr_dot = (curr - prev).normalized().dot((next - curr).normalized());
-                curr_dot = (1.0f - (curr_dot * 0.5f + 0.5f)) * 180.0f;
-                if(curr_dot > 175.0f)
-                {
-                    // Create a new pen line, and set line properties.
-                    auto new_line = CappedPenLine();
-                    new_line.cap_radius = line.cap_radius;
-                    new_line.width = line.width;
-                    new_line.color = line.color;
-                    new_line.append(line[line.size() - 1]);
-                    // Add the mouse position as the second point of the line.
-                    new_line.append(get_local_mouse_position());
-                    // Add the line to the list.
-                    lines.push_back(new_line);
-                    queue_redraw();
-                    return;
-                }
+                mode = ERASE;
+                Erase(pen_position);
+                queue_redraw();
             }
-            line.append(get_local_mouse_position());
-            // If the line has 3 or more points, smooth it.
-            if(line.size() >= 3)
+            else
             {
-                int smooth_start = line.size() - 2;
-                const int smooth_iterations = 5;
-                for(int i = 0; i < smooth_iterations; i++)
-                {
-                    SmoothLine(line, 1.0f / 3.0f, 0.1f, smooth_start);
-                }
+                mode = DRAW;
+                // Create a new pen line, and set line properties.
+                auto line = CappedPenLine();
+                line.cap_radius = (line_width / 2.0f) * cap_scale;
+                line.width = line_width;
+                // Add the mouse position as the first point of the line.
+                line.append(pen_position);
+                // Add the line to the list.
+                lines.push_back(line);
+                queue_redraw();
             }
-            queue_redraw();
         }
     }
     else if(mode == ERASE)
     {
-        Erase(get_local_mouse_position());
-        queue_redraw();
+        if(is_pen_inverted && pen_pressure > 0.0f)
+        {
+            Erase(pen_position);
+            queue_redraw();
+        } else { mode = NONE; }
+    }
+    else if(mode == DRAW)
+    {
+        if(!is_pen_inverted && pen_pressure > 0.0f)
+        {
+            const float min_dist = 5.0f * (1.0f / cam->get_zoom().x);
+            CappedPenLine& line = lines.back();
+            auto prev_pos = line[line.size() - 1];
+            auto dist = prev_pos.distance_squared_to(pen_position);
+            if(dist >= powf(min_dist, 2.0))
+            {
+                if(line.size() >= 2)
+                {
+                    Vector2 prev = line[line.size() - 2], curr = prev_pos, next = pen_position;
+                    float curr_dot = (curr - prev).normalized().dot((next - curr).normalized());
+                    curr_dot = (1.0f - (curr_dot * 0.5f + 0.5f)) * 180.0f;
+                    if(curr_dot > 135.0f)
+                    {
+                        // Create a new pen line, and set line properties.
+                        auto new_line = CappedPenLine();
+                        new_line.cap_radius = line.cap_radius;
+                        new_line.width = line.width;
+                        new_line.color = line.color;
+                        new_line.append(line[line.size() - 1]);
+                        // Add the mouse position as the second point of the line.
+                        new_line.append(next);
+                        // Add the line to the list.
+                        lines.push_back(new_line);
+                        queue_redraw();
+                        return;
+                    }
+                }
+                line.append(pen_position);
+                // If the line has 3 or more points, smooth it.
+                if(line.size() >= 3)
+                {
+                    int smooth_start = line.size() - 2;
+                    const int smooth_iterations = 5;
+                    for(int i = 0; i < smooth_iterations; i++)
+                    {
+                        SmoothLine(line, 1.0f / 3.0f, 1.0f, smooth_start);
+                    }
+                }
+                queue_redraw();
+            }
+        } else { mode = NONE; }
     }
 }
 
