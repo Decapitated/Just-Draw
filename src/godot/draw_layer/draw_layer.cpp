@@ -136,7 +136,7 @@ void DrawLayer::_unhandled_input(const Ref<InputEvent> &p_event)
 
 void DrawLayer::HandleMouseButton(const InputEventMouseButton &event)
 {
-    if(mode == NONE)
+    if(mode == NONE && event.is_pressed())
     {
         const Vector2 pen_position = event.get_position();
         if(event.get_button_index() == MOUSE_BUTTON_LEFT)
@@ -183,7 +183,7 @@ void DrawLayer::HandleMouseMotion(const InputEventMouseMotion &event)
     {
         if(!is_pen_inverted && pen_pressure > 0.0f)
         {
-            Draw(pen_position);
+            UpdateDraw(pen_position);
         } else { mode = NONE; }
     }
 }
