@@ -58,6 +58,12 @@ class DrawLayer : public Control {
         float cap_scale = 1.0f;
 
         float eraser_size = 10.0f;
+        float min_draw_distance = 5.0f;
+        float max_draw_angle = 135.0f;
+
+        int smooth_steps = 5;
+        float smooth_ratio = 0.333333f;
+        float smooth_min_distance = 0.1f;
 
         DrawLayer();
         ~DrawLayer();
@@ -72,6 +78,21 @@ class DrawLayer : public Control {
 
         float get_eraser_size() { return eraser_size; }
         void set_eraser_size(float size) { eraser_size = size; }
+
+        float get_min_draw_distance() { return min_draw_distance; }
+        void set_min_draw_distance(float distance) { min_draw_distance = distance; }
+
+        float get_max_draw_angle() { return max_draw_angle; }
+        void set_max_draw_angle(float angle) { max_draw_angle = angle; }
+
+        int get_smooth_steps() { return smooth_steps; }
+        void set_smooth_steps(int steps) { smooth_steps = steps; }
+
+        float get_smooth_ratio() { return smooth_ratio; }
+        void set_smooth_ratio(float ratio) { smooth_ratio = ratio; }
+
+        float get_smooth_min_distance() { return smooth_min_distance; }
+        void set_smooth_min_distance(float distance) { smooth_min_distance = distance; }
 
         #pragma endregion
 

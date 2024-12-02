@@ -11,6 +11,8 @@ void SmoothLine(Line &line, float ratio, float min_dist, int smooth_start);
 
 void DrawLayer::_bind_methods()
 {
+    #pragma region Getters and Setters
+
 	ClassDB::bind_method(D_METHOD("set_line_width", "p_width"), &DrawLayer::set_line_width);
     ClassDB::bind_method(D_METHOD("get_line_width"), &DrawLayer::get_line_width);
     ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "line_width"), "set_line_width", "get_line_width");
@@ -22,6 +24,28 @@ void DrawLayer::_bind_methods()
     ClassDB::bind_method(D_METHOD("set_eraser_size", "p_width"), &DrawLayer::set_eraser_size);
     ClassDB::bind_method(D_METHOD("get_eraser_size"), &DrawLayer::get_eraser_size);
     ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "eraser_size"), "set_eraser_size", "get_eraser_size");
+
+    ClassDB::bind_method(D_METHOD("set_min_draw_distance", "p_distance"), &DrawLayer::set_min_draw_distance);
+    ClassDB::bind_method(D_METHOD("get_min_draw_distance"), &DrawLayer::get_min_draw_distance);
+    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "minimum_draw_distance"), "set_min_draw_distance", "get_min_draw_distance");
+
+    ClassDB::bind_method(D_METHOD("set_max_draw_angle", "p_angle"), &DrawLayer::set_max_draw_angle);
+    ClassDB::bind_method(D_METHOD("get_max_draw_angle"), &DrawLayer::get_max_draw_angle);
+    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "maximum_draw_angle"), "set_max_draw_angle", "get_max_draw_angle");
+
+    ClassDB::bind_method(D_METHOD("set_smooth_steps", "p_steps"), &DrawLayer::set_smooth_steps);
+    ClassDB::bind_method(D_METHOD("get_smooth_steps"), &DrawLayer::get_smooth_steps);
+    ADD_PROPERTY(PropertyInfo(Variant::INT, "smooth_steps"), "set_smooth_steps", "get_smooth_steps");
+
+    ClassDB::bind_method(D_METHOD("set_smooth_ratio", "p_ratio"), &DrawLayer::set_smooth_ratio);
+    ClassDB::bind_method(D_METHOD("get_smooth_ratio"), &DrawLayer::get_smooth_ratio);
+    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "smooth_ratio"), "set_smooth_ratio", "get_smooth_ratio");
+
+    ClassDB::bind_method(D_METHOD("set_smooth_min_distance", "p_distance"), &DrawLayer::set_smooth_min_distance);
+    ClassDB::bind_method(D_METHOD("get_smooth_min_distance"), &DrawLayer::get_smooth_min_distance);
+    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "smooth_min_distance"), "set_smooth_min_distance", "get_smooth_min_distance");
+
+    #pragma endregion
 }
 
 DrawLayer::DrawLayer() {}
@@ -92,7 +116,7 @@ void DrawLayer::HandleMouseMotion(const InputEventMouseMotion &event)
     {
         if(!is_pen_inverted && pen_pressure > 0.0f)
         {
-            const float min_dist = 5.0f * (1.0f / cam->get_zoom().x);
+            const float min_dist = min_draw_distance * (1.0f / cam->get_zoom().x);
             CappedPenLine& line = lines.back();
             auto prev_pos = line[line.size() - 1];
             auto dist = prev_pos.distance_squared_to(pen_position);
@@ -103,7 +127,7 @@ void DrawLayer::HandleMouseMotion(const InputEventMouseMotion &event)
                     Vector2 prev = line[line.size() - 2], curr = prev_pos, next = pen_position;
                     float curr_dot = (curr - prev).normalized().dot((next - curr).normalized());
                     curr_dot = (1.0f - (curr_dot * 0.5f + 0.5f)) * 180.0f;
-                    if(curr_dot > 135.0f)
+                    if(curr_dot > max_draw_angle)
                     {
                         // Create a new pen line, and set line properties.
                         auto new_line = CappedPenLine();
@@ -124,10 +148,9 @@ void DrawLayer::HandleMouseMotion(const InputEventMouseMotion &event)
                 if(line.size() >= 3)
                 {
                     int smooth_start = line.size() - 2;
-                    const int smooth_iterations = 5;
-                    for(int i = 0; i < smooth_iterations; i++)
+                    for(int i = 0; i < smooth_steps; i++)
                     {
-                        SmoothLine(line, 1.0f / 3.0f, 0.1f, smooth_start);
+                        SmoothLine(line, smooth_ratio, smooth_min_distance, smooth_start);
                     }
                 }
                 queue_redraw();
