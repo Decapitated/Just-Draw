@@ -10,6 +10,7 @@
 #include <godot_cpp/classes/input_event_key.hpp>
 
 #include <list>
+#include <algorithm>
 
 using namespace std;
 using namespace godot;
@@ -45,15 +46,7 @@ class DrawLayer : public Control {
 
         enum PenMode { NONE, DRAW, ERASE };
         PenMode mode = NONE;
-
-        void HandleMouseButton(const InputEventMouseButton &event);
-        void HandleMouseMotion(const InputEventMouseMotion &event);
-        void HandleKey(const InputEventKey &event);
-
-    protected:
-        static void _bind_methods();
-
-    public:
+        
         float line_width = 5.0f;
         float cap_scale = 1.0f;
 
@@ -65,6 +58,14 @@ class DrawLayer : public Control {
         float smooth_ratio = 0.333333f;
         float smooth_min_distance = 0.1f;
 
+        void HandleMouseButton(const InputEventMouseButton &event);
+        void HandleMouseMotion(const InputEventMouseMotion &event);
+        void HandleKey(const InputEventKey &event);
+
+    protected:
+        static void _bind_methods();
+
+    public:
         DrawLayer();
         ~DrawLayer();
 
@@ -74,25 +75,25 @@ class DrawLayer : public Control {
         void set_line_width(float width) { line_width = width; }
 
         float get_cap_scale() { return cap_scale; }
-        void set_cap_scale(float scale) { cap_scale = scale; }
+        void set_cap_scale(float scale) { cap_scale = max(scale, 0.0f); }
 
         float get_eraser_size() { return eraser_size; }
-        void set_eraser_size(float size) { eraser_size = size; }
+        void set_eraser_size(float size) { eraser_size = max(size, 0.0f); }
 
         float get_min_draw_distance() { return min_draw_distance; }
-        void set_min_draw_distance(float distance) { min_draw_distance = distance; }
+        void set_min_draw_distance(float distance) { min_draw_distance = max(distance, 0.0f); }
 
         float get_max_draw_angle() { return max_draw_angle; }
-        void set_max_draw_angle(float angle) { max_draw_angle = angle; }
+        void set_max_draw_angle(float angle) { max_draw_angle = min(max(angle, 0.0f), 180.0f); }
 
         int get_smooth_steps() { return smooth_steps; }
-        void set_smooth_steps(int steps) { smooth_steps = steps; }
+        void set_smooth_steps(int steps) { smooth_steps = max(steps, 0); }
 
         float get_smooth_ratio() { return smooth_ratio; }
-        void set_smooth_ratio(float ratio) { smooth_ratio = ratio; }
+        void set_smooth_ratio(float ratio) { smooth_ratio = min(max(ratio, 0.0f), 1.0f); }
 
         float get_smooth_min_distance() { return smooth_min_distance; }
-        void set_smooth_min_distance(float distance) { smooth_min_distance = distance; }
+        void set_smooth_min_distance(float distance) { smooth_min_distance = max(distance, 0.0f); }
 
         #pragma endregion
 
