@@ -62,6 +62,11 @@ class DrawLayer : public Control {
         void HandleMouseMotion(const InputEventMouseMotion &event);
         void HandleKey(const InputEventKey &event);
 
+        void StartDraw(Vector2 pen_position);
+        void StartErase(Vector2 pen_position);
+
+        void UpdateDraw(Vector2 pen_position);
+
     protected:
         static void _bind_methods();
 

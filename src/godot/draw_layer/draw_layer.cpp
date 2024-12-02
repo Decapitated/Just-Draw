@@ -52,6 +52,71 @@ DrawLayer::DrawLayer() {}
 
 DrawLayer::~DrawLayer() {}
 
+void DrawLayer::StartDraw(Vector2 pen_position)
+{
+    mode = DRAW;
+    // Create a new pen line, and set line properties.
+    auto line = CappedPenLine();
+    line.cap_radius = (line_width / 2.0f) * cap_scale;
+    line.width = line_width;
+    // Add the mouse position as the first point of the line.
+    line.append(pen_position);
+    // Add the line to the list.
+    lines.push_back(line);
+    queue_redraw();
+}
+
+void DrawLayer::StartErase(Vector2 pen_position)
+{
+    mode = ERASE;
+    Erase(pen_position);
+    queue_redraw();
+}
+
+void DrawLayer::UpdateDraw(Vector2 pen_position)
+{
+    auto cam = get_viewport()->get_camera_2d();
+    const float min_dist = min_draw_distance * (1.0f / cam->get_zoom().x);
+    CappedPenLine& line = lines.back();
+    auto prev_pos = line[line.size() - 1];
+    auto dist = prev_pos.distance_squared_to(pen_position);
+    if(dist >= powf(min_dist, 2.0))
+    {
+        if(line.size() >= 2)
+        {
+            Vector2 prev = line[line.size() - 2], curr = prev_pos, next = pen_position;
+            float curr_dot = (curr - prev).normalized().dot((next - curr).normalized());
+            curr_dot = (1.0f - (curr_dot * 0.5f + 0.5f)) * 180.0f;
+            if(curr_dot > max_draw_angle)
+            {
+                // Create a new pen line, and set line properties.
+                auto new_line = CappedPenLine();
+                new_line.cap_radius = line.cap_radius;
+                new_line.width = line.width;
+                new_line.color = line.color;
+                new_line.append(line[line.size() - 1]);
+                // Add the mouse position as the second point of the line.
+                new_line.append(next);
+                // Add the line to the list.
+                lines.push_back(new_line);
+                queue_redraw();
+                return;
+            }
+        }
+        line.append(pen_position);
+        // If the line has 3 or more points, smooth it.
+        if(line.size() >= 3)
+        {
+            int smooth_start = line.size() - 2;
+            for(int i = 0; i < smooth_steps; i++)
+            {
+                SmoothLine(line, smooth_ratio, smooth_min_distance, smooth_start);
+            }
+        }
+        queue_redraw();
+    }
+}
+
 void DrawLayer::_unhandled_input(const Ref<InputEvent> &p_event)
 {
     const Ref<InputEvent> event = make_input_local(*p_event);
@@ -69,7 +134,21 @@ void DrawLayer::_unhandled_input(const Ref<InputEvent> &p_event)
     }
 }
 
-void DrawLayer::HandleMouseButton(const InputEventMouseButton &event) {}
+void DrawLayer::HandleMouseButton(const InputEventMouseButton &event)
+{
+    if(mode == NONE)
+    {
+        const Vector2 pen_position = event.get_position();
+        if(event.get_button_index() == MOUSE_BUTTON_LEFT)
+        {
+            StartDraw(pen_position);
+        }
+        else if(event.get_button_index() == MOUSE_BUTTON_RIGHT)
+        {
+            StartErase(pen_position);
+        }
+    }
+}
 
 void DrawLayer::HandleMouseMotion(const InputEventMouseMotion &event)
 {
@@ -77,7 +156,6 @@ void DrawLayer::HandleMouseMotion(const InputEventMouseMotion &event)
     const float pen_pressure = event.get_pressure() || is_left_button_pressed;
     const float is_pen_inverted = event.get_pen_inverted() || is_left_button_pressed;
     const Vector2 pen_position = event.get_position();
-    auto cam = get_viewport()->get_camera_2d();
     if(mode == NONE)
     {
         if(pen_pressure > 0.0f)
@@ -85,22 +163,11 @@ void DrawLayer::HandleMouseMotion(const InputEventMouseMotion &event)
             // If eraser.
             if(is_pen_inverted)
             {
-                mode = ERASE;
-                Erase(pen_position);
-                queue_redraw();
+                StartErase(pen_position);
             }
             else
             {
-                mode = DRAW;
-                // Create a new pen line, and set line properties.
-                auto line = CappedPenLine();
-                line.cap_radius = (line_width / 2.0f) * cap_scale;
-                line.width = line_width;
-                // Add the mouse position as the first point of the line.
-                line.append(pen_position);
-                // Add the line to the list.
-                lines.push_back(line);
-                queue_redraw();
+                StartDraw(pen_position);
             }
         }
     }
@@ -116,45 +183,7 @@ void DrawLayer::HandleMouseMotion(const InputEventMouseMotion &event)
     {
         if(!is_pen_inverted && pen_pressure > 0.0f)
         {
-            const float min_dist = min_draw_distance * (1.0f / cam->get_zoom().x);
-            CappedPenLine& line = lines.back();
-            auto prev_pos = line[line.size() - 1];
-            auto dist = prev_pos.distance_squared_to(pen_position);
-            if(dist >= powf(min_dist, 2.0))
-            {
-                if(line.size() >= 2)
-                {
-                    Vector2 prev = line[line.size() - 2], curr = prev_pos, next = pen_position;
-                    float curr_dot = (curr - prev).normalized().dot((next - curr).normalized());
-                    curr_dot = (1.0f - (curr_dot * 0.5f + 0.5f)) * 180.0f;
-                    if(curr_dot > max_draw_angle)
-                    {
-                        // Create a new pen line, and set line properties.
-                        auto new_line = CappedPenLine();
-                        new_line.cap_radius = line.cap_radius;
-                        new_line.width = line.width;
-                        new_line.color = line.color;
-                        new_line.append(line[line.size() - 1]);
-                        // Add the mouse position as the second point of the line.
-                        new_line.append(next);
-                        // Add the line to the list.
-                        lines.push_back(new_line);
-                        queue_redraw();
-                        return;
-                    }
-                }
-                line.append(pen_position);
-                // If the line has 3 or more points, smooth it.
-                if(line.size() >= 3)
-                {
-                    int smooth_start = line.size() - 2;
-                    for(int i = 0; i < smooth_steps; i++)
-                    {
-                        SmoothLine(line, smooth_ratio, smooth_min_distance, smooth_start);
-                    }
-                }
-                queue_redraw();
-            }
+            Draw(pen_position);
         } else { mode = NONE; }
     }
 }
