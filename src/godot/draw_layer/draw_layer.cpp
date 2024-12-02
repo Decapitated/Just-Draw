@@ -42,92 +42,132 @@ void DrawLayer::_unhandled_input(const Ref<InputEvent> &p_event)
 
 void DrawLayer::HandleMouseButton(const InputEventMouseButton &event)
 {
-    if(event.get_button_index() == MouseButton::MOUSE_BUTTON_LEFT)
-    {
-        if(mode == NONE && event.is_pressed())
-        {
-            mode = DRAW;
-            // Create a new pen line, and set line properties.
-            auto line = CappedPenLine();
-            line.cap_radius = (line_width / 2.0f) * cap_scale;
-            line.width = line_width;
-            // Add the mouse position as the first point of the line.
-            line.append(get_local_mouse_position());
-            // Add the line to the list.
-            lines.push_back(line);
-            queue_redraw();
-        } 
-        else if(mode == DRAW && !event.is_pressed())
-        {
-            mode = NONE;
-        }
-    }
-    else if(event.get_button_index() == MouseButton::MOUSE_BUTTON_RIGHT)
-    {
-        if(mode == NONE && event.is_pressed())
-        {
-            mode = ERASE;
-            Erase(get_local_mouse_position());
-            queue_redraw();
-        } 
-        else if(mode == ERASE && !event.is_pressed())
-        {
-            mode = NONE;
-        }
-    }
+    // if(event.get_button_index() == MouseButton::MOUSE_BUTTON_LEFT)
+    // {
+    //     if(mode == NONE && event.is_pressed())
+    //     {
+    //         mode = DRAW;
+    //         // Create a new pen line, and set line properties.
+    //         auto line = CappedPenLine();
+    //         line.cap_radius = (line_width / 2.0f) * cap_scale;
+    //         line.width = line_width;
+    //         // Add the mouse position as the first point of the line.
+    //         line.append(get_local_mouse_position());
+    //         // Add the line to the list.
+    //         lines.push_back(line);
+    //         queue_redraw();
+    //     } 
+    //     else if(mode == DRAW && !event.is_pressed())
+    //     {
+    //         mode = NONE;
+    //     }
+    // }
+    // else if(event.get_button_index() == MouseButton::MOUSE_BUTTON_RIGHT)
+    // {
+    //     if(mode == NONE && event.is_pressed())
+    //     {
+    //         mode = ERASE;
+    //         Erase(get_local_mouse_position());
+    //         queue_redraw();
+    //     } 
+    //     else if(mode == ERASE && !event.is_pressed())
+    //     {
+    //         mode = NONE;
+    //     }
+    // }
 }
 
 void DrawLayer::HandleMouseMotion(const InputEventMouseMotion &event)
 {
+    UtilityFunctions::print("DrawLayer::HandleMouseMotion");
+    UtilityFunctions::print("Pressure: ", event.get_pressure());
+    UtilityFunctions::print("Inverted: ", event.get_pen_inverted());
+    UtilityFunctions::print("Position: ", event.get_position());
     auto cam = get_viewport()->get_camera_2d();
-    const float min_dist = 5.0f * (1.0f / cam->get_zoom().x);
-    if(mode == DRAW)
+    auto trans_pos = get_global_transform_with_canvas().inverse().xform(event.get_global_position()) * (Vector2(1.0f, 1.0f) / cam->get_zoom());
+    UtilityFunctions::print("Zoom: ", cam->get_zoom(), ", ", Vector2(1.0f, 1.0f) / cam->get_zoom());
+    UtilityFunctions::print("Transformed Position: ", trans_pos);
+    UtilityFunctions::print("Mouse Position: ", get_local_mouse_position());
+    if(mode == NONE)
     {
-        CappedPenLine& line = lines.back();
-        auto current_pos = get_local_mouse_position();
-        auto prev_pos = line[line.size() - 1];
-        auto dist = prev_pos.distance_squared_to(current_pos);
-        if(dist >= powf(min_dist, 2.0))
+        if(event.get_pressure() > 0.0f)
         {
-            if(line.size() >= 2)
+            // If eraser.
+            if(event.get_pen_inverted())
             {
-                Vector2 prev = line[line.size() - 2], curr = prev_pos, next = current_pos;
-                float curr_dot = (curr - prev).normalized().dot((next - curr).normalized());
-                curr_dot = (1.0f - (curr_dot * 0.5f + 0.5f)) * 180.0f;
-                if(curr_dot > 135.0f)
-                {
-                    // Create a new pen line, and set line properties.
-                    auto new_line = CappedPenLine();
-                    new_line.cap_radius = line.cap_radius;
-                    new_line.width = line.width;
-                    new_line.color = line.color;
-                    new_line.append(line[line.size() - 1]);
-                    // Add the mouse position as the second point of the line.
-                    new_line.append(get_local_mouse_position());
-                    // Add the line to the list.
-                    lines.push_back(new_line);
-                    queue_redraw();
-                    return;
-                }
+                mode = ERASE;
+                Erase(trans_pos);
+                queue_redraw();
             }
-            line.append(get_local_mouse_position());
-            // If the line has 3 or more points, smooth it.
-            if(line.size() >= 3)
+            else
             {
-                int smooth_start = line.size() - 2;
-                const int smooth_iterations = 5;
-                for(int i = 0; i < smooth_iterations; i++)
-                {
-                    SmoothLine(line, 1.0f / 3.0f, 1.0f, smooth_start);
-                }
+                mode = DRAW;
+                // Create a new pen line, and set line properties.
+                auto line = CappedPenLine();
+                line.cap_radius = (line_width / 2.0f) * cap_scale;
+                line.width = line_width;
+                // Add the mouse position as the first point of the line.
+                line.append(trans_pos);
+                // Add the line to the list.
+                lines.push_back(line);
+                queue_redraw();
             }
-            queue_redraw();
         }
     }
     else if(mode == ERASE)
     {
-        Erase(get_local_mouse_position());
-        queue_redraw();
+        if(event.get_pen_inverted() && event.get_pressure() > 0.0f)
+        {
+            Erase(trans_pos);
+            queue_redraw();
+        } else { mode = NONE; }
+    }
+    else if(mode == DRAW)
+    {
+        if(!event.get_pen_inverted() && event.get_pressure() > 0.0f)
+        {
+            const float min_dist = 5.0f * (1.0f / cam->get_zoom().x);
+            CappedPenLine& line = lines.back();
+            auto current_pos = trans_pos;
+            auto prev_pos = line[line.size() - 1];
+            auto dist = prev_pos.distance_squared_to(current_pos);
+            if(dist >= powf(min_dist, 2.0))
+            {
+                if(line.size() >= 2)
+                {
+                    Vector2 prev = line[line.size() - 2], curr = prev_pos, next = current_pos;
+                    float curr_dot = (curr - prev).normalized().dot((next - curr).normalized());
+                    curr_dot = (1.0f - (curr_dot * 0.5f + 0.5f)) * 180.0f;
+                    if(curr_dot > 135.0f)
+                    {
+                        // Create a new pen line, and set line properties.
+                        auto new_line = CappedPenLine();
+                        new_line.cap_radius = line.cap_radius;
+                        new_line.width = line.width;
+                        new_line.color = line.color;
+                        new_line.append(line[line.size() - 1]);
+                        // Add the mouse position as the second point of the line.
+                        new_line.append(trans_pos);
+                        // Add the line to the list.
+                        lines.push_back(new_line);
+                        queue_redraw();
+                        return;
+                    }
+                }
+                line.append(trans_pos);
+                // If the line has 3 or more points, smooth it.
+                if(line.size() >= 3)
+                {
+                    int smooth_start = line.size() - 2;
+                    const int smooth_iterations = 5;
+                    for(int i = 0; i < smooth_iterations; i++)
+                    {
+                        SmoothLine(line, 1.0f / 3.0f, 1.0f, smooth_start);
+                    }
+                }
+                queue_redraw();
+            }
+        } else { mode = NONE; }
     }
 }
 
