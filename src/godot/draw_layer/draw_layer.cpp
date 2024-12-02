@@ -18,6 +18,10 @@ void DrawLayer::_bind_methods()
 	ClassDB::bind_method(D_METHOD("set_cap_scale", "p_width"), &DrawLayer::set_cap_scale);
     ClassDB::bind_method(D_METHOD("get_cap_scale"), &DrawLayer::get_cap_scale);
     ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "cap_scale"), "set_cap_scale", "get_cap_scale");
+
+    ClassDB::bind_method(D_METHOD("set_eraser_size", "p_width"), &DrawLayer::set_eraser_size);
+    ClassDB::bind_method(D_METHOD("get_eraser_size"), &DrawLayer::get_eraser_size);
+    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "eraser_size"), "set_eraser_size", "get_eraser_size");
 }
 
 DrawLayer::DrawLayer() {}

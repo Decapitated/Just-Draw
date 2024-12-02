@@ -57,16 +57,23 @@ class DrawLayer : public Control {
         float line_width = 5.0f;
         float cap_scale = 1.0f;
 
-        float eraser_size = 50.0f;
+        float eraser_size = 10.0f;
 
         DrawLayer();
         ~DrawLayer();
+
+        #pragma region Getters and Setters
 
         float get_line_width() { return line_width; }
         void set_line_width(float width) { line_width = width; }
 
         float get_cap_scale() { return cap_scale; }
         void set_cap_scale(float scale) { cap_scale = scale; }
+
+        float get_eraser_size() { return eraser_size; }
+        void set_eraser_size(float size) { eraser_size = size; }
+
+        #pragma endregion
 
         void _unhandled_input(const Ref<InputEvent> &p_event) override;
         void _draw() override;
