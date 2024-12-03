@@ -48,7 +48,10 @@ void DrawLayer::_bind_methods()
     #pragma endregion
 }
 
-DrawLayer::DrawLayer() {}
+DrawLayer::DrawLayer()
+{
+    set_mouse_filter(MOUSE_FILTER_PASS);
+}
 
 DrawLayer::~DrawLayer() {}
 
