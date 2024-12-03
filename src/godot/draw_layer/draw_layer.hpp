@@ -67,6 +67,9 @@ class DrawLayer : public Control {
 
         void UpdateDraw(Vector2 pen_position);
 
+        void UpdateErase(Vector2 pen_position);
+        bool UpdateErase(Vector2 pen_position, LineIterator line_it);
+
     protected:
         static void _bind_methods();
 
@@ -104,9 +107,6 @@ class DrawLayer : public Control {
 
         void _unhandled_input(const Ref<InputEvent> &p_event) override;
         void _draw() override;
-
-        void Erase(Vector2 pos);
-        bool Erase(Vector2 pos, LineIterator line_it);
 };
 
 }
