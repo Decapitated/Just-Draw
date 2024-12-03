@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://d4gg7o4p81gb"]
+[gd_scene load_steps=3 format=3 uid="uid://d4gg7o4p81gb"]
 
 [ext_resource type="Script" path="res://draw_cam.gd" id="1_hampg"]
+[ext_resource type="PackedScene" uid="uid://c8ep4tphh70yx" path="res://controls/Zoom/zoom_control.res" id="2_lj6a1"]
 
 [node name="Node2D" type="Node2D"]
 
@@ -98,3 +99,6 @@ custom_minimum_size = Vector2(50, 50)
 layout_mode = 2
 size_flags_vertical = 3
 text = "F"
+
+[node name="ZoomContainer" parent="Menu" node_paths=PackedStringArray("camera") instance=ExtResource("2_lj6a1")]
+camera = NodePath("../../Camera2D")
