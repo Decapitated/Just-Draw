@@ -16,6 +16,7 @@ config/icon="res://icon.svg"
 
 [autoload]
 
+TouchTracker="*res://touch_tracker.gd"
 FPSCounter="*res://debug/FPSCounter/FPSCounter.tscn"
 
 [display]
