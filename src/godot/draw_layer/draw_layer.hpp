@@ -80,28 +80,28 @@ class DrawLayer : public Control {
         #pragma region Getters and Setters
 
         float get_line_width() { return line_width; }
-        void set_line_width(float width) { line_width = width; }
+        void set_line_width(float p_width) { line_width = p_width; }
 
         float get_cap_scale() { return cap_scale; }
-        void set_cap_scale(float scale) { cap_scale = max(scale, 0.0f); }
+        void set_cap_scale(float p_scale) { cap_scale = max(p_scale, 0.0f); }
 
         float get_eraser_size() { return eraser_size; }
-        void set_eraser_size(float size) { eraser_size = max(size, 0.0f); }
+        void set_eraser_size(float p_size) { eraser_size = max(p_size, 0.0f); }
 
         float get_min_draw_distance() { return min_draw_distance; }
-        void set_min_draw_distance(float distance) { min_draw_distance = max(distance, 0.0f); }
+        void set_min_draw_distance(float p_distance) { min_draw_distance = max(p_distance, 0.0f); }
 
         float get_max_draw_angle() { return max_draw_angle; }
-        void set_max_draw_angle(float angle) { max_draw_angle = min(max(angle, 0.0f), 180.0f); }
+        void set_max_draw_angle(float p_angle) { max_draw_angle = min(max(p_angle, 0.0f), 180.0f); }
 
         int get_smooth_steps() { return smooth_steps; }
-        void set_smooth_steps(int steps) { smooth_steps = max(steps, 0); }
+        void set_smooth_steps(int p_steps) { smooth_steps = max(p_steps, 0); }
 
         float get_smooth_ratio() { return smooth_ratio; }
-        void set_smooth_ratio(float ratio) { smooth_ratio = min(max(ratio, 0.0f), 1.0f); }
+        void set_smooth_ratio(float p_ratio) { smooth_ratio = min(max(p_ratio, 0.0f), 1.0f); }
 
         float get_smooth_min_distance() { return smooth_min_distance; }
-        void set_smooth_min_distance(float distance) { smooth_min_distance = max(distance, 0.0f); }
+        void set_smooth_min_distance(float p_distance) { smooth_min_distance = max(p_distance, 0.0f); }
 
         #pragma endregion
 
