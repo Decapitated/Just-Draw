@@ -24,4 +24,4 @@ func _on_zoom_in_pressed():
 	zoom_slider.value += zoom_button_amount
 
 func _on_zoom_slider_changed(new_value):
-	camera.zoom = Vector2.ONE * new_value
+	camera.zoom = Vector2.ONE * max(new_value, 0.01)

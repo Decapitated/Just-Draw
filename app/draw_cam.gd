@@ -14,8 +14,8 @@ func _unhandled_input(event):
 		if event.button_index == MOUSE_BUTTON_MIDDLE:
 			panning = event.pressed
 		elif event.button_index == MOUSE_BUTTON_WHEEL_UP || event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-			zoom += Vector2.ONE * zoom_speed * (1.0 if event.button_index == MOUSE_BUTTON_WHEEL_UP else -1.0)
-			zoom = Vector2.ONE * max(zoom.x, 0.001)
+			var zoom_dir = 1.0 if event.button_index == MOUSE_BUTTON_WHEEL_UP else -1.0
+			zoom = Vector2.ONE * max(zoom.x + zoom_speed * zoom_dir, 0.01)
 
 	elif event is InputEventMouseMotion:
 		if panning:
