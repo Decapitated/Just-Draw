@@ -70,14 +70,12 @@ void DrawLayer::StartDraw(Vector2 pen_position)
     line.append(pen_position);
     // Add the line to the list.
     lines.push_back(line);
-    queue_redraw();
 }
 
 void DrawLayer::StartErase(Vector2 pen_position)
 {
     mode = ERASE;
     UpdateErase(pen_position);
-    queue_redraw();
 }
 
 void DrawLayer::UpdateDraw(Vector2 pen_position)
@@ -106,7 +104,6 @@ void DrawLayer::UpdateDraw(Vector2 pen_position)
                 new_line.append(next);
                 // Add the line to the list.
                 lines.push_back(new_line);
-                queue_redraw();
                 return;
             }
         }
@@ -120,7 +117,6 @@ void DrawLayer::UpdateDraw(Vector2 pen_position)
                 static_cast<Line&>(line) = SmoothLine(line, smooth_ratio, smooth_min_distance, smooth_start);
             }
         }
-        queue_redraw();
     }
 }
 
@@ -157,6 +153,7 @@ void DrawLayer::HandleMouseButton(const InputEventMouseButton &event)
         {
             StartErase(pen_position);
         }
+        queue_redraw();
     }
 }
 
@@ -179,6 +176,7 @@ void DrawLayer::HandleMouseMotion(const InputEventMouseMotion &event)
             {
                 StartDraw(pen_position);
             }
+            queue_redraw();
         }
     }
     else if(mode == ERASE)
@@ -194,6 +192,7 @@ void DrawLayer::HandleMouseMotion(const InputEventMouseMotion &event)
         if(!is_pen_inverted && pen_pressure > 0.0f)
         {
             UpdateDraw(pen_position);
+            queue_redraw();
         } else { mode = NONE; }
     }
 }
