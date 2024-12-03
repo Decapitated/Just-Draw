@@ -53,7 +53,7 @@ class DrawLayer : public Control {
         float cap_scale = 1.0f;
 
         float eraser_size = 10.0f;
-        float min_draw_distance = 5.0f;
+        float min_draw_distance = 10.0f;
         float max_draw_angle = 135.0f;
 
         int smooth_steps = 1;
