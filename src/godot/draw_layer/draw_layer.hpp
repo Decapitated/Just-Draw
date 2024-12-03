@@ -46,6 +46,8 @@ class DrawLayer : public Control {
 
         enum PenMode { NONE, DRAW, ERASE };
         PenMode mode = NONE;
+
+        bool active = false;
         
         float line_width = 5.0f;
         float cap_scale = 1.0f;
@@ -78,6 +80,9 @@ class DrawLayer : public Control {
         ~DrawLayer();
 
         #pragma region Getters and Setters
+
+        bool get_active() { return active; }
+        void set_active(bool p_active) { active = p_active; }
 
         float get_line_width() { return line_width; }
         void set_line_width(float p_width) { line_width = p_width; }

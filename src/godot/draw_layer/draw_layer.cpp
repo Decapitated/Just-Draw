@@ -13,6 +13,10 @@ void DrawLayer::_bind_methods()
 {
     #pragma region Getters and Setters
 
+    ClassDB::bind_method(D_METHOD("set_active", "p_active"), &DrawLayer::set_active);
+    ClassDB::bind_method(D_METHOD("get_active"), &DrawLayer::get_active);
+    ADD_PROPERTY(PropertyInfo(Variant::BOOL, "active"), "set_active", "get_active");
+
 	ClassDB::bind_method(D_METHOD("set_line_width", "p_width"), &DrawLayer::set_line_width);
     ClassDB::bind_method(D_METHOD("get_line_width"), &DrawLayer::get_line_width);
     ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "line_width"), "set_line_width", "get_line_width");
@@ -122,18 +126,22 @@ void DrawLayer::UpdateDraw(Vector2 pen_position)
 
 void DrawLayer::_unhandled_input(const Ref<InputEvent> &p_event)
 {
-    const Ref<InputEvent> event = make_input_local(*p_event);
-    if(auto e = dynamic_cast<InputEventMouseButton*>(*event))
+    if(active)
     {
-        HandleMouseButton(*e);
-    }
-    else if(auto e = dynamic_cast<InputEventMouseMotion*>(*event))
-    {
-        HandleMouseMotion(*e);
-    }
-    else if(auto e = dynamic_cast<InputEventKey*>(*event))
-    {
-        HandleKey(*e);
+        const Ref<InputEvent> event = make_input_local(*p_event);
+        if(auto e = dynamic_cast<InputEventMouseButton*>(*event))
+        {
+            HandleMouseButton(*e);
+        }
+        else if(auto e = dynamic_cast<InputEventMouseMotion*>(*event))
+        {
+            HandleMouseMotion(*e);
+        }
+        else if(auto e = dynamic_cast<InputEventKey*>(*event))
+        {
+            HandleKey(*e);
+        }
+        get_viewport()->set_input_as_handled();
     }
 }
 
