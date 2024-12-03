@@ -7,7 +7,7 @@
 using namespace JustDraw;
 using namespace godot;
 
-void SmoothLine(Line &line, float ratio, float min_dist, int smooth_start);
+Line SmoothLine(Line line, float ratio, float min_dist, int smooth_start);
 
 void DrawLayer::_bind_methods()
 {
@@ -114,10 +114,10 @@ void DrawLayer::UpdateDraw(Vector2 pen_position)
         // If the line has 3 or more points, smooth it.
         if(line.size() >= 3)
         {
-            int smooth_start = line.size() - 2;
             for(int i = 0; i < smooth_steps; i++)
             {
-                SmoothLine(line, smooth_ratio, smooth_min_distance, smooth_start);
+                int smooth_start = line.size() - 2;
+                static_cast<Line&>(line) = SmoothLine(line, smooth_ratio, smooth_min_distance, smooth_start);
             }
         }
         queue_redraw();
@@ -141,7 +141,6 @@ void DrawLayer::_unhandled_input(const Ref<InputEvent> &p_event)
         {
             HandleKey(*e);
         }
-        get_viewport()->set_input_as_handled();
     }
 }
 
@@ -266,7 +265,7 @@ bool DrawLayer::UpdateErase(Vector2 pen_position, LineIterator line_it)
     return sliced || line_it->size() == 0;
 }
 
-void SmoothLine(Line &line, float ratio, float min_dist, int smooth_start = 0)
+Line SmoothLine(Line line, float ratio, float min_dist, int smooth_start = 0)
 {
     // Clamp ratio, then minus one so it doesn't go past midpoint.
     ratio = fmaxf(0.0, fminf(1.0, ratio));
@@ -291,5 +290,5 @@ void SmoothLine(Line &line, float ratio, float min_dist, int smooth_start = 0)
         smoothed_line.push_back(curr.lerp(next, ratio));
     }
     smoothed_line.push_back(line[line.size() - 1]); // Add last point to new line.
-    line = smoothed_line;
+    return smoothed_line;
 }

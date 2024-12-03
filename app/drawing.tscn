@@ -7,6 +7,7 @@
 
 [node name="Camera2D" type="Camera2D" parent="."]
 script = ExtResource("1_hampg")
+zoom_speed = 0.1
 
 [node name="Canvas" type="CanvasLayer" parent="."]
 follow_viewport_enabled = true
@@ -27,6 +28,8 @@ mouse_filter = 2
 
 [node name="DrawLayer" type="DrawLayer" parent="Canvas/Background"]
 active = true
+minimum_draw_distance = 10.0
+maximum_draw_angle = 90.0
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0

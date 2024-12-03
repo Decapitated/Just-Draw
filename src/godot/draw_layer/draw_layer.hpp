@@ -56,7 +56,7 @@ class DrawLayer : public Control {
         float min_draw_distance = 5.0f;
         float max_draw_angle = 135.0f;
 
-        int smooth_steps = 5;
+        int smooth_steps = 1;
         float smooth_ratio = 0.333333f;
         float smooth_min_distance = 0.1f;
 
