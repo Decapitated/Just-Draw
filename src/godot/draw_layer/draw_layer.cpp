@@ -122,7 +122,7 @@ void DrawLayer::UpdateDraw(Vector2 pen_position)
 
 void DrawLayer::_unhandled_input(const Ref<InputEvent> &p_event)
 {
-    if(active)
+    if(active && p_event->get_device() != InputEvent::DEVICE_ID_EMULATION)
     {
         const Ref<InputEvent> event = make_input_local(*p_event);
         if(auto e = dynamic_cast<InputEventMouseButton*>(*event))
@@ -145,7 +145,7 @@ void DrawLayer::HandleMouseButton(const InputEventMouseButton &event)
     if(mode == NONE && event.is_pressed())
     {
         const Vector2 pen_position = event.get_position();
-        if(event.get_button_index() == MOUSE_BUTTON_LEFT)
+        if(event.get_button_index() == MOUSE_BUTTON_LEFT && !event.is_double_click())
         {
             StartDraw(pen_position);
         }
