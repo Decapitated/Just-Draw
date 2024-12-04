@@ -9,8 +9,8 @@ func duplicate_drawing():
 	var layers = drawing.find_children("*", "DrawLayer")
 	for layer in layers:
 		if layer is DrawLayer:
-			var pens: Array[Dictionary] = layer.get_pens()
 			var lines: Array[PackedVector2Array] = layer.get_lines()
+			var pens: Array[Dictionary] = layer.get_pens()
 
 			for i in range(lines.size()):
 				var line: PackedVector2Array = lines[i]
