@@ -213,8 +213,6 @@ void DrawLayer::_draw()
     }
 }
 
-typedef list<CappedPenLine>::iterator LineIterator;
-
 void DrawLayer::UpdateErase(Vector2 pen_position)
 {
     LineIterator line_it = lines.begin();

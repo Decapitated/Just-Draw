@@ -19,6 +19,7 @@ namespace JustDraw
 {
 
 typedef PackedVector2Array Line;
+
 class PenLine : public Line {
     public:
         Color color = Color();
