@@ -25,8 +25,10 @@ class PenLine : public Line {
         float width = 5.0f;
 
         PenLine() {}
-        PenLine(const Line &line) : Line(line) {}
-        virtual ~PenLine(){}
+        PenLine(const Color &p_color, float p_width) : color(p_color), width(p_width) {}
+        PenLine(const Line &p_line, const Color &p_color, float p_width) : Line(p_line), color(p_color), width(p_width) {}
+        PenLine(const PenLine &p_line) : PenLine(p_line, p_line.color, p_line.width) {}
+        virtual ~PenLine() {}
 };
 
 class CappedPenLine : public PenLine {
@@ -34,7 +36,11 @@ class CappedPenLine : public PenLine {
         float cap_radius = 0.0f;
 
         CappedPenLine() {};
-        CappedPenLine(const Line &line) : PenLine(line) {}
+        CappedPenLine(const Color &p_color, float p_width, float p_cap_radius) : PenLine(p_color, p_width), cap_radius(p_cap_radius) {}
+        CappedPenLine(const Line &p_line, const Color &p_color, float p_width, float p_cap_radius) : PenLine(p_line, p_color, p_width), cap_radius(p_cap_radius) {}
+        CappedPenLine(const PenLine &p_line, float p_cap_radius) : PenLine(p_line), cap_radius(p_cap_radius) {}
+        CappedPenLine(const CappedPenLine &p_line) : CappedPenLine(p_line, p_line.color, p_line.width, p_line.cap_radius) {}
+        virtual ~CappedPenLine() {}
 };
 
 typedef list<CappedPenLine>::iterator LineIterator;

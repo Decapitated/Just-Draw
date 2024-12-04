@@ -95,10 +95,7 @@ void DrawLayer::UpdateDraw(Vector2 pen_position)
             if(curr_dot > max_draw_angle)
             {
                 // Create a new pen line, and set line properties.
-                auto new_line = CappedPenLine();
-                new_line.cap_radius = line.cap_radius;
-                new_line.width = line.width;
-                new_line.color = line.color;
+                auto new_line = CappedPenLine(line.color, line.width, line.cap_radius);
                 new_line.append(line[line.size() - 1]);
                 // Add the mouse position as the second point of the line.
                 new_line.append(next);
@@ -248,10 +245,7 @@ bool DrawLayer::UpdateErase(Vector2 pen_position, LineIterator line_it)
         {
             sliced = true;
             int end = is_last_slice ? i + 1 : i;
-            auto new_line = CappedPenLine(line_it->slice(slice_start, end));
-            new_line.cap_radius = line_it->cap_radius;
-            new_line.width = line_it->width;
-            new_line.color = line_it->color;
+            auto new_line = CappedPenLine(line_it->slice(slice_start, end), line_it->color, line_it->width, line_it->cap_radius);
             auto new_line_it = lines.insert(line_it, new_line);
             bool should_erase = UpdateErase(pen_position, new_line_it);
             if(should_erase)
