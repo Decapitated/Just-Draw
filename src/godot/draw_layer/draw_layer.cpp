@@ -17,6 +17,10 @@ void DrawLayer::_bind_methods()
     ClassDB::bind_method(D_METHOD("get_active"), &DrawLayer::get_active);
     ADD_PROPERTY(PropertyInfo(Variant::BOOL, "active"), "set_active", "get_active");
 
+    ClassDB::bind_method(D_METHOD("set_color", "p_color"), &DrawLayer::set_color);
+    ClassDB::bind_method(D_METHOD("get_color"), &DrawLayer::get_color);
+    ADD_PROPERTY(PropertyInfo(Variant::COLOR, "color"), "set_color", "get_color");
+
 	ClassDB::bind_method(D_METHOD("set_line_width", "p_width"), &DrawLayer::set_line_width);
     ClassDB::bind_method(D_METHOD("get_line_width"), &DrawLayer::get_line_width);
     ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "line_width"), "set_line_width", "get_line_width");
@@ -162,9 +166,7 @@ void DrawLayer::StartDraw(Vector2 pen_position)
 {
     mode = DRAW;
     // Create a new pen line, and set line properties.
-    auto line = CappedPenLine();
-    line.cap_radius = (line_width / 2.0f) * cap_scale;
-    line.width = line_width;
+    auto line = CappedPenLine(color, line_width, (line_width / 2.0f) * cap_scale);
     // Add the mouse position as the first point of the line.
     line.append(pen_position);
     // Add the line to the list.

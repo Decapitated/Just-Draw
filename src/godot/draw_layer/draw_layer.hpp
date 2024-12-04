@@ -57,6 +57,8 @@ namespace JustDraw
             PenMode mode = NONE;
 
             bool active = false;
+
+            Color color = Color();
             
             float line_width = 5.0f;
             float cap_scale = 1.0f;
@@ -95,6 +97,9 @@ namespace JustDraw
 
             bool get_active() { return active; }
             void set_active(bool p_active) { active = p_active; }
+
+            Color get_color() { return color; }
+            void set_color(Color p_color) { color = p_color; }
 
             float get_line_width() { return line_width; }
             void set_line_width(float p_width) { line_width = p_width; }
