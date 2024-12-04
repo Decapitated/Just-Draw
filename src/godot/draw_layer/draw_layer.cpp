@@ -49,6 +49,9 @@ void DrawLayer::_bind_methods()
     ClassDB::bind_method(D_METHOD("get_smooth_min_distance"), &DrawLayer::get_smooth_min_distance);
     ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "smooth_min_distance"), "set_smooth_min_distance", "get_smooth_min_distance");
 
+    ClassDB::bind_method(D_METHOD("get_lines"), &DrawLayer::GetLines);
+    ClassDB::bind_method(D_METHOD("get_pens"), &DrawLayer::GetPens);
+
     #pragma endregion
 }
 
@@ -58,64 +61,6 @@ DrawLayer::DrawLayer()
 }
 
 DrawLayer::~DrawLayer() {}
-
-void DrawLayer::StartDraw(Vector2 pen_position)
-{
-    mode = DRAW;
-    // Create a new pen line, and set line properties.
-    auto line = CappedPenLine();
-    line.cap_radius = (line_width / 2.0f) * cap_scale;
-    line.width = line_width;
-    // Add the mouse position as the first point of the line.
-    line.append(pen_position);
-    // Add the line to the list.
-    lines.push_back(line);
-}
-
-void DrawLayer::StartErase(Vector2 pen_position)
-{
-    mode = ERASE;
-    UpdateErase(pen_position);
-}
-
-void DrawLayer::UpdateDraw(Vector2 pen_position)
-{
-    auto cam = get_viewport()->get_camera_2d();
-    const float min_dist = min_draw_distance * (1.0f / cam->get_zoom().x);
-    CappedPenLine& line = lines.back();
-    auto prev_pos = line[line.size() - 1];
-    auto dist = prev_pos.distance_squared_to(pen_position);
-    if(dist >= powf(min_dist, 2.0))
-    {
-        if(line.size() >= 2)
-        {
-            Vector2 prev = line[line.size() - 2], curr = prev_pos, next = pen_position;
-            float curr_dot = (curr - prev).normalized().dot((next - curr).normalized());
-            curr_dot = (1.0f - (curr_dot * 0.5f + 0.5f)) * 180.0f;
-            if(curr_dot > max_draw_angle)
-            {
-                // Create a new pen line, and set line properties.
-                auto new_line = CappedPenLine(line.color, line.width, line.cap_radius);
-                new_line.append(line[line.size() - 1]);
-                // Add the mouse position as the second point of the line.
-                new_line.append(next);
-                // Add the line to the list.
-                lines.push_back(new_line);
-                return;
-            }
-        }
-        line.append(pen_position);
-        // If the line has 3 or more points, smooth it.
-        if(line.size() >= 3)
-        {
-            for(int i = 0; i < smooth_steps; i++)
-            {
-                int smooth_start = line.size() - 2;
-                static_cast<Line&>(line) = SmoothLine(line, smooth_ratio, smooth_min_distance, smooth_start);
-            }
-        }
-    }
-}
 
 void DrawLayer::_unhandled_input(const Ref<InputEvent> &p_event)
 {
@@ -213,6 +158,64 @@ void DrawLayer::_draw()
     }
 }
 
+void DrawLayer::StartDraw(Vector2 pen_position)
+{
+    mode = DRAW;
+    // Create a new pen line, and set line properties.
+    auto line = CappedPenLine();
+    line.cap_radius = (line_width / 2.0f) * cap_scale;
+    line.width = line_width;
+    // Add the mouse position as the first point of the line.
+    line.append(pen_position);
+    // Add the line to the list.
+    lines.push_back(line);
+}
+
+void DrawLayer::StartErase(Vector2 pen_position)
+{
+    mode = ERASE;
+    UpdateErase(pen_position);
+}
+
+void DrawLayer::UpdateDraw(Vector2 pen_position)
+{
+    auto cam = get_viewport()->get_camera_2d();
+    const float min_dist = min_draw_distance * (1.0f / cam->get_zoom().x);
+    CappedPenLine& line = lines.back();
+    auto prev_pos = line[line.size() - 1];
+    auto dist = prev_pos.distance_squared_to(pen_position);
+    if(dist >= powf(min_dist, 2.0))
+    {
+        if(line.size() >= 2)
+        {
+            Vector2 prev = line[line.size() - 2], curr = prev_pos, next = pen_position;
+            float curr_dot = (curr - prev).normalized().dot((next - curr).normalized());
+            curr_dot = (1.0f - (curr_dot * 0.5f + 0.5f)) * 180.0f;
+            if(curr_dot > max_draw_angle)
+            {
+                // Create a new pen line, and set line properties.
+                auto new_line = CappedPenLine(line.color, line.width, line.cap_radius);
+                new_line.append(line[line.size() - 1]);
+                // Add the mouse position as the second point of the line.
+                new_line.append(next);
+                // Add the line to the list.
+                lines.push_back(new_line);
+                return;
+            }
+        }
+        line.append(pen_position);
+        // If the line has 3 or more points, smooth it.
+        if(line.size() >= 3)
+        {
+            for(int i = 0; i < smooth_steps; i++)
+            {
+                int smooth_start = line.size() - 2;
+                static_cast<Line&>(line) = SmoothLine(line, smooth_ratio, smooth_min_distance, smooth_start);
+            }
+        }
+    }
+}
+
 void DrawLayer::UpdateErase(Vector2 pen_position)
 {
     LineIterator line_it = lines.begin();
@@ -254,6 +257,30 @@ bool DrawLayer::UpdateErase(Vector2 pen_position, LineIterator line_it)
         }
     }
     return sliced || line_it->size() == 0;
+}
+
+TypedArray<PackedVector2Array> JustDraw::DrawLayer::GetLines()
+{
+    TypedArray<PackedVector2Array> lines_array;
+    for(const auto &line : lines)
+    {
+        lines_array.append(line);
+    }
+    return lines_array;
+}
+
+TypedArray<Dictionary> JustDraw::DrawLayer::GetPens()
+{
+    TypedArray<Dictionary> pens_array;
+    for(const auto &line : lines)
+    {
+        auto pen = Dictionary();
+        pen["color"] = line.color;
+        pen["width"] = line.width;
+        pen["cap_radius"] = line.cap_radius;
+        pens_array.append(pen);
+    }
+    return pens_array;
 }
 
 Line SmoothLine(Line line, float ratio, float min_dist, int smooth_start = 0)
