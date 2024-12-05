@@ -17,6 +17,7 @@ env.Append(CPPPATH=["src/"])
 sources = Glob("src/*.cpp")               # src/file.cpp
 sources = sources + Glob("src/*/*.cpp")   # src/folder/file.cpp
 sources = sources + Glob("src/*/*/*.cpp") # src/folder/subfolder/file.cpp
+sources = sources + Glob("src/*/*/*/*.cpp") # src/folder/subfolder/subfolder/file.cpp
 
 if env["platform"] == "macos":
     library = env.SharedLibrary(

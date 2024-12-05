@@ -10,14 +10,17 @@
 #include <godot_cpp/classes/input_event_key.hpp>
 
 #include <list>
+#include <vector>
 #include <algorithm>
+
+#include "godot/resources/layer_data/layer_data.hpp"
 
 using namespace std;
 using namespace godot;
 
 namespace JustDraw
 {
-    typedef PackedVector2Array Line;
+    using Line = PackedVector2Array;
 
     class PenLine : public Line
     {
@@ -45,13 +48,14 @@ namespace JustDraw
             virtual ~CappedPenLine() {}
     };
 
-    typedef list<CappedPenLine>::iterator LineIterator;
+    using Lines = list<CappedPenLine>;
+    using LineIterator = Lines::iterator;
 
     class DrawLayer : public Control
     {
         GDCLASS(DrawLayer, Control);
         private:
-            list<CappedPenLine> lines = list<CappedPenLine>();
+            Lines lines = Lines();
 
             enum PenMode { NONE, DRAW, ERASE };
             PenMode mode = NONE;
@@ -125,8 +129,12 @@ namespace JustDraw
             float get_smooth_min_distance() { return smooth_min_distance; }
             void set_smooth_min_distance(float p_distance) { smooth_min_distance = max(p_distance, 0.0f); }
 
+            Ref<LayerData> get_layer_data() { return memnew(LayerData(GetLines(), GetPens())); }
+            void load_layer_data(Ref<LayerData> p_layer_data);
+
             #pragma endregion
 
+            void _process(double p_delta) override;
             void _unhandled_input(const Ref<InputEvent> &p_event) override;
             void _draw() override;
     };

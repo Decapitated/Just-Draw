@@ -53,14 +53,15 @@ void DrawLayer::_bind_methods()
     ClassDB::bind_method(D_METHOD("get_smooth_min_distance"), &DrawLayer::get_smooth_min_distance);
     ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "smooth_min_distance"), "set_smooth_min_distance", "get_smooth_min_distance");
 
-    ClassDB::bind_method(D_METHOD("get_lines"), &DrawLayer::GetLines);
-    ClassDB::bind_method(D_METHOD("get_pens"), &DrawLayer::GetPens);
+    ClassDB::bind_method(D_METHOD("get_layer_data"), &DrawLayer::get_layer_data);
+    ClassDB::bind_method(D_METHOD("load_layer_data", "p_layer_data"), &DrawLayer::load_layer_data);
 
     #pragma endregion
 }
 
 DrawLayer::DrawLayer()
 {
+    set_default_cursor_shape(CURSOR_CROSS);
     set_mouse_filter(MOUSE_FILTER_PASS);
 }
 
@@ -84,6 +85,12 @@ void DrawLayer::_unhandled_input(const Ref<InputEvent> &p_event)
             HandleKey(*e);
         }
     }
+}
+
+void DrawLayer::_process(double p_delta)
+{
+    set_position(Vector2());
+    set_size(get_parent_control()->get_size());
 }
 
 void DrawLayer::HandleMouseButton(const InputEventMouseButton &event)
@@ -261,7 +268,7 @@ bool DrawLayer::UpdateErase(Vector2 pen_position, LineIterator line_it)
     return sliced || line_it->size() == 0;
 }
 
-TypedArray<PackedVector2Array> JustDraw::DrawLayer::GetLines()
+TypedArray<PackedVector2Array> DrawLayer::GetLines()
 {
     TypedArray<PackedVector2Array> lines_array;
     for(const auto &line : lines)
@@ -271,7 +278,7 @@ TypedArray<PackedVector2Array> JustDraw::DrawLayer::GetLines()
     return lines_array;
 }
 
-TypedArray<Dictionary> JustDraw::DrawLayer::GetPens()
+TypedArray<Dictionary> DrawLayer::GetPens()
 {
     TypedArray<Dictionary> pens_array;
     for(const auto &line : lines)
@@ -283,6 +290,22 @@ TypedArray<Dictionary> JustDraw::DrawLayer::GetPens()
         pens_array.append(pen);
     }
     return pens_array;
+}
+
+void DrawLayer::load_layer_data(Ref<LayerData> p_layer_data)
+{
+    Lines new_lines = Lines();
+    auto p_lines = p_layer_data->get_lines();
+    auto p_pens = p_layer_data->get_pens();
+    for(int i = 0; i < p_lines.size(); i++)
+    {
+        auto color = static_cast<Color>(p_pens[i].get("color"));
+        auto width = static_cast<float>(p_pens[i].get("width"));
+        auto cap_radius = static_cast<float>(p_pens[i].get("cap_radius"));
+        new_lines.push_back(CappedPenLine(p_lines[i], color, width, cap_radius));
+    }
+    lines = new_lines;
+    queue_redraw();
 }
 
 Line SmoothLine(Line line, float ratio, float min_dist, int smooth_start = 0)

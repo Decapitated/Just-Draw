@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://d4gg7o4p81gb"]
+[gd_scene load_steps=4 format=3 uid="uid://b1fwia5qj8s06"]
 
 [ext_resource type="Script" path="res://draw_cam.gd" id="1_hampg"]
 [ext_resource type="PackedScene" uid="uid://c8ep4tphh70yx" path="res://controls/Zoom/zoom_control.res" id="2_lj6a1"]
@@ -33,7 +33,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_default_cursor_shape = 3
 
 [node name="Menu" type="CanvasLayer" parent="."]
 
@@ -95,13 +94,13 @@ theme_override_constants/separation = 8
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 2
 size_flags_vertical = 3
-text = "A"
+text = "Copy"
 
 [node name="Button2" type="Button" parent="Menu/LeftContainer/PanelContainer/MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 2
 size_flags_vertical = 3
-text = "B"
+text = "Load"
 
 [node name="Button3" type="Button" parent="Menu/LeftContainer/PanelContainer/MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(50, 50)
@@ -132,4 +131,5 @@ offset_left = -272.0
 offset_top = -65.0
 camera = NodePath("../../Camera2D")
 
-[connection signal="pressed" from="Menu/LeftContainer/PanelContainer/MarginContainer/VBoxContainer/Button" to="Menu/SubViewportContainer/SubViewport/Background" method="queue_redraw"]
+[connection signal="pressed" from="Menu/LeftContainer/PanelContainer/MarginContainer/VBoxContainer/Button" to="Menu/SubViewportContainer/SubViewport/Background" method="duplicate_drawing"]
+[connection signal="pressed" from="Menu/LeftContainer/PanelContainer/MarginContainer/VBoxContainer/Button2" to="Menu/SubViewportContainer/SubViewport/Background" method="load_drawing"]
