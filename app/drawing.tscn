@@ -1,9 +1,11 @@
-[gd_scene load_steps=5 format=3 uid="uid://b1fwia5qj8s06"]
+[gd_scene load_steps=7 format=3 uid="uid://b1fwia5qj8s06"]
 
 [ext_resource type="Script" path="res://draw_cam.gd" id="1_hampg"]
 [ext_resource type="PackedScene" uid="uid://c8ep4tphh70yx" path="res://controls/Zoom/zoom_control.res" id="2_lj6a1"]
 [ext_resource type="Script" path="res://canvas_manager.gd" id="2_o3k06"]
 [ext_resource type="Script" path="res://duplicate_drawing.gd" id="2_uaca0"]
+[ext_resource type="PackedScene" uid="uid://b0h0gw0vd2vcj" path="res://controls/Layers/layer_container.res" id="4_p565e"]
+[ext_resource type="PackedScene" uid="uid://dnjllqtckn1n5" path="res://controls/Layers/layer.res" id="4_rgkyq"]
 
 [node name="Node2D" type="Node2D"]
 
@@ -39,7 +41,7 @@ grow_vertical = 2
 [node name="Menu" type="CanvasLayer" parent="."]
 
 [node name="SubViewportContainer" type="SubViewportContainer" parent="Menu"]
-custom_minimum_size = Vector2(250, 250)
+custom_minimum_size = Vector2(150, 150)
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
@@ -50,7 +52,7 @@ stretch = true
 
 [node name="SubViewport" type="SubViewport" parent="Menu/SubViewportContainer"]
 handle_input_locally = false
-size = Vector2i(250, 250)
+size = Vector2i(150, 150)
 size_2d_override = Vector2i(500, 500)
 size_2d_override_stretch = true
 render_target_update_mode = 4
@@ -128,6 +130,26 @@ layout_mode = 2
 size_flags_vertical = 3
 text = "F"
 
+[node name="LayerContainer" parent="Menu" instance=ExtResource("4_p565e")]
+
+[node name="Layer" parent="Menu/LayerContainer/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/LayerContainer" index="0" instance=ExtResource("4_rgkyq")]
+layout_mode = 2
+
+[node name="Layer2" parent="Menu/LayerContainer/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/LayerContainer" index="1" instance=ExtResource("4_rgkyq")]
+layout_mode = 2
+
+[node name="Layer3" parent="Menu/LayerContainer/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/LayerContainer" index="2" instance=ExtResource("4_rgkyq")]
+layout_mode = 2
+
+[node name="Layer4" parent="Menu/LayerContainer/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/LayerContainer" index="3" instance=ExtResource("4_rgkyq")]
+layout_mode = 2
+
+[node name="Layer5" parent="Menu/LayerContainer/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/LayerContainer" index="4" instance=ExtResource("4_rgkyq")]
+layout_mode = 2
+
+[node name="Layer6" parent="Menu/LayerContainer/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/LayerContainer" index="5" instance=ExtResource("4_rgkyq")]
+layout_mode = 2
+
 [node name="ZoomContainer" parent="Menu" node_paths=PackedStringArray("camera") instance=ExtResource("2_lj6a1")]
 offset_left = -272.0
 offset_top = -65.0
@@ -135,3 +157,5 @@ camera = NodePath("../../Camera2D")
 
 [connection signal="pressed" from="Menu/LeftContainer/PanelContainer/MarginContainer/VBoxContainer/Button" to="Menu/SubViewportContainer/SubViewport/Background" method="duplicate_drawing"]
 [connection signal="pressed" from="Menu/LeftContainer/PanelContainer/MarginContainer/VBoxContainer/Button2" to="Menu/SubViewportContainer/SubViewport/Background" method="load_drawing"]
+
+[editable path="Menu/LayerContainer"]
