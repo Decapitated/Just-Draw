@@ -10,99 +10,134 @@
 #include <godot_cpp/classes/input_event_key.hpp>
 
 #include <list>
+#include <vector>
+#include <algorithm>
+
+#include "godot/resources/layer_data/layer_data.hpp"
 
 using namespace std;
 using namespace godot;
 
 namespace JustDraw
 {
+    using Line = PackedVector2Array;
 
-typedef PackedVector2Array Line;
-class PenLine : public Line {
-    public:
-        Color color = Color();
-        float width = 5.0f;
+    class PenLine : public Line
+    {
+        public:
+            Color color = Color();
+            float width = 5.0f;
 
-        PenLine() {}
-        PenLine(const Line &line) : Line(line) {}
-        virtual ~PenLine(){}
-};
+            PenLine() {}
+            PenLine(const Color &p_color, float p_width) : color(p_color), width(p_width) {}
+            PenLine(const Line &p_line, const Color &p_color, float p_width) : Line(p_line), color(p_color), width(p_width) {}
+            PenLine(const PenLine &p_line) : PenLine(p_line, p_line.color, p_line.width) {}
+            virtual ~PenLine() {}
+    };
 
-class CappedPenLine : public PenLine {
-    public:
-        float cap_radius = 0.0f;
+    class CappedPenLine : public PenLine
+    {
+        public:
+            float cap_radius = 0.0f;
 
-        CappedPenLine() {};
-        CappedPenLine(const Line &line) : PenLine(line) {}
-};
+            CappedPenLine() {};
+            CappedPenLine(const Color &p_color, float p_width, float p_cap_radius) : PenLine(p_color, p_width), cap_radius(p_cap_radius) {}
+            CappedPenLine(const Line &p_line, const Color &p_color, float p_width, float p_cap_radius) : PenLine(p_line, p_color, p_width), cap_radius(p_cap_radius) {}
+            CappedPenLine(const PenLine &p_line, float p_cap_radius) : PenLine(p_line), cap_radius(p_cap_radius) {}
+            CappedPenLine(const CappedPenLine &p_line) : CappedPenLine(p_line, p_line.color, p_line.width, p_line.cap_radius) {}
+            virtual ~CappedPenLine() {}
+    };
 
-typedef list<CappedPenLine>::iterator LineIterator;
+    using Lines = list<CappedPenLine>;
+    using LineIterator = Lines::iterator;
 
-class DrawLayer : public Control {
-    GDCLASS(DrawLayer, Control);
-    private:
-        list<CappedPenLine> lines = list<CappedPenLine>();
+    class DrawLayer : public Control
+    {
+        GDCLASS(DrawLayer, Control);
+        private:
+            Lines lines = Lines();
 
-        enum PenMode { NONE, DRAW, ERASE };
-        PenMode mode = NONE;
+            enum PenMode { NONE, DRAW, ERASE };
+            PenMode mode = NONE;
 
-        void HandleMouseButton(const InputEventMouseButton &event);
-        void HandleMouseMotion(const InputEventMouseMotion &event);
-        void HandleKey(const InputEventKey &event);
+            bool active = false;
 
-    protected:
-        static void _bind_methods();
+            Color color = Color();
+            
+            float line_width = 5.0f;
+            float cap_scale = 1.0f;
 
-    public:
-        float line_width = 5.0f;
-        float cap_scale = 1.0f;
+            float eraser_size = 10.0f;
+            float min_draw_distance = 10.0f;
+            float max_draw_angle = 135.0f;
 
-        float eraser_size = 10.0f;
-        float min_draw_distance = 5.0f;
-        float max_draw_angle = 135.0f;
+            int smooth_steps = 1;
+            float smooth_ratio = 0.333333f;
+            float smooth_min_distance = 0.1f;
 
-        int smooth_steps = 5;
-        float smooth_ratio = 0.333333f;
-        float smooth_min_distance = 0.1f;
+            void HandleMouseButton(const InputEventMouseButton &event);
+            void HandleMouseMotion(const InputEventMouseMotion &event);
+            void HandleKey(const InputEventKey &event);
 
-        DrawLayer();
-        ~DrawLayer();
+            void StartDraw(Vector2 pen_position);
+            void StartErase(Vector2 pen_position);
 
-        #pragma region Getters and Setters
+            void UpdateDraw(Vector2 pen_position);
 
-        float get_line_width() { return line_width; }
-        void set_line_width(float width) { line_width = width; }
+            void UpdateErase(Vector2 pen_position);
+            bool UpdateErase(Vector2 pen_position, LineIterator line_it);
 
-        float get_cap_scale() { return cap_scale; }
-        void set_cap_scale(float scale) { cap_scale = scale; }
+            TypedArray<PackedVector2Array> GetLines();
+            TypedArray<Dictionary> GetPens();
 
-        float get_eraser_size() { return eraser_size; }
-        void set_eraser_size(float size) { eraser_size = size; }
+        protected:
+            static void _bind_methods();
 
-        float get_min_draw_distance() { return min_draw_distance; }
-        void set_min_draw_distance(float distance) { min_draw_distance = distance; }
+        public:
+            DrawLayer();
+            ~DrawLayer();
 
-        float get_max_draw_angle() { return max_draw_angle; }
-        void set_max_draw_angle(float angle) { max_draw_angle = angle; }
+            #pragma region Getters and Setters
 
-        int get_smooth_steps() { return smooth_steps; }
-        void set_smooth_steps(int steps) { smooth_steps = steps; }
+            bool get_active() { return active; }
+            void set_active(bool p_active) { active = p_active; }
 
-        float get_smooth_ratio() { return smooth_ratio; }
-        void set_smooth_ratio(float ratio) { smooth_ratio = ratio; }
+            Color get_color() { return color; }
+            void set_color(Color p_color) { color = p_color; }
 
-        float get_smooth_min_distance() { return smooth_min_distance; }
-        void set_smooth_min_distance(float distance) { smooth_min_distance = distance; }
+            float get_line_width() { return line_width; }
+            void set_line_width(float p_width) { line_width = p_width; }
 
-        #pragma endregion
+            float get_cap_scale() { return cap_scale; }
+            void set_cap_scale(float p_scale) { cap_scale = max(p_scale, 0.0f); }
 
-        void _unhandled_input(const Ref<InputEvent> &p_event) override;
-        void _draw() override;
+            float get_eraser_size() { return eraser_size; }
+            void set_eraser_size(float p_size) { eraser_size = max(p_size, 0.0f); }
 
-        void Erase(Vector2 pos);
-        bool Erase(Vector2 pos, LineIterator line_it);
-};
+            float get_min_draw_distance() { return min_draw_distance; }
+            void set_min_draw_distance(float p_distance) { min_draw_distance = max(p_distance, 0.0f); }
 
+            float get_max_draw_angle() { return max_draw_angle; }
+            void set_max_draw_angle(float p_angle) { max_draw_angle = min(max(p_angle, 0.0f), 180.0f); }
+
+            int get_smooth_steps() { return smooth_steps; }
+            void set_smooth_steps(int p_steps) { smooth_steps = max(p_steps, 0); }
+
+            float get_smooth_ratio() { return smooth_ratio; }
+            void set_smooth_ratio(float p_ratio) { smooth_ratio = min(max(p_ratio, 0.0f), 1.0f); }
+
+            float get_smooth_min_distance() { return smooth_min_distance; }
+            void set_smooth_min_distance(float p_distance) { smooth_min_distance = max(p_distance, 0.0f); }
+
+            Ref<LayerData> get_layer_data() { return memnew(LayerData(GetLines(), GetPens())); }
+            void load_layer_data(Ref<LayerData> p_layer_data);
+
+            #pragma endregion
+
+            void _process(double p_delta) override;
+            void _unhandled_input(const Ref<InputEvent> &p_event) override;
+            void _draw() override;
+    };
 }
 
 #endif

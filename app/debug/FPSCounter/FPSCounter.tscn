@@ -2,29 +2,24 @@
 
 [ext_resource type="Script" path="res://debug/FPSCounter/FPSCounter.gd" id="1_ndbs0"]
 
-
 [node name="FPS" type="CanvasLayer"]
 layer = 100
 
-[node name="FPSCounter" type="Control" parent="."]
-top_level = true
-z_index = 1000
-layout_mode = 3
-anchors_preset = 0
-mouse_filter = 2
-script = ExtResource("1_ndbs0")
-
-[node name="MarginContainer" type="MarginContainer" parent="FPSCounter"]
-layout_mode = 0
-offset_right = 97.0
+[node name="MarginContainer" type="MarginContainer" parent="."]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -97.0
 offset_bottom = 38.0
+grow_horizontal = 0
 mouse_filter = 2
 theme_override_constants/margin_left = 12
 theme_override_constants/margin_top = 6
 theme_override_constants/margin_right = 12
 theme_override_constants/margin_bottom = 6
 
-[node name="Label" type="Label" parent="FPSCounter/MarginContainer"]
+[node name="FPSCounter" type="Label" parent="MarginContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 text = "FPS: 9999"
+script = ExtResource("1_ndbs0")
