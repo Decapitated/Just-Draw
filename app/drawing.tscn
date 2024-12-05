@@ -38,35 +38,76 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Menu" type="CanvasLayer" parent="."]
+[node name="Controls" type="CanvasLayer" parent="."]
+layer = 2
 
-[node name="SubViewportContainer" type="SubViewportContainer" parent="Menu"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Controls"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 0
+
+[node name="Toolbar" type="PanelContainer" parent="Controls/VBoxContainer"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Controls/VBoxContainer/Toolbar"]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Controls/VBoxContainer/Toolbar/MarginContainer"]
+layout_mode = 2
+
+[node name="FileMenu" type="MenuButton" parent="Controls/VBoxContainer/Toolbar/MarginContainer/HBoxContainer"]
+layout_mode = 2
+mouse_default_cursor_shape = 2
+text = "File"
+flat = false
+switch_on_hover = true
+item_count = 2
+popup/item_0/text = "Open..."
+popup/item_1/text = "Save As..."
+popup/item_1/id = 1
+
+[node name="CanvasControls" type="Control" parent="Controls/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="Controls/VBoxContainer/CanvasControls"]
 custom_minimum_size = Vector2(150, 150)
+layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -40.0
-offset_bottom = 40.0
+offset_left = -150.0
+offset_bottom = 150.0
 grow_horizontal = 0
 stretch = true
 
-[node name="SubViewport" type="SubViewport" parent="Menu/SubViewportContainer"]
+[node name="SubViewport" type="SubViewport" parent="Controls/VBoxContainer/CanvasControls/SubViewportContainer"]
 handle_input_locally = false
 size = Vector2i(150, 150)
 size_2d_override = Vector2i(500, 500)
 size_2d_override_stretch = true
 render_target_update_mode = 4
 
-[node name="Background" type="ColorRect" parent="Menu/SubViewportContainer/SubViewport" node_paths=PackedStringArray("canvas_manager")]
+[node name="Background" type="ColorRect" parent="Controls/VBoxContainer/CanvasControls/SubViewportContainer/SubViewport" node_paths=PackedStringArray("canvas_manager")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("2_uaca0")
-canvas_manager = NodePath("../../../../Canvas")
+canvas_manager = NodePath("../../../../../../Canvas")
 
-[node name="LeftContainer" type="MarginContainer" parent="Menu"]
+[node name="LeftContainer" type="MarginContainer" parent="Controls/VBoxContainer/CanvasControls"]
+layout_mode = 1
 anchors_preset = 4
 anchor_top = 0.5
 anchor_bottom = 0.5
@@ -79,83 +120,88 @@ theme_override_constants/margin_top = 16
 theme_override_constants/margin_right = 16
 theme_override_constants/margin_bottom = 16
 
-[node name="PanelContainer" type="PanelContainer" parent="Menu/LeftContainer"]
+[node name="PanelContainer" type="PanelContainer" parent="Controls/VBoxContainer/CanvasControls/LeftContainer"]
 layout_mode = 2
 size_flags_vertical = 4
 
-[node name="MarginContainer" type="MarginContainer" parent="Menu/LeftContainer/PanelContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="Controls/VBoxContainer/CanvasControls/LeftContainer/PanelContainer"]
 layout_mode = 2
 theme_override_constants/margin_left = 8
 theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 8
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Menu/LeftContainer/PanelContainer/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Controls/VBoxContainer/CanvasControls/LeftContainer/PanelContainer/MarginContainer"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="Button" type="Button" parent="Menu/LeftContainer/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="Button" type="Button" parent="Controls/VBoxContainer/CanvasControls/LeftContainer/PanelContainer/MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 2
 size_flags_vertical = 3
 text = "Copy"
 
-[node name="Button2" type="Button" parent="Menu/LeftContainer/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="Button2" type="Button" parent="Controls/VBoxContainer/CanvasControls/LeftContainer/PanelContainer/MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 2
 size_flags_vertical = 3
 text = "Load"
 
-[node name="Button3" type="Button" parent="Menu/LeftContainer/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="Button3" type="Button" parent="Controls/VBoxContainer/CanvasControls/LeftContainer/PanelContainer/MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 2
 size_flags_vertical = 3
 text = "C"
 
-[node name="Button4" type="Button" parent="Menu/LeftContainer/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="Button4" type="Button" parent="Controls/VBoxContainer/CanvasControls/LeftContainer/PanelContainer/MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 2
 size_flags_vertical = 3
 text = "D"
 
-[node name="Button5" type="Button" parent="Menu/LeftContainer/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="Button5" type="Button" parent="Controls/VBoxContainer/CanvasControls/LeftContainer/PanelContainer/MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 2
 size_flags_vertical = 3
 text = "E"
 
-[node name="Button6" type="Button" parent="Menu/LeftContainer/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="Button6" type="Button" parent="Controls/VBoxContainer/CanvasControls/LeftContainer/PanelContainer/MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 2
 size_flags_vertical = 3
 text = "F"
 
-[node name="LayerContainer" parent="Menu" instance=ExtResource("4_p565e")]
+[node name="LayerContainer" parent="Controls/VBoxContainer/CanvasControls" instance=ExtResource("4_p565e")]
+layout_mode = 1
+offset_left = -208.0
+offset_top = -145.0
+offset_bottom = 145.0
 
-[node name="Layer" parent="Menu/LayerContainer/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/LayerContainer" index="0" instance=ExtResource("4_rgkyq")]
+[node name="Layer" parent="Controls/VBoxContainer/CanvasControls/LayerContainer/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/LayerContainer" index="0" instance=ExtResource("4_rgkyq")]
 layout_mode = 2
 
-[node name="Layer2" parent="Menu/LayerContainer/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/LayerContainer" index="1" instance=ExtResource("4_rgkyq")]
+[node name="Layer2" parent="Controls/VBoxContainer/CanvasControls/LayerContainer/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/LayerContainer" index="1" instance=ExtResource("4_rgkyq")]
 layout_mode = 2
 
-[node name="Layer3" parent="Menu/LayerContainer/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/LayerContainer" index="2" instance=ExtResource("4_rgkyq")]
+[node name="Layer3" parent="Controls/VBoxContainer/CanvasControls/LayerContainer/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/LayerContainer" index="2" instance=ExtResource("4_rgkyq")]
 layout_mode = 2
 
-[node name="Layer4" parent="Menu/LayerContainer/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/LayerContainer" index="3" instance=ExtResource("4_rgkyq")]
+[node name="Layer4" parent="Controls/VBoxContainer/CanvasControls/LayerContainer/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/LayerContainer" index="3" instance=ExtResource("4_rgkyq")]
 layout_mode = 2
 
-[node name="Layer5" parent="Menu/LayerContainer/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/LayerContainer" index="4" instance=ExtResource("4_rgkyq")]
+[node name="Layer5" parent="Controls/VBoxContainer/CanvasControls/LayerContainer/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/LayerContainer" index="4" instance=ExtResource("4_rgkyq")]
 layout_mode = 2
 
-[node name="Layer6" parent="Menu/LayerContainer/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/LayerContainer" index="5" instance=ExtResource("4_rgkyq")]
+[node name="Layer6" parent="Controls/VBoxContainer/CanvasControls/LayerContainer/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/LayerContainer" index="5" instance=ExtResource("4_rgkyq")]
 layout_mode = 2
 
-[node name="ZoomContainer" parent="Menu" node_paths=PackedStringArray("camera") instance=ExtResource("2_lj6a1")]
+[node name="ZoomContainer" parent="Controls/VBoxContainer/CanvasControls" node_paths=PackedStringArray("camera") instance=ExtResource("2_lj6a1")]
+layout_mode = 1
 offset_left = -272.0
 offset_top = -65.0
-camera = NodePath("../../Camera2D")
+camera = NodePath("../../../../Camera2D")
 
-[connection signal="pressed" from="Menu/LeftContainer/PanelContainer/MarginContainer/VBoxContainer/Button" to="Menu/SubViewportContainer/SubViewport/Background" method="duplicate_drawing"]
-[connection signal="pressed" from="Menu/LeftContainer/PanelContainer/MarginContainer/VBoxContainer/Button2" to="Menu/SubViewportContainer/SubViewport/Background" method="load_drawing"]
+[connection signal="pressed" from="Controls/VBoxContainer/CanvasControls/LeftContainer/PanelContainer/MarginContainer/VBoxContainer/Button" to="Controls/VBoxContainer/CanvasControls/SubViewportContainer/SubViewport/Background" method="duplicate_drawing"]
+[connection signal="pressed" from="Controls/VBoxContainer/CanvasControls/LeftContainer/PanelContainer/MarginContainer/VBoxContainer/Button2" to="Controls/VBoxContainer/CanvasControls/SubViewportContainer/SubViewport/Background" method="load_drawing"]
 
-[editable path="Menu/LayerContainer"]
+[editable path="Controls/VBoxContainer/CanvasControls/LayerContainer"]
