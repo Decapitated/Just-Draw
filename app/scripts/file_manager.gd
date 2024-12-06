@@ -1,4 +1,4 @@
-extends MenuButton
+extends PopupMenu
 
 @export var draw_canvas: DrawCanvas
 
@@ -7,7 +7,7 @@ extends MenuButton
 enum MenuOptions { OPEN, SAVE, EXPORT }
 
 func _ready():
-    get_popup().id_pressed.connect(_on_id_pressed)
+    id_pressed.connect(_on_id_pressed)
     file_dialog.file_selected.connect(_on_file_selected)
 
 func _on_id_pressed(id: int):

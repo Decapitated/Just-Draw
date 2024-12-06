@@ -80,22 +80,23 @@ theme_override_constants/margin_bottom = 4
 [node name="HBoxContainer" type="HBoxContainer" parent="Controls/VBoxContainer/Toolbar/MarginContainer"]
 layout_mode = 2
 
-[node name="FileMenu" type="MenuButton" parent="Controls/VBoxContainer/Toolbar/MarginContainer/HBoxContainer" node_paths=PackedStringArray("draw_canvas")]
-custom_minimum_size = Vector2(32, 0)
+[node name="MenuBar" type="MenuBar" parent="Controls/VBoxContainer/Toolbar/MarginContainer/HBoxContainer"]
 layout_mode = 2
+size_flags_horizontal = 3
 mouse_default_cursor_shape = 2
-text = "File"
-switch_on_hover = true
-item_count = 3
-popup/item_0/text = "Open..."
-popup/item_1/text = "Save as..."
-popup/item_1/id = 1
-popup/item_2/text = "Export as..."
-popup/item_2/id = 2
-script = ExtResource("2_k3gg7")
-draw_canvas = NodePath("../../../../../../Canvas/CenterContainer/DrawCanvas")
+flat = true
 
-[node name="FileDialog" type="FileDialog" parent="Controls/VBoxContainer/Toolbar/MarginContainer/HBoxContainer/FileMenu"]
+[node name="File" type="PopupMenu" parent="Controls/VBoxContainer/Toolbar/MarginContainer/HBoxContainer/MenuBar" node_paths=PackedStringArray("draw_canvas")]
+item_count = 3
+item_0/text = "Open..."
+item_1/text = "Save as..."
+item_1/id = 1
+item_2/text = "Export as..."
+item_2/id = 2
+script = ExtResource("2_k3gg7")
+draw_canvas = NodePath("../../../../../../../Canvas/CenterContainer/DrawCanvas")
+
+[node name="FileDialog" type="FileDialog" parent="Controls/VBoxContainer/Toolbar/MarginContainer/HBoxContainer/MenuBar/File"]
 title = "Open a File"
 size = Vector2i(324, 180)
 ok_button_text = "Open"
@@ -248,4 +249,4 @@ layout_mode = 2
 
 [connection signal="pressed" from="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer/Copy" to="Controls/VBoxContainer/CanvasControls/Control/SubViewportContainer/SubViewport/Background" method="duplicate_drawing"]
 [connection signal="pressed" from="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer/Load" to="Controls/VBoxContainer/CanvasControls/Control/SubViewportContainer/SubViewport/Background" method="load_drawing"]
-[connection signal="pressed" from="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer/Open" to="Controls/VBoxContainer/Toolbar/MarginContainer/HBoxContainer/FileMenu/FileDialog" method="set_visible" binds= [true]]
+[connection signal="pressed" from="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer/Open" to="Controls/VBoxContainer/Toolbar/MarginContainer/HBoxContainer/MenuBar/File/FileDialog" method="set_visible" binds= [true]]
