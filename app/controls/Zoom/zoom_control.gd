@@ -2,9 +2,9 @@ extends Control
 
 @export var camera: Camera2D
 
-@onready var zoom_out: Button = $"HBoxContainer/Zoom Out"
-@onready var zoom_in: Button = $"HBoxContainer/Zoom In"
-@onready var zoom_slider: HSlider = $"HBoxContainer/Zoom Slider"
+@onready var zoom_out: Button = $"Zoom Out"
+@onready var zoom_in: Button = $"Zoom In"
+@onready var zoom_slider: HSlider = $"Zoom Slider"
 
 var zoom_button_amount: float = 0.1
 

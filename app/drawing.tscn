@@ -1,11 +1,10 @@
-[gd_scene load_steps=7 format=3 uid="uid://b1fwia5qj8s06"]
+[gd_scene load_steps=6 format=3 uid="uid://b1fwia5qj8s06"]
 
 [ext_resource type="Script" path="res://draw_cam.gd" id="1_hampg"]
-[ext_resource type="PackedScene" uid="uid://c8ep4tphh70yx" path="res://controls/Zoom/zoom_control.res" id="2_lj6a1"]
 [ext_resource type="Script" path="res://canvas_manager.gd" id="2_o3k06"]
 [ext_resource type="Script" path="res://duplicate_drawing.gd" id="2_uaca0"]
-[ext_resource type="PackedScene" uid="uid://b0h0gw0vd2vcj" path="res://controls/Layers/layer_container.res" id="4_p565e"]
-[ext_resource type="PackedScene" uid="uid://dnjllqtckn1n5" path="res://controls/Layers/layer.res" id="4_rgkyq"]
+[ext_resource type="PackedScene" uid="uid://cgf8cuhalbgj1" path="res://controls/Layers/layer_container.tscn" id="4_6l18o"]
+[ext_resource type="PackedScene" uid="uid://32mj3r685gx5" path="res://controls/Zoom/zoom_control.res" id="6_0dv2d"]
 
 [node name="Node2D" type="Node2D"]
 
@@ -18,18 +17,21 @@ zoom_speed = 0.1
 follow_viewport_enabled = true
 script = ExtResource("2_o3k06")
 
-[node name="Background" type="ColorRect" parent="Canvas"]
+[node name="DrawCanvas" type="DrawCanvas" parent="Canvas"]
 custom_minimum_size = Vector2(500, 500)
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
+offset_left = -250.0
+offset_top = -250.0
+offset_right = 250.0
+offset_bottom = 250.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
 
-[node name="DrawLayer" type="DrawLayer" parent="Canvas/Background"]
+[node name="DrawLayer" type="DrawLayer" parent="Canvas/DrawCanvas"]
 active = true
 layout_mode = 1
 anchors_preset = 15
@@ -69,18 +71,86 @@ mouse_default_cursor_shape = 2
 text = "File"
 flat = false
 switch_on_hover = true
-item_count = 2
+item_count = 3
 popup/item_0/text = "Open..."
-popup/item_1/text = "Save As..."
+popup/item_1/text = "Save as..."
 popup/item_1/id = 1
+popup/item_2/text = "Export as..."
+popup/item_2/id = 2
 
-[node name="CanvasControls" type="Control" parent="Controls/VBoxContainer"]
+[node name="CanvasControls" type="MarginContainer" parent="Controls/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="Control" type="Control" parent="Controls/VBoxContainer/CanvasControls"]
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
 
-[node name="SubViewportContainer" type="SubViewportContainer" parent="Controls/VBoxContainer/CanvasControls"]
-custom_minimum_size = Vector2(150, 150)
+[node name="LeftContainer" type="PanelContainer" parent="Controls/VBoxContainer/CanvasControls/Control"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -164.0
+offset_right = 58.0
+offset_bottom = 164.0
+grow_vertical = 2
+size_flags_vertical = 4
+
+[node name="MarginContainer" type="MarginContainer" parent="Controls/VBoxContainer/CanvasControls/Control/LeftContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Button" type="Button" parent="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_vertical = 3
+text = "Copy"
+
+[node name="Button2" type="Button" parent="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_vertical = 3
+text = "Load"
+
+[node name="Button3" type="Button" parent="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_vertical = 3
+text = "C"
+
+[node name="Button4" type="Button" parent="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_vertical = 3
+text = "D"
+
+[node name="Button5" type="Button" parent="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_vertical = 3
+text = "E"
+
+[node name="Button6" type="Button" parent="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_vertical = 3
+text = "F"
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="Controls/VBoxContainer/CanvasControls/Control"]
 layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
@@ -88,120 +158,56 @@ anchor_right = 1.0
 offset_left = -150.0
 offset_bottom = 150.0
 grow_horizontal = 0
+mouse_filter = 2
 stretch = true
 
-[node name="SubViewport" type="SubViewport" parent="Controls/VBoxContainer/CanvasControls/SubViewportContainer"]
+[node name="SubViewport" type="SubViewport" parent="Controls/VBoxContainer/CanvasControls/Control/SubViewportContainer"]
 handle_input_locally = false
+snap_2d_transforms_to_pixel = true
+snap_2d_vertices_to_pixel = true
+msaa_2d = 3
 size = Vector2i(150, 150)
 size_2d_override = Vector2i(500, 500)
 size_2d_override_stretch = true
 render_target_update_mode = 4
 
-[node name="Background" type="ColorRect" parent="Controls/VBoxContainer/CanvasControls/SubViewportContainer/SubViewport" node_paths=PackedStringArray("canvas_manager")]
+[node name="Background" type="ColorRect" parent="Controls/VBoxContainer/CanvasControls/Control/SubViewportContainer/SubViewport" node_paths=PackedStringArray("canvas_manager")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("2_uaca0")
-canvas_manager = NodePath("../../../../../../Canvas")
+canvas_manager = NodePath("../../../../../../../Canvas")
 
-[node name="LeftContainer" type="MarginContainer" parent="Controls/VBoxContainer/CanvasControls"]
+[node name="LayerContainer" parent="Controls/VBoxContainer/CanvasControls/Control" instance=ExtResource("4_6l18o")]
 layout_mode = 1
-anchors_preset = 4
+anchors_preset = 6
+anchor_left = 1.0
 anchor_top = 0.5
+anchor_right = 1.0
 anchor_bottom = 0.5
-offset_top = -194.0
-offset_right = 98.0
-offset_bottom = 194.0
-grow_vertical = 2
-theme_override_constants/margin_left = 16
-theme_override_constants/margin_top = 16
-theme_override_constants/margin_right = 16
-theme_override_constants/margin_bottom = 16
-
-[node name="PanelContainer" type="PanelContainer" parent="Controls/VBoxContainer/CanvasControls/LeftContainer"]
-layout_mode = 2
-size_flags_vertical = 4
-
-[node name="MarginContainer" type="MarginContainer" parent="Controls/VBoxContainer/CanvasControls/LeftContainer/PanelContainer"]
-layout_mode = 2
-theme_override_constants/margin_left = 8
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 8
-theme_override_constants/margin_bottom = 8
-
-[node name="VBoxContainer" type="VBoxContainer" parent="Controls/VBoxContainer/CanvasControls/LeftContainer/PanelContainer/MarginContainer"]
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="Button" type="Button" parent="Controls/VBoxContainer/CanvasControls/LeftContainer/PanelContainer/MarginContainer/VBoxContainer"]
-custom_minimum_size = Vector2(50, 50)
-layout_mode = 2
-size_flags_vertical = 3
-text = "Copy"
-
-[node name="Button2" type="Button" parent="Controls/VBoxContainer/CanvasControls/LeftContainer/PanelContainer/MarginContainer/VBoxContainer"]
-custom_minimum_size = Vector2(50, 50)
-layout_mode = 2
-size_flags_vertical = 3
-text = "Load"
-
-[node name="Button3" type="Button" parent="Controls/VBoxContainer/CanvasControls/LeftContainer/PanelContainer/MarginContainer/VBoxContainer"]
-custom_minimum_size = Vector2(50, 50)
-layout_mode = 2
-size_flags_vertical = 3
-text = "C"
-
-[node name="Button4" type="Button" parent="Controls/VBoxContainer/CanvasControls/LeftContainer/PanelContainer/MarginContainer/VBoxContainer"]
-custom_minimum_size = Vector2(50, 50)
-layout_mode = 2
-size_flags_vertical = 3
-text = "D"
-
-[node name="Button5" type="Button" parent="Controls/VBoxContainer/CanvasControls/LeftContainer/PanelContainer/MarginContainer/VBoxContainer"]
-custom_minimum_size = Vector2(50, 50)
-layout_mode = 2
-size_flags_vertical = 3
-text = "E"
-
-[node name="Button6" type="Button" parent="Controls/VBoxContainer/CanvasControls/LeftContainer/PanelContainer/MarginContainer/VBoxContainer"]
-custom_minimum_size = Vector2(50, 50)
-layout_mode = 2
-size_flags_vertical = 3
-text = "F"
-
-[node name="LayerContainer" parent="Controls/VBoxContainer/CanvasControls" instance=ExtResource("4_p565e")]
-layout_mode = 1
 offset_left = -208.0
 offset_top = -145.0
+offset_right = 0.0
 offset_bottom = 145.0
+grow_horizontal = 0
+grow_vertical = 2
 
-[node name="Layer" parent="Controls/VBoxContainer/CanvasControls/LayerContainer/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/LayerContainer" index="0" instance=ExtResource("4_rgkyq")]
-layout_mode = 2
-
-[node name="Layer2" parent="Controls/VBoxContainer/CanvasControls/LayerContainer/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/LayerContainer" index="1" instance=ExtResource("4_rgkyq")]
-layout_mode = 2
-
-[node name="Layer3" parent="Controls/VBoxContainer/CanvasControls/LayerContainer/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/LayerContainer" index="2" instance=ExtResource("4_rgkyq")]
-layout_mode = 2
-
-[node name="Layer4" parent="Controls/VBoxContainer/CanvasControls/LayerContainer/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/LayerContainer" index="3" instance=ExtResource("4_rgkyq")]
-layout_mode = 2
-
-[node name="Layer5" parent="Controls/VBoxContainer/CanvasControls/LayerContainer/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/LayerContainer" index="4" instance=ExtResource("4_rgkyq")]
-layout_mode = 2
-
-[node name="Layer6" parent="Controls/VBoxContainer/CanvasControls/LayerContainer/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/LayerContainer" index="5" instance=ExtResource("4_rgkyq")]
-layout_mode = 2
-
-[node name="ZoomContainer" parent="Controls/VBoxContainer/CanvasControls" node_paths=PackedStringArray("camera") instance=ExtResource("2_lj6a1")]
+[node name="ZoomControl" parent="Controls/VBoxContainer/CanvasControls/Control" node_paths=PackedStringArray("camera") instance=ExtResource("6_0dv2d")]
 layout_mode = 1
-offset_left = -272.0
-offset_top = -65.0
-camera = NodePath("../../../../Camera2D")
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -240.0
+offset_top = -33.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 0
+grow_vertical = 0
+camera = NodePath("../../../../../Camera2D")
 
-[connection signal="pressed" from="Controls/VBoxContainer/CanvasControls/LeftContainer/PanelContainer/MarginContainer/VBoxContainer/Button" to="Controls/VBoxContainer/CanvasControls/SubViewportContainer/SubViewport/Background" method="duplicate_drawing"]
-[connection signal="pressed" from="Controls/VBoxContainer/CanvasControls/LeftContainer/PanelContainer/MarginContainer/VBoxContainer/Button2" to="Controls/VBoxContainer/CanvasControls/SubViewportContainer/SubViewport/Background" method="load_drawing"]
-
-[editable path="Controls/VBoxContainer/CanvasControls/LayerContainer"]
+[connection signal="pressed" from="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer/Button" to="Controls/VBoxContainer/CanvasControls/Control/SubViewportContainer/SubViewport/Background" method="duplicate_drawing"]
+[connection signal="pressed" from="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer/Button2" to="Controls/VBoxContainer/CanvasControls/Control/SubViewportContainer/SubViewport/Background" method="load_drawing"]

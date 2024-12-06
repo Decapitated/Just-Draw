@@ -2,9 +2,10 @@
 
 #include <godot_cpp/classes/engine.hpp>
 
-#include "godot/draw_layer/draw_layer.hpp"
 #include "godot/resources/layer_data/layer_data.hpp"
 #include "godot/resources/canvas_data/canvas_data.hpp"
+#include "godot/nodes/draw_layer/draw_layer.hpp"
+#include "godot/nodes/draw_canvas/draw_canvas.hpp"
 
 using namespace godot;
 
@@ -16,6 +17,7 @@ void initialize_justdraw_module(ModuleInitializationLevel p_level) {
     GDREGISTER_CLASS(JustDraw::LayerData);
     GDREGISTER_CLASS(JustDraw::CanvasData);
     GDREGISTER_CLASS(JustDraw::DrawLayer);
+    GDREGISTER_CLASS(JustDraw::DrawCanvas);
 }
 
 void uninitialize_justdraw_module(ModuleInitializationLevel p_level) {
