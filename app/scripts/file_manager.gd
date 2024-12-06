@@ -1,30 +1,33 @@
 extends PopupMenu
 
 @export var draw_canvas: DrawCanvas
+@export var subviewport: CanvasViewport
 
-@onready var file_dialog: FileDialog = $FileDialog
+@onready var open_save_dialog: FileDialog = $OpenSaveFileDialog
+@onready var export_dialog: FileDialog = $ExportFileDialog
 
 enum MenuOptions { OPEN, SAVE, EXPORT }
 
 func _ready():
     id_pressed.connect(_on_id_pressed)
-    file_dialog.file_selected.connect(_on_file_selected)
+    open_save_dialog.file_selected.connect(_on_open_save_file_selected)
+    export_dialog.file_selected.connect(_on_export_file_selected)
 
 func _on_id_pressed(id: int):
     if draw_canvas:
         match id:
             MenuOptions.OPEN:
-                file_dialog.file_mode = FileDialog.FILE_MODE_OPEN_FILE
-                file_dialog.visible = true
+                open_save_dialog.file_mode = FileDialog.FILE_MODE_OPEN_FILE
+                open_save_dialog.visible = true
             MenuOptions.SAVE:
-                file_dialog.file_mode = FileDialog.FILE_MODE_SAVE_FILE
-                file_dialog.visible = true
+                open_save_dialog.file_mode = FileDialog.FILE_MODE_SAVE_FILE
+                open_save_dialog.visible = true
             MenuOptions.EXPORT:
-                print("export")
+                export_dialog.visible = true
         
-func _on_file_selected(path: String):
+func _on_open_save_file_selected(path: String):
     if draw_canvas:
-        match file_dialog.file_mode:
+        match open_save_dialog.file_mode:
             FileDialog.FILE_MODE_OPEN_FILE:
                 var res: Resource = ResourceLoader.load(path, "CanvasData", ResourceLoader.CACHE_MODE_IGNORE_DEEP)
                 if res and res is CanvasData:
@@ -32,3 +35,8 @@ func _on_file_selected(path: String):
             FileDialog.FILE_MODE_SAVE_FILE:
                 var canvas_data: CanvasData = draw_canvas.create_canvas_data()
                 ResourceSaver.save(canvas_data, path, ResourceSaver.FLAG_COMPRESS)
+
+func _on_export_file_selected(path: String):
+    subviewport.update_viewport()
+    subviewport.save_canvas(path)
+    
