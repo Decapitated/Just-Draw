@@ -31,4 +31,4 @@ func _on_file_selected(path: String):
                     draw_canvas.load_canvas_data(res)
             FileDialog.FILE_MODE_SAVE_FILE:
                 var canvas_data: CanvasData = draw_canvas.create_canvas_data()
-                ResourceSaver.save(canvas_data, path)
+                ResourceSaver.save(canvas_data, path, ResourceSaver.FLAG_COMPRESS)
