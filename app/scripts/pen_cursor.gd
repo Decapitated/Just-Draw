@@ -2,7 +2,8 @@ extends Control
 
 @export var draw_canvas: DrawCanvas
 
-var is_eraser = false
+var is_eraser: bool = false
+var pen_position: Vector2 = Vector2.ZERO
 
 func _ready():
     mouse_entered.connect(_mouse_entered_canvas)
@@ -14,7 +15,9 @@ func _process(_delta):
 
 func _unhandled_input(event):
     if event is InputEventMouseMotion:
+        event = make_input_local(event)
         is_eraser = event.pen_inverted
+        pen_position = event.position
 
 func _draw():
     if draw_canvas:
@@ -26,7 +29,7 @@ func _draw():
             draw_cursor(draw_canvas.line_width / 2.0)
 
 func draw_cursor(radius: float, width: float = -1.0):
-    draw_circle(get_local_mouse_position(), radius + max(width, 0.0) / 2.0, Color.DARK_GRAY, false, width)
+    draw_circle(pen_position, radius + max(width, 0.0) / 2.0, Color.DARK_GRAY, false, width)
 
 func _mouse_entered_canvas():
     Input.mouse_mode = Input.MOUSE_MODE_HIDDEN
