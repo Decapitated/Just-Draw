@@ -68,9 +68,11 @@ namespace JustDraw
             Line SmoothLineStep(Line line, int smooth_start = 0);
             Line SmoothLine(Line line);
 
-            Ref<CanvasData> create_canvas_data();
+            Ref<CanvasData> create_canvas_data() const;
             void load_canvas_data(Ref<CanvasData> canvas_data);
             void clear_canvas();
+
+            DrawLayer* get_active_layer() const;
     };
 }
 

@@ -20,6 +20,12 @@ void DrawLayer::_bind_methods()
     ClassDB::bind_method(D_METHOD("get_layer_data"), &DrawLayer::get_layer_data);
     ClassDB::bind_method(D_METHOD("load_layer_data", "p_layer_data"), &DrawLayer::load_layer_data);
 
+    BIND_ENUM_CONSTANT(NONE);
+    BIND_ENUM_CONSTANT(DRAW);
+    BIND_ENUM_CONSTANT(ERASE);
+
+    ClassDB::bind_method(D_METHOD("get_pen_mode"), &DrawLayer::get_pen_mode);
+
     #pragma endregion
 }
 

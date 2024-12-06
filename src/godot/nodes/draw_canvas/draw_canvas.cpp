@@ -48,14 +48,14 @@ void DrawCanvas::_bind_methods()
     ClassDB::bind_method(D_METHOD("create_canvas_data"), &DrawCanvas::create_canvas_data);
     ClassDB::bind_method(D_METHOD("load_canvas_data", "p_canvas_data"), &DrawCanvas::load_canvas_data);
     ClassDB::bind_method(D_METHOD("clear_canvas"), &DrawCanvas::clear_canvas);
+    ClassDB::bind_method(D_METHOD("get_active_layer"), &DrawCanvas::get_active_layer);
 
     #pragma endregion
 }
 
 DrawCanvas::DrawCanvas()
 {
-    set_mouse_filter(MOUSE_FILTER_PASS);
-    set_default_cursor_shape(CURSOR_CROSS);
+    set_mouse_filter(MOUSE_FILTER_IGNORE);
 }
 
 DrawCanvas::~DrawCanvas() {}
@@ -98,7 +98,7 @@ Line DrawCanvas::SmoothLine(Line line)
     return line;
 }
 
-Ref<CanvasData> JustDraw::DrawCanvas::create_canvas_data()
+Ref<CanvasData> JustDraw::DrawCanvas::create_canvas_data() const
 {
     auto layers = TypedArray<LayerData>();
     // Get layer data from children DrawLayers.
@@ -144,4 +144,23 @@ void DrawCanvas::clear_canvas()
             draw_layer->queue_free();
         }
     }
+}
+
+DrawLayer* DrawCanvas::get_active_layer() const
+{
+    DrawLayer* active_layer = nullptr;
+    auto draw_layers = find_children("*", "DrawLayer", false, false);
+    for(int i = 0; i < draw_layers.size(); i++)
+    {
+        auto draw_layer = dynamic_cast<DrawLayer*>((Object*)draw_layers[i]);
+        if(draw_layer != nullptr)
+        {
+            if(draw_layer->get_active())
+            {
+                active_layer = draw_layer;
+                break;
+            }
+        }
+    }
+    return active_layer;
 }

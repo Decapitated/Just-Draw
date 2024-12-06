@@ -54,11 +54,12 @@ namespace JustDraw
     class DrawLayer : public Control
     {
         GDCLASS(DrawLayer, Control);
+        public:
+            enum PenMode { NONE, DRAW, ERASE };
         private:
             Lines lines = Lines();
 
-            enum PenMode { NONE, DRAW, ERASE };
-            PenMode mode = NONE;
+            PenMode mode = PenMode::NONE;
 
             bool active = false;
 
@@ -92,6 +93,8 @@ namespace JustDraw
             Ref<LayerData> get_layer_data() { return memnew(LayerData(GetLines(), GetPens())); }
             void load_layer_data(Ref<LayerData> p_layer_data);
 
+            PenMode get_pen_mode() { return mode; }
+
             #pragma endregion
 
             PackedStringArray _get_configuration_warnings() const override;
@@ -100,5 +103,7 @@ namespace JustDraw
             void _draw() override;
     };
 }
+
+VARIANT_ENUM_CAST(JustDraw::DrawLayer::PenMode);
 
 #endif
