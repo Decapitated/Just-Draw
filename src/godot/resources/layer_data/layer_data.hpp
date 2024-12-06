@@ -29,7 +29,10 @@ namespace JustDraw
             #pragma region Getters and Setters
 
             TypedArray<PackedVector2Array> get_lines() { return lines; };
+            void set_lines(TypedArray<PackedVector2Array> p_lines) { lines = p_lines; };
+
             TypedArray<Dictionary> get_pens() { return pens; };
+            void set_pens(TypedArray<Dictionary> p_pens) { pens = p_pens; };
 
             #pragma endregion
     };

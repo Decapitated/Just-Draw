@@ -1,5 +1,7 @@
 #include "draw_canvas.hpp"
 
+#include <godot_cpp/variant/utility_functions.hpp>
+
 using namespace JustDraw;
 using namespace godot;
 
@@ -120,6 +122,7 @@ void DrawCanvas::load_canvas_data(Ref<CanvasData> canvas_data)
 {
     clear_canvas();
 
+    set_custom_minimum_size(canvas_data->get_size());
     auto layers = canvas_data->get_layers();
     for(int i = 0; i < layers.size(); i++)
     {

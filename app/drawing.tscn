@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://b1fwia5qj8s06"]
+[gd_scene load_steps=6 format=3 uid="uid://b1fwia5qj8s06"]
 
-[ext_resource type="Script" path="res://draw_cam.gd" id="1_hampg"]
+[ext_resource type="Script" path="res://scripts/draw_cam.gd" id="1_hampg"]
+[ext_resource type="Script" path="res://scripts/file_manager.gd" id="2_k3gg7"]
 [ext_resource type="Script" path="res://duplicate_drawing.gd" id="2_uaca0"]
 [ext_resource type="PackedScene" uid="uid://cgf8cuhalbgj1" path="res://controls/Layers/layer_container.tscn" id="4_6l18o"]
 [ext_resource type="PackedScene" uid="uid://32mj3r685gx5" path="res://controls/Zoom/zoom_control.res" id="6_0dv2d"]
@@ -15,22 +16,19 @@ zoom_speed = 0.1
 [node name="Canvas" type="CanvasLayer" parent="."]
 follow_viewport_enabled = true
 
-[node name="DrawCanvas" type="DrawCanvas" parent="Canvas"]
-smooth_min_distance = 0.001
-custom_minimum_size = Vector2(500, 500)
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -250.0
-offset_top = -250.0
-offset_right = 250.0
-offset_bottom = 250.0
+[node name="CenterContainer" type="CenterContainer" parent="Canvas"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="DrawLayer" type="DrawLayer" parent="Canvas/DrawCanvas"]
+[node name="DrawCanvas" type="DrawCanvas" parent="Canvas/CenterContainer"]
+smooth_min_distance = 0.001
+custom_minimum_size = Vector2(500, 500)
+layout_mode = 2
+
+[node name="DrawLayer" type="DrawLayer" parent="Canvas/CenterContainer/DrawCanvas"]
 active = true
 layout_mode = 1
 anchors_preset = 15
@@ -56,19 +54,19 @@ layout_mode = 2
 
 [node name="MarginContainer" type="MarginContainer" parent="Controls/VBoxContainer/Toolbar"]
 layout_mode = 2
-theme_override_constants/margin_left = 4
+theme_override_constants/margin_left = 8
 theme_override_constants/margin_top = 4
-theme_override_constants/margin_right = 4
+theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 4
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Controls/VBoxContainer/Toolbar/MarginContainer"]
 layout_mode = 2
 
-[node name="FileMenu" type="MenuButton" parent="Controls/VBoxContainer/Toolbar/MarginContainer/HBoxContainer"]
+[node name="FileMenu" type="MenuButton" parent="Controls/VBoxContainer/Toolbar/MarginContainer/HBoxContainer" node_paths=PackedStringArray("draw_canvas")]
+custom_minimum_size = Vector2(32, 0)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 text = "File"
-flat = false
 switch_on_hover = true
 item_count = 3
 popup/item_0/text = "Open..."
@@ -76,6 +74,17 @@ popup/item_1/text = "Save as..."
 popup/item_1/id = 1
 popup/item_2/text = "Export as..."
 popup/item_2/id = 2
+script = ExtResource("2_k3gg7")
+draw_canvas = NodePath("../../../../../../Canvas/CenterContainer/DrawCanvas")
+
+[node name="FileDialog" type="FileDialog" parent="Controls/VBoxContainer/Toolbar/MarginContainer/HBoxContainer/FileMenu"]
+title = "Open a File"
+size = Vector2i(324, 180)
+ok_button_text = "Open"
+file_mode = 0
+access = 2
+filters = PackedStringArray("*.tres; Resource")
+use_native_dialog = true
 
 [node name="CanvasControls" type="MarginContainer" parent="Controls/VBoxContainer"]
 layout_mode = 2
@@ -113,23 +122,23 @@ theme_override_constants/margin_bottom = 4
 layout_mode = 2
 theme_override_constants/separation = 4
 
-[node name="Button" type="Button" parent="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer"]
+[node name="Copy" type="Button" parent="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 2
 size_flags_vertical = 3
 text = "Copy"
 
-[node name="Button2" type="Button" parent="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer"]
+[node name="Load" type="Button" parent="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 2
 size_flags_vertical = 3
 text = "Load"
 
-[node name="Button3" type="Button" parent="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer"]
+[node name="Open" type="Button" parent="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 2
 size_flags_vertical = 3
-text = "C"
+text = "Open"
 
 [node name="Button4" type="Button" parent="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(50, 50)
@@ -177,7 +186,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("2_uaca0")
-canvas = NodePath("../../../../../../../Canvas/DrawCanvas")
+canvas = NodePath("../../../../../../../Canvas/CenterContainer/DrawCanvas")
 
 [node name="LayerContainer" parent="Controls/VBoxContainer/CanvasControls/Control" instance=ExtResource("4_6l18o")]
 layout_mode = 1
@@ -208,5 +217,17 @@ grow_horizontal = 0
 grow_vertical = 0
 camera = NodePath("../../../../../Camera2D")
 
-[connection signal="pressed" from="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer/Button" to="Controls/VBoxContainer/CanvasControls/Control/SubViewportContainer/SubViewport/Background" method="duplicate_drawing"]
-[connection signal="pressed" from="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer/Button2" to="Controls/VBoxContainer/CanvasControls/Control/SubViewportContainer/SubViewport/Background" method="load_drawing"]
+[node name="PanelContainer" type="PanelContainer" parent="Controls"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CenterContainer" type="CenterContainer" parent="Controls/PanelContainer"]
+layout_mode = 2
+
+[connection signal="pressed" from="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer/Copy" to="Controls/VBoxContainer/CanvasControls/Control/SubViewportContainer/SubViewport/Background" method="duplicate_drawing"]
+[connection signal="pressed" from="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer/Load" to="Controls/VBoxContainer/CanvasControls/Control/SubViewportContainer/SubViewport/Background" method="load_drawing"]
+[connection signal="pressed" from="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer/Open" to="Controls/VBoxContainer/Toolbar/MarginContainer/HBoxContainer/FileMenu/FileDialog" method="set_visible" binds= [true]]

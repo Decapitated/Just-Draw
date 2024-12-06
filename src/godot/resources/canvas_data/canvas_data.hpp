@@ -17,6 +17,7 @@ namespace JustDraw
         GDCLASS(CanvasData, Resource);
         private:
             Vector2i size;
+            Color color;
             TypedArray<LayerData> layers;
 
         protected:
@@ -32,6 +33,9 @@ namespace JustDraw
 
             Vector2i get_size() { return size; }
             void set_size(Vector2i p_size) { size = p_size; }
+
+            Color get_color() { return color; }
+            void set_color(Color p_color) { color = p_color; }
 
             TypedArray<LayerData> get_layers() { return layers; }
             void set_layers(TypedArray<LayerData> p_layers) { layers = p_layers; }
