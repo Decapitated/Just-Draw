@@ -49,7 +49,6 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="DrawCanvas" type="DrawCanvas" parent="Canvas/CenterContainer"]
-smooth_min_distance = 0.001
 custom_minimum_size = Vector2(500, 500)
 layout_mode = 2
 
@@ -62,14 +61,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="PenCursor" type="Control" parent="Canvas" node_paths=PackedStringArray("draw_canvas")]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 1
+[node name="PenCursor" type="Node2D" parent="Canvas" node_paths=PackedStringArray("draw_canvas")]
 script = ExtResource("2_3c6d4")
 draw_canvas = NodePath("../CenterContainer/DrawCanvas")
 

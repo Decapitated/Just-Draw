@@ -55,7 +55,7 @@ void DrawCanvas::_bind_methods()
 
 DrawCanvas::DrawCanvas()
 {
-    set_mouse_filter(MOUSE_FILTER_IGNORE);
+    set_mouse_filter(MOUSE_FILTER_PASS);
 }
 
 DrawCanvas::~DrawCanvas() {}

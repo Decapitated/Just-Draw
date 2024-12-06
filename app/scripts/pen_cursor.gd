@@ -1,4 +1,4 @@
-extends Control
+extends CanvasItem
 
 @export var draw_canvas: DrawCanvas
 
@@ -6,8 +6,8 @@ var is_eraser: bool = false
 var pen_position: Vector2 = Vector2.ZERO
 
 func _ready():
-    mouse_entered.connect(_mouse_entered_canvas)
-    mouse_exited.connect(_mouse_exited_canvas)
+    draw_canvas.mouse_entered.connect(_mouse_entered_canvas)
+    draw_canvas.mouse_exited.connect(_mouse_exited_canvas)
 
 func _process(_delta):
     if draw_canvas:

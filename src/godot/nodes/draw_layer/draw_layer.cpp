@@ -31,7 +31,7 @@ void DrawLayer::_bind_methods()
 
 DrawLayer::DrawLayer()
 {
-    set_mouse_filter(MOUSE_FILTER_IGNORE);
+    set_mouse_filter(MOUSE_FILTER_PASS);
 }
 
 DrawLayer::~DrawLayer() {}
