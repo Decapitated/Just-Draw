@@ -151,7 +151,7 @@ void DrawLayer::StartDraw(Vector2 pen_position)
     {
         mode = DRAW;
         // Create a new pen line, and set line properties.
-        auto line = CappedPenLine(canvas->pen_color, canvas->line_width, (canvas->line_width / 2.0f) * canvas->cap_scale);
+        auto line = CappedPenLine(canvas->get_line_color(), canvas->get_line_width(), (canvas->get_line_width() / 2.0f) * canvas->get_cap_scale());
         // Add the mouse position as the first point of the line.
         line.append(pen_position);
         // Add the line to the list.
@@ -171,7 +171,7 @@ void DrawLayer::UpdateDraw(Vector2 pen_position)
     if(canvas != nullptr)
     {
         auto cam = get_viewport()->get_camera_2d();
-        const float min_dist = canvas->min_draw_distance * (1.0f / cam->get_zoom().x);
+        const float min_dist = canvas->get_min_draw_distance() * (1.0f / cam->get_zoom().x);
         CappedPenLine& line = lines.back();
         auto prev_pos = line[line.size() - 1];
         auto dist = prev_pos.distance_squared_to(pen_position);
@@ -182,7 +182,7 @@ void DrawLayer::UpdateDraw(Vector2 pen_position)
                 Vector2 prev = line[line.size() - 2], curr = prev_pos, next = pen_position;
                 float curr_dot = (curr - prev).normalized().dot((next - curr).normalized());
                 curr_dot = (1.0f - (curr_dot * 0.5f + 0.5f)) * 180.0f;
-                if(curr_dot > canvas->max_draw_angle)
+                if(curr_dot > canvas->get_max_draw_angle())
                 {
                     // Create a new pen line, and set line properties.
                     auto new_line = CappedPenLine(line.color, line.width, line.cap_radius);
@@ -198,11 +198,7 @@ void DrawLayer::UpdateDraw(Vector2 pen_position)
             // If the line has 3 or more points, smooth it.
             if(line.size() >= 3)
             {
-                for(int i = 0; i < canvas->smooth_steps; i++)
-                {
-                    int smooth_start = line.size() - 2;
-                    static_cast<Line&>(line) = canvas->SmoothLine(line, smooth_start);
-                }
+                static_cast<Line&>(line) = canvas->SmoothLine(line);
             }
         }
     }
@@ -237,7 +233,7 @@ bool DrawLayer::UpdateErase(Vector2 pen_position, LineIterator line_it)
         {
             auto curr = (*line_it)[i];
             bool is_last_slice = slice_start > 0 && i == line_it->size() - 1;
-            if(is_last_slice || (curr.distance_squared_to(pen_position) < powf(canvas->eraser_size, 2.0f)))
+            if(is_last_slice || (curr.distance_squared_to(pen_position) < powf(canvas->get_eraser_size(), 2.0f)))
             {
                 sliced = true;
                 int end = is_last_slice ? i + 1 : i;

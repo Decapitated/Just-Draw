@@ -4,6 +4,7 @@
 #include <godot_cpp/classes/color_rect.hpp>
 
 #include "godot/nodes/draw_layer/draw_layer.hpp"
+#include "godot/resources/canvas_data/canvas_data.hpp"
 
 using namespace std;
 using namespace godot;
@@ -14,8 +15,6 @@ namespace JustDraw
     {
         GDCLASS(DrawCanvas, ColorRect);
         private:
-            friend class DrawLayer;
-
             Color pen_color = Color();
             
             float line_width = 5.0f;
@@ -37,8 +36,8 @@ namespace JustDraw
 
             #pragma region Getters and Setters
 
-            Color get_color() { return pen_color; }
-            void set_color(Color p_color) { pen_color = p_color; }
+            Color get_line_color() { return pen_color; }
+            void set_line_color(Color p_color) { pen_color = p_color; }
 
             float get_line_width() { return line_width; }
             void set_line_width(float p_width) { line_width = p_width; }
@@ -67,7 +66,11 @@ namespace JustDraw
             #pragma endregion
 
             Line SmoothLineStep(Line line, int smooth_start = 0);
-            Line SmoothLine(Line line, int smooth_start = 0);
+            Line SmoothLine(Line line);
+
+            Ref<CanvasData> create_canvas_data();
+            void load_canvas_data(Ref<CanvasData> canvas_data);
+            void clear_canvas();
     };
 }
 

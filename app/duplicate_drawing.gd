@@ -1,6 +1,6 @@
 extends Control
 
-@export var canvas_manager: CanvasManager
+@export var canvas: DrawCanvas
 
 var current_canvas: CanvasData
 
@@ -20,9 +20,9 @@ func _draw():
 					draw_circle(line[0], pen.width / 2.0, pen.color)
 
 func duplicate_drawing():
-		current_canvas = canvas_manager.create_canvas_data()
+		current_canvas = canvas.create_canvas_data()
 		queue_redraw()
 
 func load_drawing():
 	if current_canvas != null:
-		canvas_manager.load_canvas_data(current_canvas)
+		canvas.load_canvas_data(current_canvas)

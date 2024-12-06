@@ -7,9 +7,9 @@ void DrawCanvas::_bind_methods()
 {
     #pragma region Getters and Setters
 
-    ClassDB::bind_method(D_METHOD("set_color", "p_color"), &DrawCanvas::set_color);
-    ClassDB::bind_method(D_METHOD("get_color"), &DrawCanvas::get_color);
-    ADD_PROPERTY(PropertyInfo(Variant::COLOR, "pen_color"), "set_color", "get_color");
+    ClassDB::bind_method(D_METHOD("set_line_color", "p_color"), &DrawCanvas::set_line_color);
+    ClassDB::bind_method(D_METHOD("get_line_color"), &DrawCanvas::get_line_color);
+    ADD_PROPERTY(PropertyInfo(Variant::COLOR, "pen_color"), "set_line_color", "get_line_color");
 
 	ClassDB::bind_method(D_METHOD("set_line_width", "p_width"), &DrawCanvas::set_line_width);
     ClassDB::bind_method(D_METHOD("get_line_width"), &DrawCanvas::get_line_width);
@@ -43,6 +43,10 @@ void DrawCanvas::_bind_methods()
     ClassDB::bind_method(D_METHOD("get_smooth_min_distance"), &DrawCanvas::get_smooth_min_distance);
     ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "smooth_min_distance"), "set_smooth_min_distance", "get_smooth_min_distance");
     
+    ClassDB::bind_method(D_METHOD("create_canvas_data"), &DrawCanvas::create_canvas_data);
+    ClassDB::bind_method(D_METHOD("load_canvas_data", "p_canvas_data"), &DrawCanvas::load_canvas_data);
+    ClassDB::bind_method(D_METHOD("clear_canvas"), &DrawCanvas::clear_canvas);
+
     #pragma endregion
 }
 
@@ -82,11 +86,59 @@ Line DrawCanvas::SmoothLineStep(Line line, int smooth_start)
     return smoothed_line;
 }
 
-Line DrawCanvas::SmoothLine(Line line, int smooth_start)
+Line DrawCanvas::SmoothLine(Line line)
 {
     for (int i = 0; i < smooth_steps; i++)
     {
+        int smooth_start = line.size() - 2;
         line = SmoothLineStep(line, smooth_start);
     }
     return line;
+}
+
+Ref<CanvasData> JustDraw::DrawCanvas::create_canvas_data()
+{
+    auto layers = TypedArray<LayerData>();
+    // Get layer data from children DrawLayers.
+    auto draw_layers = find_children("*", "DrawLayer", false, false);
+    for(int i = 0; i < draw_layers.size(); i++)
+    {
+        auto draw_layer = dynamic_cast<DrawLayer*>((Object*)draw_layers[i]);
+        if(draw_layer != nullptr)
+        {
+            layers.push_back(draw_layer->get_layer_data());
+        }
+    }
+
+    Ref<CanvasData> canvas_data = memnew(CanvasData);
+    canvas_data->set_size(get_size());
+    canvas_data->set_layers(layers);
+    return canvas_data;
+}
+
+void DrawCanvas::load_canvas_data(Ref<CanvasData> canvas_data)
+{
+    clear_canvas();
+
+    auto layers = canvas_data->get_layers();
+    for(int i = 0; i < layers.size(); i++)
+    {
+        auto draw_layer = memnew(DrawLayer);
+        if(i == 0) draw_layer->set_active(true);
+        add_child(draw_layer);
+        draw_layer->load_layer_data(layers[i]);
+    }
+}
+
+void DrawCanvas::clear_canvas()
+{
+    auto draw_layers = find_children("*", "DrawLayer", false, false);
+    for(int i = 0; i < draw_layers.size(); i++)
+    {
+        auto draw_layer = dynamic_cast<DrawLayer*>((Object*)draw_layers[i]);
+        if(draw_layer != nullptr)
+        {
+            draw_layer->queue_free();
+        }
+    }
 }

@@ -1,7 +1,6 @@
-[gd_scene load_steps=6 format=3 uid="uid://b1fwia5qj8s06"]
+[gd_scene load_steps=5 format=3 uid="uid://b1fwia5qj8s06"]
 
 [ext_resource type="Script" path="res://draw_cam.gd" id="1_hampg"]
-[ext_resource type="Script" path="res://canvas_manager.gd" id="2_o3k06"]
 [ext_resource type="Script" path="res://duplicate_drawing.gd" id="2_uaca0"]
 [ext_resource type="PackedScene" uid="uid://cgf8cuhalbgj1" path="res://controls/Layers/layer_container.tscn" id="4_6l18o"]
 [ext_resource type="PackedScene" uid="uid://32mj3r685gx5" path="res://controls/Zoom/zoom_control.res" id="6_0dv2d"]
@@ -15,9 +14,9 @@ zoom_speed = 0.1
 
 [node name="Canvas" type="CanvasLayer" parent="."]
 follow_viewport_enabled = true
-script = ExtResource("2_o3k06")
 
 [node name="DrawCanvas" type="DrawCanvas" parent="Canvas"]
+smooth_min_distance = 0.001
 custom_minimum_size = Vector2(500, 500)
 anchors_preset = 8
 anchor_left = 0.5
@@ -171,14 +170,14 @@ size_2d_override = Vector2i(500, 500)
 size_2d_override_stretch = true
 render_target_update_mode = 4
 
-[node name="Background" type="ColorRect" parent="Controls/VBoxContainer/CanvasControls/Control/SubViewportContainer/SubViewport" node_paths=PackedStringArray("canvas_manager")]
+[node name="Background" type="ColorRect" parent="Controls/VBoxContainer/CanvasControls/Control/SubViewportContainer/SubViewport" node_paths=PackedStringArray("canvas")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("2_uaca0")
-canvas_manager = NodePath("../../../../../../../Canvas")
+canvas = NodePath("../../../../../../../Canvas/DrawCanvas")
 
 [node name="LayerContainer" parent="Controls/VBoxContainer/CanvasControls/Control" instance=ExtResource("4_6l18o")]
 layout_mode = 1
