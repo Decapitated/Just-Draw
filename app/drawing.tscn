@@ -98,8 +98,6 @@ theme_override_constants/margin_bottom = 4
 [node name="MenuBar" type="MenuBar" parent="Controls/VBoxContainer/Toolbar/MarginContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-mouse_default_cursor_shape = 2
-flat = true
 
 [node name="File" type="PopupMenu" parent="Controls/VBoxContainer/Toolbar/MarginContainer/MenuBar" node_paths=PackedStringArray("draw_canvas", "subviewport")]
 item_count = 3
