@@ -83,7 +83,7 @@ size = Vector2i(324, 180)
 ok_button_text = "Open"
 file_mode = 0
 access = 2
-filters = PackedStringArray("*.tres; Resource")
+filters = PackedStringArray("*.tres, *.res; Resource")
 use_native_dialog = true
 
 [node name="CanvasControls" type="MarginContainer" parent="Controls/VBoxContainer"]
