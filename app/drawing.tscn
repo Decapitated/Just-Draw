@@ -49,6 +49,8 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="DrawCanvas" type="DrawCanvas" parent="Canvas/CenterContainer"]
+minimum_draw_distance = 10.0
+smooth_steps = 5
 custom_minimum_size = Vector2(500, 500)
 layout_mode = 2
 

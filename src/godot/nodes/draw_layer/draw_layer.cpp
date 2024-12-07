@@ -125,8 +125,11 @@ void DrawLayer::HandleMouseMotion(const InputEventMouseMotion &event)
         if(!is_pen_inverted && pen_pressure > 0.0f)
         {
             UpdateDraw(pen_position);
-            queue_redraw();
-        } else { mode = NONE; }
+        } else {
+            mode = NONE;
+            FinishDraw();
+        }
+        queue_redraw();
     }
 }
 
@@ -157,7 +160,7 @@ void DrawLayer::StartDraw(Vector2 pen_position)
     {
         mode = DRAW;
         // Create a new pen line, and set line properties.
-        auto line = CappedPenLine(canvas->get_line_color(), canvas->get_line_width(), (canvas->get_line_width() / 2.0f) * canvas->get_cap_scale());
+        auto line = CappedPenLine(canvas->line_color, canvas->line_width, (canvas->line_width / 2.0f) * canvas->cap_scale);
         // Add the mouse position as the first point of the line.
         line.append(pen_position);
         // Add the line to the list.
@@ -177,7 +180,8 @@ void DrawLayer::UpdateDraw(Vector2 pen_position)
     if(canvas != nullptr)
     {
         auto cam = get_viewport()->get_camera_2d();
-        const float min_dist = canvas->get_min_draw_distance() * (1.0f / cam->get_zoom().x);
+        const float min_dist = canvas->min_draw_distance * (1.0f / cam->get_zoom().x);
+        // const float min_dist = canvas->get_min_draw_distance();
         CappedPenLine& line = lines.back();
         auto prev_pos = line[line.size() - 1];
         auto dist = prev_pos.distance_squared_to(pen_position);
@@ -188,7 +192,7 @@ void DrawLayer::UpdateDraw(Vector2 pen_position)
                 Vector2 prev = line[line.size() - 2], curr = prev_pos, next = pen_position;
                 float curr_dot = (curr - prev).normalized().dot((next - curr).normalized());
                 curr_dot = (1.0f - (curr_dot * 0.5f + 0.5f)) * 180.0f;
-                if(curr_dot > canvas->get_max_draw_angle())
+                if(curr_dot > canvas->max_draw_angle)
                 {
                     // Create a new pen line, and set line properties.
                     auto new_line = CappedPenLine(line.color, line.width, line.cap_radius);
@@ -201,11 +205,6 @@ void DrawLayer::UpdateDraw(Vector2 pen_position)
                 }
             }
             line.append(pen_position);
-            // If the line has 3 or more points, smooth it.
-            if(line.size() >= 3)
-            {
-                static_cast<Line&>(line) = canvas->SmoothLine(line);
-            }
         }
     }
 }
@@ -239,7 +238,7 @@ bool DrawLayer::UpdateErase(Vector2 pen_position, LineIterator line_it)
         {
             auto curr = (*line_it)[i];
             bool is_last_slice = slice_start > 0 && i == line_it->size() - 1;
-            if(is_last_slice || (curr.distance_squared_to(pen_position) < powf(canvas->get_eraser_size(), 2.0f)))
+            if(is_last_slice || (curr.distance_squared_to(pen_position) < powf(canvas->eraser_size, 2.0f)))
             {
                 sliced = true;
                 int end = is_last_slice ? i + 1 : i;
@@ -255,6 +254,61 @@ bool DrawLayer::UpdateErase(Vector2 pen_position, LineIterator line_it)
         }
     }
     return sliced || line_it->size() == 0;
+}
+
+void DrawLayer::FinishDraw()
+{
+    if(lines.size() > 0)
+    {   
+        CappedPenLine& line = lines.back();
+        // If the line has 3 or more points, smooth it.
+        if(line.size() >= 3)
+        {
+            UtilityFunctions::prints("Smoothing line. Line size:", line.size());
+            SmoothLine(static_cast<Line&>(line));
+            UtilityFunctions::prints("Smoothed line. Line size:", line.size());
+        }
+    }
+}
+
+void DrawLayer::SmoothLineStep(Line &line, float smooth_ratio, float smooth_min_distance, int smooth_start)
+{
+    // Clamp ratio, then minus one so it doesn't go past midpoint.
+    float ratio = fmaxf(0.0, fminf(1.0, smooth_ratio));
+    if (ratio > 0.5f) ratio = 1.0f - ratio;
+    auto smoothed_line = Line();
+    smoothed_line.push_back(line[0]); // Add first point to new line.
+    for (int i = 1; i < line.size() - 1; i++)
+    {
+        if (i < smooth_start)
+        {
+            smoothed_line.push_back(line[i]);
+            continue;
+        }
+        Vector2 prev = line[i - 1], curr = line[i], next = line[i + 1];
+        float dist_squared = prev.distance_squared_to(curr);
+        if(dist_squared < powf(smooth_min_distance, 2.0f))
+        {
+            smoothed_line.push_back(curr);
+            continue;
+        }
+        smoothed_line.push_back(curr.lerp(prev, ratio));
+        smoothed_line.push_back(curr.lerp(next, ratio));
+    }
+    smoothed_line.push_back(line[line.size() - 1]); // Add last point to new line.
+    line = smoothed_line;
+}
+
+void DrawLayer::SmoothLine(Line &line, int smooth_start)
+{
+    auto canvas = dynamic_cast<DrawCanvas*>(get_parent_control());
+    if(canvas != nullptr)
+    {
+        for (int i = 0; i < canvas->smooth_steps; i++)
+        {
+            SmoothLineStep(line, canvas->smooth_ratio, canvas->smooth_min_distance, smooth_start);
+        }
+    }
 }
 
 TypedArray<PackedVector2Array> DrawLayer::GetLines()

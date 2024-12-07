@@ -11,7 +11,7 @@ void DrawCanvas::_bind_methods()
 
     ClassDB::bind_method(D_METHOD("set_line_color", "p_color"), &DrawCanvas::set_line_color);
     ClassDB::bind_method(D_METHOD("get_line_color"), &DrawCanvas::get_line_color);
-    ADD_PROPERTY(PropertyInfo(Variant::COLOR, "pen_color"), "set_line_color", "get_line_color");
+    ADD_PROPERTY(PropertyInfo(Variant::COLOR, "line_color"), "set_line_color", "get_line_color");
 
 	ClassDB::bind_method(D_METHOD("set_line_width", "p_width"), &DrawCanvas::set_line_width);
     ClassDB::bind_method(D_METHOD("get_line_width"), &DrawCanvas::get_line_width);
@@ -40,10 +40,6 @@ void DrawCanvas::_bind_methods()
     ClassDB::bind_method(D_METHOD("set_smooth_ratio", "p_ratio"), &DrawCanvas::set_smooth_ratio);
     ClassDB::bind_method(D_METHOD("get_smooth_ratio"), &DrawCanvas::get_smooth_ratio);
     ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "smooth_ratio"), "set_smooth_ratio", "get_smooth_ratio");
-
-    ClassDB::bind_method(D_METHOD("set_smooth_min_distance", "p_distance"), &DrawCanvas::set_smooth_min_distance);
-    ClassDB::bind_method(D_METHOD("get_smooth_min_distance"), &DrawCanvas::get_smooth_min_distance);
-    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "smooth_min_distance"), "set_smooth_min_distance", "get_smooth_min_distance");
     
     ClassDB::bind_method(D_METHOD("create_canvas_data"), &DrawCanvas::create_canvas_data);
     ClassDB::bind_method(D_METHOD("load_canvas_data", "p_canvas_data"), &DrawCanvas::load_canvas_data);
@@ -59,44 +55,6 @@ DrawCanvas::DrawCanvas()
 }
 
 DrawCanvas::~DrawCanvas() {}
-
-Line DrawCanvas::SmoothLineStep(Line line, int smooth_start)
-{
-    // Clamp ratio, then minus one so it doesn't go past midpoint.
-    float ratio = fmaxf(0.0, fminf(1.0, smooth_ratio));
-    if (ratio > 0.5f) ratio = 1.0f - ratio;
-    auto smoothed_line = Line();
-    smoothed_line.push_back(line[0]); // Add first point to new line.
-    for (int i = 1; i < line.size() - 1; i++)
-    {
-        if (i < smooth_start)
-        {
-            smoothed_line.push_back(line[i]);
-            continue;
-        }
-        Vector2 prev = line[i - 1], curr = line[i], next = line[i + 1];
-        float dist_squared = prev.distance_squared_to(curr);
-        if(dist_squared < powf(smooth_min_distance, 2.0f))
-        {
-            smoothed_line.push_back(curr);
-            continue;
-        }
-        smoothed_line.push_back(curr.lerp(prev, ratio));
-        smoothed_line.push_back(curr.lerp(next, ratio));
-    }
-    smoothed_line.push_back(line[line.size() - 1]); // Add last point to new line.
-    return smoothed_line;
-}
-
-Line DrawCanvas::SmoothLine(Line line)
-{
-    for (int i = 0; i < smooth_steps; i++)
-    {
-        int smooth_start = line.size() - 2;
-        line = SmoothLineStep(line, smooth_start);
-    }
-    return line;
-}
 
 Ref<CanvasData> JustDraw::DrawCanvas::create_canvas_data() const
 {
