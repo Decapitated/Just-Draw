@@ -76,16 +76,11 @@ void DrawCanvas::CallOnLayers(LayerCallback callback)
 Ref<CanvasData> JustDraw::DrawCanvas::create_canvas_data()
 {
     auto layers = TypedArray<LayerData>();
-    // Get layer data from children DrawLayers.
-    auto draw_layers = find_children("*", "DrawLayer", false, false);
-    for(int i = 0; i < draw_layers.size(); i++)
+    CallOnLayers([&layers](DrawLayer* draw_layer)
     {
-        auto draw_layer = dynamic_cast<DrawLayer*>((Object*)draw_layers[i]);
-        if(draw_layer != nullptr)
-        {
-            layers.push_back(draw_layer->get_layer_data());
-        }
-    }
+        layers.push_back(draw_layer->get_layer_data());
+        return false;
+    });
 
     Ref<CanvasData> canvas_data = memnew(CanvasData);
     canvas_data->set_size(get_size());
@@ -110,15 +105,11 @@ void DrawCanvas::load_canvas_data(Ref<CanvasData> canvas_data)
 
 void DrawCanvas::clear_canvas()
 {
-    auto draw_layers = find_children("*", "DrawLayer", false, false);
-    for(int i = 0; i < draw_layers.size(); i++)
+    CallOnLayers([](DrawLayer* draw_layer)
     {
-        auto draw_layer = dynamic_cast<DrawLayer*>((Object*)draw_layers[i]);
-        if(draw_layer != nullptr)
-        {
-            draw_layer->queue_free();
-        }
-    }
+        draw_layer->queue_free();
+        return false;
+    });
 }
 
 DrawLayer* DrawCanvas::get_active_layer()
