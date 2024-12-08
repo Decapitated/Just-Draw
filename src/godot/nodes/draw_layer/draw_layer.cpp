@@ -104,8 +104,7 @@ void DrawLayer::HandleMouseMotion(const InputEventMouseMotion &event)
             if(is_pen_inverted)
             {
                 StartErase(pen_position);
-            }
-            else
+            } else
             {
                 StartDraw(pen_position);
             }
@@ -195,6 +194,7 @@ void DrawLayer::UpdateDraw(Vector2 pen_position)
                 curr_dot = (1.0f - (curr_dot * 0.5f + 0.5f)) * 180.0f;
                 if(curr_dot > canvas->max_draw_angle)
                 {
+                    FinishDraw();
                     // Create a new pen line, and set line properties.
                     auto new_line = CappedPenLine(line.color, line.width, line.cap_radius);
                     new_line.append(line[line.size() - 1]);
