@@ -6,6 +6,8 @@
 #include "godot/nodes/draw_layer/draw_layer.hpp"
 #include "godot/resources/canvas_data/canvas_data.hpp"
 
+#include <functional>
+
 using namespace std;
 using namespace godot;
 
@@ -15,18 +17,20 @@ namespace JustDraw
     {
         GDCLASS(DrawCanvas, ColorRect);
         private:
-            Color pen_color = Color();
+            friend class DrawLayer;
+
+            Color line_color = Color();
             
             float line_width = 5.0f;
             float cap_scale = 1.0f;
 
             float eraser_size = 10.0f;
-            float min_draw_distance = 10.0f;
+            float min_draw_distance = 5.0f;
             float max_draw_angle = 135.0f;
 
             int smooth_steps = 1;
             float smooth_ratio = 0.333333f;
-            float smooth_min_distance = 0.1f;
+            const float smooth_min_distance = 0.001f;
 
         protected:
             static void _bind_methods();
@@ -36,8 +40,8 @@ namespace JustDraw
 
             #pragma region Getters and Setters
 
-            Color get_line_color() { return pen_color; }
-            void set_line_color(Color p_color) { pen_color = p_color; }
+            Color get_line_color() { return line_color; }
+            void set_line_color(Color p_color) { line_color = p_color; }
 
             float get_line_width() { return line_width; }
             void set_line_width(float p_width) { line_width = p_width; }
@@ -60,19 +64,19 @@ namespace JustDraw
             float get_smooth_ratio() { return smooth_ratio; }
             void set_smooth_ratio(float p_ratio) { smooth_ratio = min(max(p_ratio, 0.0f), 1.0f); }
 
-            float get_smooth_min_distance() { return smooth_min_distance; }
-            void set_smooth_min_distance(float p_distance) { smooth_min_distance = max(p_distance, 0.0f); }
-
             #pragma endregion
 
-            Line SmoothLineStep(Line line, int smooth_start = 0);
-            Line SmoothLine(Line line);
+            using LayerCallback = function<bool(DrawLayer*)>;
+            void CallOnLayers(LayerCallback callback);
 
-            Ref<CanvasData> create_canvas_data() const;
+            Ref<CanvasData> create_canvas_data();
             void load_canvas_data(Ref<CanvasData> canvas_data);
             void clear_canvas();
 
-            DrawLayer* get_active_layer() const;
+            DrawLayer* get_active_layer();
+
+            void scale_layers(Vector2 p_scale);
+            void offset_layers(Vector2 p_offset);
     };
 }
 
