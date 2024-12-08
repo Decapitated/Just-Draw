@@ -46,6 +46,9 @@ void DrawCanvas::_bind_methods()
     ClassDB::bind_method(D_METHOD("clear_canvas"), &DrawCanvas::clear_canvas);
     ClassDB::bind_method(D_METHOD("get_active_layer"), &DrawCanvas::get_active_layer);
 
+    ClassDB::bind_method(D_METHOD("scale_layers", "p_scale"), &DrawCanvas::scale_layers);
+    ClassDB::bind_method(D_METHOD("offset_layers", "p_offset"), &DrawCanvas::offset_layers);
+
     #pragma endregion
 }
 
@@ -121,4 +124,30 @@ DrawLayer* DrawCanvas::get_active_layer() const
         }
     }
     return active_layer;
+}
+
+void DrawCanvas::scale_layers(Vector2 scale)
+{
+    auto draw_layers = find_children("*", "DrawLayer", false, false);
+    for(int i = 0; i < draw_layers.size(); i++)
+    {
+        auto draw_layer = dynamic_cast<DrawLayer*>((Object*)draw_layers[i]);
+        if(draw_layer != nullptr)
+        {
+            draw_layer->scale_lines(scale);
+        }
+    }
+}
+
+void DrawCanvas::offset_layers(Vector2 offset)
+{
+    auto draw_layers = find_children("*", "DrawLayer", false, false);
+    for(int i = 0; i < draw_layers.size(); i++)
+    {
+        auto draw_layer = dynamic_cast<DrawLayer*>((Object*)draw_layers[i]);
+        if(draw_layer != nullptr)
+        {
+            draw_layer->offset_lines(offset);
+        }
+    }
 }

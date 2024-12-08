@@ -25,6 +25,8 @@ void DrawLayer::_bind_methods()
     BIND_ENUM_CONSTANT(ERASE);
 
     ClassDB::bind_method(D_METHOD("get_pen_mode"), &DrawLayer::get_pen_mode);
+    ClassDB::bind_method(D_METHOD("scale_lines", "p_scale"), &DrawLayer::scale_lines);
+    ClassDB::bind_method(D_METHOD("offset_lines", "p_offset"), &DrawLayer::offset_lines);
 
     #pragma endregion
 }
@@ -348,4 +350,32 @@ void DrawLayer::load_layer_data(Ref<LayerData> p_layer_data)
     }
     lines = new_lines;
     queue_redraw();
+}
+
+void DrawLayer::scale_lines(Vector2 scale)
+{
+    LineIterator line_it = lines.begin();
+    int loop_count = 0;
+    while(line_it != lines.end())
+    {
+        for(int i = 0; i < line_it->size(); i++)
+        {
+            (*line_it)[i] *= scale;
+        }
+        line_it++;
+    }
+}
+
+void DrawLayer::offset_lines(Vector2 offset)
+{
+    LineIterator line_it = lines.begin();
+    int loop_count = 0;
+    while(line_it != lines.end())
+    {
+        for(int i = 0; i < line_it->size(); i++)
+        {
+            (*line_it)[i] += offset;
+        }
+        line_it++;
+    }
 }

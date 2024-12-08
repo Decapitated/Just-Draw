@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://b1fwia5qj8s06"]
+[gd_scene load_steps=10 format=3 uid="uid://b1fwia5qj8s06"]
 
 [ext_resource type="Script" path="res://scripts/draw_cam.gd" id="1_hampg"]
 [ext_resource type="Script" path="res://scripts/pen_cursor.gd" id="2_3c6d4"]
@@ -8,6 +8,7 @@
 [ext_resource type="Script" path="res://scripts/canvas_viewport.gd" id="4_ojijs"]
 [ext_resource type="Script" path="res://scripts/copy_canvas.gd" id="5_lrsg0"]
 [ext_resource type="PackedScene" uid="uid://32mj3r685gx5" path="res://controls/Zoom/zoom_control.res" id="6_0dv2d"]
+[ext_resource type="Script" path="res://canvas_size_modal.gd" id="9_n0rwm"]
 
 [node name="Control" type="Control"]
 layout_mode = 3
@@ -275,9 +276,15 @@ mouse_force_pass_scroll_events = false
 [node name="CenterContainer" type="CenterContainer" parent="Controls/Modals"]
 layout_mode = 2
 
-[node name="CanvasSize" type="PanelContainer" parent="Controls/Modals/CenterContainer"]
+[node name="CanvasSize" type="PanelContainer" parent="Controls/Modals/CenterContainer" node_paths=PackedStringArray("modal_background", "draw_canvas", "width_spinbox", "height_spinbox", "draw_options")]
 visible = false
 layout_mode = 2
+script = ExtResource("9_n0rwm")
+modal_background = NodePath("../..")
+draw_canvas = NodePath("../../../../Canvas/CenterContainer/DrawCanvas")
+width_spinbox = NodePath("MarginContainer/VBoxContainer/WidthContainer/Width")
+height_spinbox = NodePath("MarginContainer/VBoxContainer/HeightContainer/Height")
+draw_options = NodePath("MarginContainer/VBoxContainer/DrawingOptions")
 
 [node name="MarginContainer" type="MarginContainer" parent="Controls/Modals/CenterContainer/CanvasSize"]
 layout_mode = 2
@@ -435,6 +442,9 @@ size_flags_horizontal = 3
 focus_mode = 0
 text = "Apply"
 
+[connection signal="pressed" from="Controls/VBoxContainer/Toolbar/MarginContainer/HBoxContainer/Edit" to="Controls/Modals/CenterContainer/CanvasSize" method="open"]
 [connection signal="pressed" from="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer/Copy" to="Controls/VBoxContainer/CanvasControls/Control/SubViewportContainer/SubViewport/Background" method="duplicate_drawing"]
 [connection signal="pressed" from="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer/Load" to="Controls/VBoxContainer/CanvasControls/Control/SubViewportContainer/SubViewport/Background" method="load_drawing"]
 [connection signal="pressed" from="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer/Update" to="SubViewport" method="update_viewport"]
+[connection signal="pressed" from="Controls/Modals/CenterContainer/CanvasSize/MarginContainer/VBoxContainer/Actions/Cancel" to="Controls/Modals/CenterContainer/CanvasSize" method="_cancel"]
+[connection signal="pressed" from="Controls/Modals/CenterContainer/CanvasSize/MarginContainer/VBoxContainer/Actions/Apply" to="Controls/Modals/CenterContainer/CanvasSize" method="_apply"]

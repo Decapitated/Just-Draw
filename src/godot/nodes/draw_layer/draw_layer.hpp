@@ -106,6 +106,9 @@ namespace JustDraw
             
             static void SmoothLineStep(Line &line, float smooth_ratio, float smooth_min_distance, int smooth_start = 0);
             void SmoothLine(Line &line, int smooth_start = 0);
+
+            void scale_lines(Vector2 scale);
+            void offset_lines(Vector2 offset);
     };
 }
 

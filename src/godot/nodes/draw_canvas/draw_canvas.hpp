@@ -69,6 +69,9 @@ namespace JustDraw
             void clear_canvas();
 
             DrawLayer* get_active_layer() const;
+
+            void scale_layers(Vector2 scale);
+            void offset_layers(Vector2 offset);
     };
 }
 
