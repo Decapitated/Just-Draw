@@ -9,8 +9,8 @@
 [ext_resource type="Script" path="res://scripts/copy_canvas.gd" id="5_lrsg0"]
 [ext_resource type="PackedScene" uid="uid://32mj3r685gx5" path="res://controls/Zoom/zoom_control.res" id="6_0dv2d"]
 [ext_resource type="Script" path="res://scripts/edit_manager.gd" id="6_mtc8j"]
-[ext_resource type="Script" path="res://scripts/canvas_size_modal.gd" id="9_n0rwm"]
-[ext_resource type="Script" path="res://scripts/image_size_modal.gd" id="11_yuv7t"]
+[ext_resource type="PackedScene" uid="uid://b11vt5ijj8o6e" path="res://controls/modals/CanvasSize/canvas_size.res" id="10_djrmi"]
+[ext_resource type="PackedScene" uid="uid://b7oses0r5deqt" path="res://controls/modals/ImageSize/image_size.res" id="11_pv3qw"]
 
 [node name="Control" type="Control"]
 layout_mode = 3
@@ -138,7 +138,7 @@ popup/item_1/text = "Image Size"
 popup/item_1/id = 1
 script = ExtResource("6_mtc8j")
 canvas_size_modal = NodePath("../../../../../Modals/CenterContainer/CanvasSize")
-image_size_modal = NodePath("../../../../../Modals/CenterContainer/ExportSize")
+image_size_modal = NodePath("../../../../../Modals/CenterContainer/ImageSize")
 
 [node name="CanvasControls" type="MarginContainer" parent="Controls/VBoxContainer"]
 layout_mode = 2
@@ -284,181 +284,18 @@ mouse_force_pass_scroll_events = false
 [node name="CenterContainer" type="CenterContainer" parent="Controls/Modals"]
 layout_mode = 2
 
-[node name="CanvasSize" type="PanelContainer" parent="Controls/Modals/CenterContainer" node_paths=PackedStringArray("modal_background", "draw_canvas", "width_spinbox", "height_spinbox", "draw_options")]
+[node name="CanvasSize" parent="Controls/Modals/CenterContainer" node_paths=PackedStringArray("draw_canvas", "modal_background") instance=ExtResource("10_djrmi")]
 visible = false
 layout_mode = 2
-script = ExtResource("9_n0rwm")
-modal_background = NodePath("../..")
 draw_canvas = NodePath("../../../../Canvas/CenterContainer/DrawCanvas")
-width_spinbox = NodePath("MarginContainer/VBoxContainer/WidthContainer/Width")
-height_spinbox = NodePath("MarginContainer/VBoxContainer/HeightContainer/Height")
-draw_options = NodePath("MarginContainer/VBoxContainer/DrawingOptions")
+modal_background = NodePath("../..")
 
-[node name="MarginContainer" type="MarginContainer" parent="Controls/Modals/CenterContainer/CanvasSize"]
-layout_mode = 2
-theme_override_constants/margin_left = 8
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 8
-theme_override_constants/margin_bottom = 8
-
-[node name="VBoxContainer" type="VBoxContainer" parent="Controls/Modals/CenterContainer/CanvasSize/MarginContainer"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="Controls/Modals/CenterContainer/CanvasSize/MarginContainer/VBoxContainer"]
-layout_mode = 2
-text = "Canvas Size"
-horizontal_alignment = 1
-
-[node name="WidthContainer" type="HBoxContainer" parent="Controls/Modals/CenterContainer/CanvasSize/MarginContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="Controls/Modals/CenterContainer/CanvasSize/MarginContainer/VBoxContainer/WidthContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "Width:"
-
-[node name="Width" type="SpinBox" parent="Controls/Modals/CenterContainer/CanvasSize/MarginContainer/VBoxContainer/WidthContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-min_value = 1.0
-max_value = 1000.0
-value = 500.0
-allow_greater = true
-alignment = 1
-update_on_text_changed = true
-select_all_on_focus = true
-
-[node name="HeightContainer" type="HBoxContainer" parent="Controls/Modals/CenterContainer/CanvasSize/MarginContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="Controls/Modals/CenterContainer/CanvasSize/MarginContainer/VBoxContainer/HeightContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "Height:
-"
-
-[node name="Height" type="SpinBox" parent="Controls/Modals/CenterContainer/CanvasSize/MarginContainer/VBoxContainer/HeightContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-min_value = 1.0
-max_value = 1000.0
-value = 500.0
-allow_greater = true
-alignment = 1
-update_on_text_changed = true
-select_all_on_focus = true
-
-[node name="DrawingOptions" type="OptionButton" parent="Controls/Modals/CenterContainer/CanvasSize/MarginContainer/VBoxContainer"]
-layout_mode = 2
-selected = 0
-item_count = 3
-popup/item_0/text = "None"
-popup/item_1/text = "Keep Centered"
-popup/item_1/id = 1
-popup/item_2/text = "Scale"
-popup/item_2/id = 2
-
-[node name="Actions" type="HBoxContainer" parent="Controls/Modals/CenterContainer/CanvasSize/MarginContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="Cancel" type="Button" parent="Controls/Modals/CenterContainer/CanvasSize/MarginContainer/VBoxContainer/Actions"]
-layout_mode = 2
-size_flags_horizontal = 3
-focus_mode = 0
-text = "Cancel
-"
-
-[node name="Apply" type="Button" parent="Controls/Modals/CenterContainer/CanvasSize/MarginContainer/VBoxContainer/Actions"]
-layout_mode = 2
-size_flags_horizontal = 3
-focus_mode = 0
-text = "Apply"
-
-[node name="ExportSize" type="PanelContainer" parent="Controls/Modals/CenterContainer" node_paths=PackedStringArray("modal_background", "export_viewport", "width_spinbox", "height_spinbox")]
+[node name="ImageSize" parent="Controls/Modals/CenterContainer" node_paths=PackedStringArray("export_viewport", "modal_background") instance=ExtResource("11_pv3qw")]
 visible = false
 layout_mode = 2
-script = ExtResource("11_yuv7t")
-modal_background = NodePath("../..")
 export_viewport = NodePath("../../../../SubViewport")
-width_spinbox = NodePath("MarginContainer/VBoxContainer/WidthContainer/Width")
-height_spinbox = NodePath("MarginContainer/VBoxContainer/HeightContainer/Height")
-
-[node name="MarginContainer" type="MarginContainer" parent="Controls/Modals/CenterContainer/ExportSize"]
-layout_mode = 2
-theme_override_constants/margin_left = 8
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 8
-theme_override_constants/margin_bottom = 8
-
-[node name="VBoxContainer" type="VBoxContainer" parent="Controls/Modals/CenterContainer/ExportSize/MarginContainer"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="Controls/Modals/CenterContainer/ExportSize/MarginContainer/VBoxContainer"]
-layout_mode = 2
-text = "Export Size"
-horizontal_alignment = 1
-
-[node name="WidthContainer" type="HBoxContainer" parent="Controls/Modals/CenterContainer/ExportSize/MarginContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="Controls/Modals/CenterContainer/ExportSize/MarginContainer/VBoxContainer/WidthContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "Width:"
-
-[node name="Width" type="SpinBox" parent="Controls/Modals/CenterContainer/ExportSize/MarginContainer/VBoxContainer/WidthContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-min_value = 1.0
-max_value = 1000.0
-value = 500.0
-allow_greater = true
-alignment = 1
-update_on_text_changed = true
-suffix = "px"
-select_all_on_focus = true
-
-[node name="HeightContainer" type="HBoxContainer" parent="Controls/Modals/CenterContainer/ExportSize/MarginContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="Controls/Modals/CenterContainer/ExportSize/MarginContainer/VBoxContainer/HeightContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "Height:
-"
-
-[node name="Height" type="SpinBox" parent="Controls/Modals/CenterContainer/ExportSize/MarginContainer/VBoxContainer/HeightContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-min_value = 1.0
-max_value = 1000.0
-value = 500.0
-allow_greater = true
-alignment = 1
-update_on_text_changed = true
-suffix = "px"
-select_all_on_focus = true
-
-[node name="Actions" type="HBoxContainer" parent="Controls/Modals/CenterContainer/ExportSize/MarginContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="Cancel" type="Button" parent="Controls/Modals/CenterContainer/ExportSize/MarginContainer/VBoxContainer/Actions"]
-layout_mode = 2
-size_flags_horizontal = 3
-focus_mode = 0
-text = "Cancel
-"
-
-[node name="Apply" type="Button" parent="Controls/Modals/CenterContainer/ExportSize/MarginContainer/VBoxContainer/Actions"]
-layout_mode = 2
-size_flags_horizontal = 3
-focus_mode = 0
-text = "Apply"
+modal_background = NodePath("../..")
 
 [connection signal="pressed" from="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer/Copy" to="Controls/VBoxContainer/CanvasControls/Control/SubViewportContainer/SubViewport/Background" method="duplicate_drawing"]
 [connection signal="pressed" from="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer/Load" to="Controls/VBoxContainer/CanvasControls/Control/SubViewportContainer/SubViewport/Background" method="load_drawing"]
 [connection signal="pressed" from="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer/Update" to="SubViewport" method="update_viewport"]
-[connection signal="pressed" from="Controls/Modals/CenterContainer/CanvasSize/MarginContainer/VBoxContainer/Actions/Cancel" to="Controls/Modals/CenterContainer/CanvasSize" method="_cancel"]
-[connection signal="pressed" from="Controls/Modals/CenterContainer/CanvasSize/MarginContainer/VBoxContainer/Actions/Apply" to="Controls/Modals/CenterContainer/CanvasSize" method="_apply"]
-[connection signal="pressed" from="Controls/Modals/CenterContainer/ExportSize/MarginContainer/VBoxContainer/Actions/Cancel" to="Controls/Modals/CenterContainer/ExportSize" method="_cancel"]
-[connection signal="pressed" from="Controls/Modals/CenterContainer/ExportSize/MarginContainer/VBoxContainer/Actions/Apply" to="Controls/Modals/CenterContainer/ExportSize" method="_apply"]

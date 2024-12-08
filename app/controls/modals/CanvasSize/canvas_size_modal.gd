@@ -1,21 +1,12 @@
-class_name CanvasSize extends Control
-
-@export var modal_background: Control
+class_name CanvasSize extends SizeModal
 
 @export var draw_canvas: DrawCanvas
-
-@export var width_spinbox: SpinBox
-@export var height_spinbox: SpinBox
-
 @export var draw_options: OptionButton
 
 enum DrawOptions { NONE, CENTER, SCALE }
 
-func _cancel():
-    close()
-
 func _apply():
-    var new_size = Vector2(width_spinbox.value, height_spinbox.value)
+    var new_size = get_input_size()
     if new_size != draw_canvas.size:
         match draw_options.selected:
             DrawOptions.CENTER:
@@ -29,17 +20,6 @@ func _apply():
         (draw_canvas as Control).custom_minimum_size = new_size
     close()
 
-func close():
-    modal_background.hide()
-    hide()
-
-func open():
-    reset()
-    modal_background.show()
-    show()
-
 func reset():
-    var current_size = draw_canvas.size
-    width_spinbox.value = current_size.x
-    height_spinbox.value = current_size.y
+    set_input_size(draw_canvas.size)
     draw_options.select(0)
