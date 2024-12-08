@@ -355,7 +355,6 @@ void DrawLayer::load_layer_data(Ref<LayerData> p_layer_data)
 void DrawLayer::scale_lines(Vector2 scale)
 {
     LineIterator line_it = lines.begin();
-    int loop_count = 0;
     while(line_it != lines.end())
     {
         for(int i = 0; i < line_it->size(); i++)
@@ -369,7 +368,6 @@ void DrawLayer::scale_lines(Vector2 scale)
 void DrawLayer::offset_lines(Vector2 offset)
 {
     LineIterator line_it = lines.begin();
-    int loop_count = 0;
     while(line_it != lines.end())
     {
         for(int i = 0; i < line_it->size(); i++)

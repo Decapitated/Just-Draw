@@ -59,7 +59,21 @@ DrawCanvas::DrawCanvas()
 
 DrawCanvas::~DrawCanvas() {}
 
-Ref<CanvasData> JustDraw::DrawCanvas::create_canvas_data() const
+void DrawCanvas::CallOnLayers(LayerCallback callback)
+{
+    auto draw_layers = find_children("*", "DrawLayer", false, false);
+    for(int i = 0; i < draw_layers.size(); i++)
+    {
+        auto draw_layer = dynamic_cast<DrawLayer*>((Object*)draw_layers[i]);
+        if(draw_layer != nullptr)
+        {
+            bool should_break = callback(draw_layer);
+            if(should_break) break;
+        }
+    }
+}
+
+Ref<CanvasData> JustDraw::DrawCanvas::create_canvas_data()
 {
     auto layers = TypedArray<LayerData>();
     // Get layer data from children DrawLayers.
@@ -107,47 +121,35 @@ void DrawCanvas::clear_canvas()
     }
 }
 
-DrawLayer* DrawCanvas::get_active_layer() const
+DrawLayer* DrawCanvas::get_active_layer()
 {
     DrawLayer* active_layer = nullptr;
-    auto draw_layers = find_children("*", "DrawLayer", false, false);
-    for(int i = 0; i < draw_layers.size(); i++)
+    CallOnLayers([&active_layer](DrawLayer* draw_layer)
     {
-        auto draw_layer = dynamic_cast<DrawLayer*>((Object*)draw_layers[i]);
-        if(draw_layer != nullptr)
+        if(draw_layer->get_active())
         {
-            if(draw_layer->get_active())
-            {
-                active_layer = draw_layer;
-                break;
-            }
+            active_layer = draw_layer;
+            return true;
         }
-    }
+        return false;
+    });
     return active_layer;
 }
 
-void DrawCanvas::scale_layers(Vector2 scale)
+void DrawCanvas::scale_layers(Vector2 p_scale)
 {
-    auto draw_layers = find_children("*", "DrawLayer", false, false);
-    for(int i = 0; i < draw_layers.size(); i++)
+    CallOnLayers([p_scale](DrawLayer* draw_layer)
     {
-        auto draw_layer = dynamic_cast<DrawLayer*>((Object*)draw_layers[i]);
-        if(draw_layer != nullptr)
-        {
-            draw_layer->scale_lines(scale);
-        }
-    }
+        draw_layer->scale_lines(p_scale);
+        return false;
+    });
 }
 
-void DrawCanvas::offset_layers(Vector2 offset)
+void DrawCanvas::offset_layers(Vector2 p_offset)
 {
-    auto draw_layers = find_children("*", "DrawLayer", false, false);
-    for(int i = 0; i < draw_layers.size(); i++)
+    CallOnLayers([p_offset](DrawLayer* draw_layer)
     {
-        auto draw_layer = dynamic_cast<DrawLayer*>((Object*)draw_layers[i]);
-        if(draw_layer != nullptr)
-        {
-            draw_layer->offset_lines(offset);
-        }
-    }
+        draw_layer->offset_lines(p_offset);
+        return false;
+    });
 }

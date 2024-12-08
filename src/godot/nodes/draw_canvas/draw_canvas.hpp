@@ -6,6 +6,8 @@
 #include "godot/nodes/draw_layer/draw_layer.hpp"
 #include "godot/resources/canvas_data/canvas_data.hpp"
 
+#include <functional>
+
 using namespace std;
 using namespace godot;
 
@@ -64,14 +66,17 @@ namespace JustDraw
 
             #pragma endregion
 
-            Ref<CanvasData> create_canvas_data() const;
+            using LayerCallback = function<bool(DrawLayer*)>;
+            void CallOnLayers(LayerCallback callback);
+
+            Ref<CanvasData> create_canvas_data();
             void load_canvas_data(Ref<CanvasData> canvas_data);
             void clear_canvas();
 
-            DrawLayer* get_active_layer() const;
+            DrawLayer* get_active_layer();
 
-            void scale_layers(Vector2 scale);
-            void offset_layers(Vector2 offset);
+            void scale_layers(Vector2 p_scale);
+            void offset_layers(Vector2 p_offset);
     };
 }
 
