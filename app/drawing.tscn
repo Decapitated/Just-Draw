@@ -89,22 +89,24 @@ theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 4
 
-[node name="MenuBar" type="MenuBar" parent="Controls/VBoxContainer/Toolbar/MarginContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="Controls/VBoxContainer/Toolbar/MarginContainer"]
 layout_mode = 2
-size_flags_horizontal = 3
 
-[node name="File" type="PopupMenu" parent="Controls/VBoxContainer/Toolbar/MarginContainer/MenuBar" node_paths=PackedStringArray("draw_canvas", "subviewport")]
+[node name="File" type="MenuButton" parent="Controls/VBoxContainer/Toolbar/MarginContainer/HBoxContainer" node_paths=PackedStringArray("draw_canvas", "subviewport")]
+layout_mode = 2
+text = "File
+"
 item_count = 3
-item_0/text = "Open..."
-item_1/text = "Save as..."
-item_1/id = 1
-item_2/text = "Export as..."
-item_2/id = 2
+popup/item_0/text = "Open..."
+popup/item_1/text = "Save as..."
+popup/item_1/id = 1
+popup/item_2/text = "Export as..."
+popup/item_2/id = 2
 script = ExtResource("2_k3gg7")
 draw_canvas = NodePath("../../../../../../Canvas/CenterContainer/DrawCanvas")
 subviewport = NodePath("../../../../../../SubViewport")
 
-[node name="OpenSaveFileDialog" type="FileDialog" parent="Controls/VBoxContainer/Toolbar/MarginContainer/MenuBar/File"]
+[node name="OpenSaveFileDialog" type="FileDialog" parent="Controls/VBoxContainer/Toolbar/MarginContainer/HBoxContainer/File"]
 title = "Open a File"
 size = Vector2i(324, 180)
 ok_button_text = "Open"
@@ -113,7 +115,7 @@ access = 2
 filters = PackedStringArray("*.res; Resource")
 use_native_dialog = true
 
-[node name="ExportFileDialog" type="FileDialog" parent="Controls/VBoxContainer/Toolbar/MarginContainer/MenuBar/File"]
+[node name="ExportFileDialog" type="FileDialog" parent="Controls/VBoxContainer/Toolbar/MarginContainer/HBoxContainer/File"]
 auto_translate_mode = 1
 size = Vector2i(324, 180)
 ok_button_text = "Save"
@@ -252,17 +254,6 @@ offset_bottom = 0.0
 grow_horizontal = 0
 grow_vertical = 0
 camera = NodePath("../../../../../Camera2D")
-
-[node name="PanelContainer" type="PanelContainer" parent="Controls"]
-visible = false
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="CenterContainer" type="CenterContainer" parent="Controls/PanelContainer"]
-layout_mode = 2
 
 [connection signal="pressed" from="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer/Copy" to="Controls/VBoxContainer/CanvasControls/Control/SubViewportContainer/SubViewport/Background" method="duplicate_drawing"]
 [connection signal="pressed" from="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer/Load" to="Controls/VBoxContainer/CanvasControls/Control/SubViewportContainer/SubViewport/Background" method="load_drawing"]
