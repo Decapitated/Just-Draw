@@ -262,17 +262,8 @@ grow_horizontal = 0
 grow_vertical = 0
 camera = NodePath("../../../../../Camera2D")
 
-[node name="Modals" type="Control" parent="Controls"]
+[node name="Modals" type="PanelContainer" parent="Controls"]
 visible = false
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="PanelContainer" type="PanelContainer" parent="Controls/Modals"]
-layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -280,36 +271,37 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_force_pass_scroll_events = false
 
-[node name="CenterContainer" type="CenterContainer" parent="Controls/Modals/PanelContainer"]
+[node name="CenterContainer" type="CenterContainer" parent="Controls/Modals"]
 layout_mode = 2
 
-[node name="CanvasSize" type="PanelContainer" parent="Controls/Modals/PanelContainer/CenterContainer"]
+[node name="CanvasSize" type="PanelContainer" parent="Controls/Modals/CenterContainer"]
+visible = false
 layout_mode = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="Controls/Modals/PanelContainer/CenterContainer/CanvasSize"]
+[node name="MarginContainer" type="MarginContainer" parent="Controls/Modals/CenterContainer/CanvasSize"]
 layout_mode = 2
 theme_override_constants/margin_left = 8
 theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 8
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Controls/Modals/PanelContainer/CenterContainer/CanvasSize/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Controls/Modals/CenterContainer/CanvasSize/MarginContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Controls/Modals/PanelContainer/CenterContainer/CanvasSize/MarginContainer/VBoxContainer"]
+[node name="Label" type="Label" parent="Controls/Modals/CenterContainer/CanvasSize/MarginContainer/VBoxContainer"]
 layout_mode = 2
 text = "Canvas Size"
 horizontal_alignment = 1
 
-[node name="WidthContainer" type="HBoxContainer" parent="Controls/Modals/PanelContainer/CenterContainer/CanvasSize/MarginContainer/VBoxContainer"]
+[node name="WidthContainer" type="HBoxContainer" parent="Controls/Modals/CenterContainer/CanvasSize/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Controls/Modals/PanelContainer/CenterContainer/CanvasSize/MarginContainer/VBoxContainer/WidthContainer"]
+[node name="Label" type="Label" parent="Controls/Modals/CenterContainer/CanvasSize/MarginContainer/VBoxContainer/WidthContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Width:"
 
-[node name="Width" type="SpinBox" parent="Controls/Modals/PanelContainer/CenterContainer/CanvasSize/MarginContainer/VBoxContainer/WidthContainer"]
+[node name="Width" type="SpinBox" parent="Controls/Modals/CenterContainer/CanvasSize/MarginContainer/VBoxContainer/WidthContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 min_value = 1.0
@@ -320,16 +312,16 @@ alignment = 1
 update_on_text_changed = true
 select_all_on_focus = true
 
-[node name="HeightContainer" type="HBoxContainer" parent="Controls/Modals/PanelContainer/CenterContainer/CanvasSize/MarginContainer/VBoxContainer"]
+[node name="HeightContainer" type="HBoxContainer" parent="Controls/Modals/CenterContainer/CanvasSize/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Controls/Modals/PanelContainer/CenterContainer/CanvasSize/MarginContainer/VBoxContainer/HeightContainer"]
+[node name="Label" type="Label" parent="Controls/Modals/CenterContainer/CanvasSize/MarginContainer/VBoxContainer/HeightContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Height:
 "
 
-[node name="Height" type="SpinBox" parent="Controls/Modals/PanelContainer/CenterContainer/CanvasSize/MarginContainer/VBoxContainer/HeightContainer"]
+[node name="Height" type="SpinBox" parent="Controls/Modals/CenterContainer/CanvasSize/MarginContainer/VBoxContainer/HeightContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 min_value = 1.0
@@ -340,7 +332,7 @@ alignment = 1
 update_on_text_changed = true
 select_all_on_focus = true
 
-[node name="DrawingOptions" type="OptionButton" parent="Controls/Modals/PanelContainer/CenterContainer/CanvasSize/MarginContainer/VBoxContainer"]
+[node name="DrawingOptions" type="OptionButton" parent="Controls/Modals/CenterContainer/CanvasSize/MarginContainer/VBoxContainer"]
 layout_mode = 2
 selected = 0
 item_count = 3
@@ -350,50 +342,50 @@ popup/item_1/id = 1
 popup/item_2/text = "Scale"
 popup/item_2/id = 2
 
-[node name="Actions" type="HBoxContainer" parent="Controls/Modals/PanelContainer/CenterContainer/CanvasSize/MarginContainer/VBoxContainer"]
+[node name="Actions" type="HBoxContainer" parent="Controls/Modals/CenterContainer/CanvasSize/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Cancel" type="Button" parent="Controls/Modals/PanelContainer/CenterContainer/CanvasSize/MarginContainer/VBoxContainer/Actions"]
+[node name="Cancel" type="Button" parent="Controls/Modals/CenterContainer/CanvasSize/MarginContainer/VBoxContainer/Actions"]
 layout_mode = 2
 size_flags_horizontal = 3
 focus_mode = 0
 text = "Cancel
 "
 
-[node name="Apply" type="Button" parent="Controls/Modals/PanelContainer/CenterContainer/CanvasSize/MarginContainer/VBoxContainer/Actions"]
+[node name="Apply" type="Button" parent="Controls/Modals/CenterContainer/CanvasSize/MarginContainer/VBoxContainer/Actions"]
 layout_mode = 2
 size_flags_horizontal = 3
 focus_mode = 0
 text = "Apply"
 
-[node name="ExportSize" type="PanelContainer" parent="Controls/Modals/PanelContainer/CenterContainer"]
+[node name="ExportSize" type="PanelContainer" parent="Controls/Modals/CenterContainer"]
 visible = false
 layout_mode = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="Controls/Modals/PanelContainer/CenterContainer/ExportSize"]
+[node name="MarginContainer" type="MarginContainer" parent="Controls/Modals/CenterContainer/ExportSize"]
 layout_mode = 2
 theme_override_constants/margin_left = 8
 theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 8
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Controls/Modals/PanelContainer/CenterContainer/ExportSize/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Controls/Modals/CenterContainer/ExportSize/MarginContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Controls/Modals/PanelContainer/CenterContainer/ExportSize/MarginContainer/VBoxContainer"]
+[node name="Label" type="Label" parent="Controls/Modals/CenterContainer/ExportSize/MarginContainer/VBoxContainer"]
 layout_mode = 2
 text = "Export Size"
 horizontal_alignment = 1
 
-[node name="WidthContainer" type="HBoxContainer" parent="Controls/Modals/PanelContainer/CenterContainer/ExportSize/MarginContainer/VBoxContainer"]
+[node name="WidthContainer" type="HBoxContainer" parent="Controls/Modals/CenterContainer/ExportSize/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Controls/Modals/PanelContainer/CenterContainer/ExportSize/MarginContainer/VBoxContainer/WidthContainer"]
+[node name="Label" type="Label" parent="Controls/Modals/CenterContainer/ExportSize/MarginContainer/VBoxContainer/WidthContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Width:"
 
-[node name="Width" type="SpinBox" parent="Controls/Modals/PanelContainer/CenterContainer/ExportSize/MarginContainer/VBoxContainer/WidthContainer"]
+[node name="Width" type="SpinBox" parent="Controls/Modals/CenterContainer/ExportSize/MarginContainer/VBoxContainer/WidthContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 min_value = 1.0
@@ -402,18 +394,19 @@ value = 500.0
 allow_greater = true
 alignment = 1
 update_on_text_changed = true
+suffix = "px"
 select_all_on_focus = true
 
-[node name="HeightContainer" type="HBoxContainer" parent="Controls/Modals/PanelContainer/CenterContainer/ExportSize/MarginContainer/VBoxContainer"]
+[node name="HeightContainer" type="HBoxContainer" parent="Controls/Modals/CenterContainer/ExportSize/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Controls/Modals/PanelContainer/CenterContainer/ExportSize/MarginContainer/VBoxContainer/HeightContainer"]
+[node name="Label" type="Label" parent="Controls/Modals/CenterContainer/ExportSize/MarginContainer/VBoxContainer/HeightContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Height:
 "
 
-[node name="Height" type="SpinBox" parent="Controls/Modals/PanelContainer/CenterContainer/ExportSize/MarginContainer/VBoxContainer/HeightContainer"]
+[node name="Height" type="SpinBox" parent="Controls/Modals/CenterContainer/ExportSize/MarginContainer/VBoxContainer/HeightContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 min_value = 1.0
@@ -422,19 +415,20 @@ value = 500.0
 allow_greater = true
 alignment = 1
 update_on_text_changed = true
+suffix = "px"
 select_all_on_focus = true
 
-[node name="Actions" type="HBoxContainer" parent="Controls/Modals/PanelContainer/CenterContainer/ExportSize/MarginContainer/VBoxContainer"]
+[node name="Actions" type="HBoxContainer" parent="Controls/Modals/CenterContainer/ExportSize/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Cancel" type="Button" parent="Controls/Modals/PanelContainer/CenterContainer/ExportSize/MarginContainer/VBoxContainer/Actions"]
+[node name="Cancel" type="Button" parent="Controls/Modals/CenterContainer/ExportSize/MarginContainer/VBoxContainer/Actions"]
 layout_mode = 2
 size_flags_horizontal = 3
 focus_mode = 0
 text = "Cancel
 "
 
-[node name="Apply" type="Button" parent="Controls/Modals/PanelContainer/CenterContainer/ExportSize/MarginContainer/VBoxContainer/Actions"]
+[node name="Apply" type="Button" parent="Controls/Modals/CenterContainer/ExportSize/MarginContainer/VBoxContainer/Actions"]
 layout_mode = 2
 size_flags_horizontal = 3
 focus_mode = 0
