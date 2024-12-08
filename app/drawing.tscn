@@ -96,6 +96,7 @@ layout_mode = 2
 layout_mode = 2
 text = "File
 "
+flat = false
 item_count = 3
 popup/item_0/text = "Open..."
 popup/item_1/text = "Save as..."
@@ -122,6 +123,12 @@ ok_button_text = "Save"
 access = 2
 filters = PackedStringArray("*.png; PNG", "*.jpg, *.jpeg; JPEG", "*.webp; WebP")
 use_native_dialog = true
+
+[node name="Edit" type="Button" parent="Controls/VBoxContainer/Toolbar/MarginContainer/HBoxContainer"]
+layout_mode = 2
+focus_mode = 0
+text = "Edit
+"
 
 [node name="CanvasControls" type="MarginContainer" parent="Controls/VBoxContainer"]
 layout_mode = 2
@@ -254,6 +261,184 @@ offset_bottom = 0.0
 grow_horizontal = 0
 grow_vertical = 0
 camera = NodePath("../../../../../Camera2D")
+
+[node name="Modals" type="Control" parent="Controls"]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="Controls/Modals"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_force_pass_scroll_events = false
+
+[node name="CenterContainer" type="CenterContainer" parent="Controls/Modals/PanelContainer"]
+layout_mode = 2
+
+[node name="CanvasSize" type="PanelContainer" parent="Controls/Modals/PanelContainer/CenterContainer"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Controls/Modals/PanelContainer/CenterContainer/CanvasSize"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Controls/Modals/PanelContainer/CenterContainer/CanvasSize/MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Controls/Modals/PanelContainer/CenterContainer/CanvasSize/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Canvas Size"
+horizontal_alignment = 1
+
+[node name="WidthContainer" type="HBoxContainer" parent="Controls/Modals/PanelContainer/CenterContainer/CanvasSize/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Controls/Modals/PanelContainer/CenterContainer/CanvasSize/MarginContainer/VBoxContainer/WidthContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Width:"
+
+[node name="Width" type="SpinBox" parent="Controls/Modals/PanelContainer/CenterContainer/CanvasSize/MarginContainer/VBoxContainer/WidthContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 1.0
+max_value = 1000.0
+value = 500.0
+allow_greater = true
+alignment = 1
+update_on_text_changed = true
+select_all_on_focus = true
+
+[node name="HeightContainer" type="HBoxContainer" parent="Controls/Modals/PanelContainer/CenterContainer/CanvasSize/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Controls/Modals/PanelContainer/CenterContainer/CanvasSize/MarginContainer/VBoxContainer/HeightContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Height:
+"
+
+[node name="Height" type="SpinBox" parent="Controls/Modals/PanelContainer/CenterContainer/CanvasSize/MarginContainer/VBoxContainer/HeightContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 1.0
+max_value = 1000.0
+value = 500.0
+allow_greater = true
+alignment = 1
+update_on_text_changed = true
+select_all_on_focus = true
+
+[node name="DrawingOptions" type="OptionButton" parent="Controls/Modals/PanelContainer/CenterContainer/CanvasSize/MarginContainer/VBoxContainer"]
+layout_mode = 2
+selected = 0
+item_count = 3
+popup/item_0/text = "None"
+popup/item_1/text = "Keep Centered"
+popup/item_1/id = 1
+popup/item_2/text = "Scale"
+popup/item_2/id = 2
+
+[node name="Actions" type="HBoxContainer" parent="Controls/Modals/PanelContainer/CenterContainer/CanvasSize/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Cancel" type="Button" parent="Controls/Modals/PanelContainer/CenterContainer/CanvasSize/MarginContainer/VBoxContainer/Actions"]
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 0
+text = "Cancel
+"
+
+[node name="Apply" type="Button" parent="Controls/Modals/PanelContainer/CenterContainer/CanvasSize/MarginContainer/VBoxContainer/Actions"]
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 0
+text = "Apply"
+
+[node name="ExportSize" type="PanelContainer" parent="Controls/Modals/PanelContainer/CenterContainer"]
+visible = false
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Controls/Modals/PanelContainer/CenterContainer/ExportSize"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Controls/Modals/PanelContainer/CenterContainer/ExportSize/MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Controls/Modals/PanelContainer/CenterContainer/ExportSize/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Export Size"
+horizontal_alignment = 1
+
+[node name="WidthContainer" type="HBoxContainer" parent="Controls/Modals/PanelContainer/CenterContainer/ExportSize/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Controls/Modals/PanelContainer/CenterContainer/ExportSize/MarginContainer/VBoxContainer/WidthContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Width:"
+
+[node name="Width" type="SpinBox" parent="Controls/Modals/PanelContainer/CenterContainer/ExportSize/MarginContainer/VBoxContainer/WidthContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 1.0
+max_value = 1000.0
+value = 500.0
+allow_greater = true
+alignment = 1
+update_on_text_changed = true
+select_all_on_focus = true
+
+[node name="HeightContainer" type="HBoxContainer" parent="Controls/Modals/PanelContainer/CenterContainer/ExportSize/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Controls/Modals/PanelContainer/CenterContainer/ExportSize/MarginContainer/VBoxContainer/HeightContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Height:
+"
+
+[node name="Height" type="SpinBox" parent="Controls/Modals/PanelContainer/CenterContainer/ExportSize/MarginContainer/VBoxContainer/HeightContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 1.0
+max_value = 1000.0
+value = 500.0
+allow_greater = true
+alignment = 1
+update_on_text_changed = true
+select_all_on_focus = true
+
+[node name="Actions" type="HBoxContainer" parent="Controls/Modals/PanelContainer/CenterContainer/ExportSize/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Cancel" type="Button" parent="Controls/Modals/PanelContainer/CenterContainer/ExportSize/MarginContainer/VBoxContainer/Actions"]
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 0
+text = "Cancel
+"
+
+[node name="Apply" type="Button" parent="Controls/Modals/PanelContainer/CenterContainer/ExportSize/MarginContainer/VBoxContainer/Actions"]
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 0
+text = "Apply"
 
 [connection signal="pressed" from="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer/Copy" to="Controls/VBoxContainer/CanvasControls/Control/SubViewportContainer/SubViewport/Background" method="duplicate_drawing"]
 [connection signal="pressed" from="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer/Load" to="Controls/VBoxContainer/CanvasControls/Control/SubViewportContainer/SubViewport/Background" method="load_drawing"]
