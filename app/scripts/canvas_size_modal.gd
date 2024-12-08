@@ -1,4 +1,4 @@
-extends Control
+class_name CanvasSize extends Control
 
 @export var modal_background: Control
 
