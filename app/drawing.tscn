@@ -18,6 +18,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="SubViewport" type="SubViewport" parent="." node_paths=PackedStringArray("canvas")]
+msaa_2d = 3
 size = Vector2i(500, 500)
 size_2d_override = Vector2i(500, 500)
 size_2d_override_stretch = true
