@@ -187,6 +187,7 @@ void DrawLayer::UpdateDraw(Vector2 pen_position)
         auto dist = prev_pos.distance_squared_to(pen_position);
         if(dist >= powf(min_dist, 2.0))
         {
+            // Clamp the angle between the line and the pen.
             if(line.size() >= 2)
             {
                 Vector2 prev = line[line.size() - 2], curr = prev_pos, next = pen_position;
@@ -264,9 +265,7 @@ void DrawLayer::FinishDraw()
         // If the line has 3 or more points, smooth it.
         if(line.size() >= 3)
         {
-            UtilityFunctions::prints("Smoothing line. Line size:", line.size());
             SmoothLine(static_cast<Line&>(line));
-            UtilityFunctions::prints("Smoothed line. Line size:", line.size());
         }
     }
 }
