@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://cgf8cuhalbgj1"]
 
-[ext_resource type="PackedScene" uid="uid://dnjllqtckn1n5" path="res://controls/Layers/layer.res" id="1_jbc1y"]
+[ext_resource type="PackedScene" uid="uid://dnjllqtckn1n5" path="res://controls/Layers/Layer/layer.res" id="1_jbc1y"]
 [ext_resource type="FontFile" uid="uid://bh3o75v57v5c4" path="res://MaterialSymbolsRounded-VariableFont_FILL,GRAD,opsz,wght.ttf" id="2_xybhc"]
 
 [node name="LayerContainer" type="PanelContainer"]
