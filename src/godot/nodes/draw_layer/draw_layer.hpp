@@ -112,6 +112,4 @@ namespace JustDraw
     };
 }
 
-VARIANT_ENUM_CAST(JustDraw::DrawLayer::PenMode);
-
 #endif

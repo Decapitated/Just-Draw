@@ -11,45 +11,60 @@ void DrawCanvas::_bind_methods()
 
     ClassDB::bind_method(D_METHOD("set_line_color", "p_color"), &DrawCanvas::set_line_color);
     ClassDB::bind_method(D_METHOD("get_line_color"), &DrawCanvas::get_line_color);
-    ADD_PROPERTY(PropertyInfo(Variant::COLOR, "line_color"), "set_line_color", "get_line_color");
+    ADD_PROPERTY(PropertyInfo(Variant::COLOR, "line_color"),
+                 "set_line_color", "get_line_color");
 
 	ClassDB::bind_method(D_METHOD("set_line_width", "p_width"), &DrawCanvas::set_line_width);
     ClassDB::bind_method(D_METHOD("get_line_width"), &DrawCanvas::get_line_width);
-    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "line_width"), "set_line_width", "get_line_width");
+    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "line_width"),
+                 "set_line_width", "get_line_width");
 
 	ClassDB::bind_method(D_METHOD("set_cap_scale", "p_width"), &DrawCanvas::set_cap_scale);
     ClassDB::bind_method(D_METHOD("get_cap_scale"), &DrawCanvas::get_cap_scale);
-    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "cap_scale"), "set_cap_scale", "get_cap_scale");
+    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "cap_scale"),
+                 "set_cap_scale", "get_cap_scale");
 
     ClassDB::bind_method(D_METHOD("set_eraser_size", "p_width"), &DrawCanvas::set_eraser_size);
     ClassDB::bind_method(D_METHOD("get_eraser_size"), &DrawCanvas::get_eraser_size);
-    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "eraser_size"), "set_eraser_size", "get_eraser_size");
+    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "eraser_size"),
+                 "set_eraser_size", "get_eraser_size");
 
     ClassDB::bind_method(D_METHOD("set_min_draw_distance", "p_distance"), &DrawCanvas::set_min_draw_distance);
     ClassDB::bind_method(D_METHOD("get_min_draw_distance"), &DrawCanvas::get_min_draw_distance);
-    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "minimum_draw_distance"), "set_min_draw_distance", "get_min_draw_distance");
+    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "minimum_draw_distance"),
+                 "set_min_draw_distance", "get_min_draw_distance");
 
     ClassDB::bind_method(D_METHOD("set_max_draw_angle", "p_angle"), &DrawCanvas::set_max_draw_angle);
     ClassDB::bind_method(D_METHOD("get_max_draw_angle"), &DrawCanvas::get_max_draw_angle);
-    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "maximum_draw_angle"), "set_max_draw_angle", "get_max_draw_angle");
+    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "maximum_draw_angle"),
+                 "set_max_draw_angle", "get_max_draw_angle");
 
     ClassDB::bind_method(D_METHOD("set_smooth_steps", "p_steps"), &DrawCanvas::set_smooth_steps);
     ClassDB::bind_method(D_METHOD("get_smooth_steps"), &DrawCanvas::get_smooth_steps);
-    ADD_PROPERTY(PropertyInfo(Variant::INT, "smooth_steps"), "set_smooth_steps", "get_smooth_steps");
+    ADD_PROPERTY(PropertyInfo(Variant::INT, "smooth_steps"),
+                 "set_smooth_steps", "get_smooth_steps");
 
     ClassDB::bind_method(D_METHOD("set_smooth_ratio", "p_ratio"), &DrawCanvas::set_smooth_ratio);
     ClassDB::bind_method(D_METHOD("get_smooth_ratio"), &DrawCanvas::get_smooth_ratio);
-    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "smooth_ratio"), "set_smooth_ratio", "get_smooth_ratio");
+    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "smooth_ratio"),
+                 "set_smooth_ratio", "get_smooth_ratio");
     
+    ClassDB::bind_method(D_METHOD("get_active_layer"), &DrawCanvas::get_active_layer);
+    ClassDB::bind_method(D_METHOD("set_active_layer", "p_layer"), &DrawCanvas::set_active_layer);
+    ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "active_layer", PROPERTY_HINT_NODE_TYPE, "DrawLayer",
+                              PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_READ_ONLY),
+                "set_active_layer", "get_active_layer");
+
+    #pragma endregion
+
     ClassDB::bind_method(D_METHOD("create_canvas_data"), &DrawCanvas::create_canvas_data);
     ClassDB::bind_method(D_METHOD("load_canvas_data", "p_canvas_data"), &DrawCanvas::load_canvas_data);
     ClassDB::bind_method(D_METHOD("clear_canvas"), &DrawCanvas::clear_canvas);
-    ClassDB::bind_method(D_METHOD("get_active_layer"), &DrawCanvas::get_active_layer);
 
     ClassDB::bind_method(D_METHOD("scale_layers", "p_scale"), &DrawCanvas::scale_layers);
     ClassDB::bind_method(D_METHOD("offset_layers", "p_offset"), &DrawCanvas::offset_layers);
 
-    #pragma endregion
+    ADD_SIGNAL(MethodInfo("data_loaded"));
 }
 
 DrawCanvas::DrawCanvas()
@@ -101,13 +116,14 @@ void DrawCanvas::load_canvas_data(Ref<CanvasData> canvas_data)
         add_child(draw_layer);
         draw_layer->load_layer_data(layers[i]);
     }
+    emit_signal("data_loaded");
 }
 
 void DrawCanvas::clear_canvas()
 {
     CallOnLayers([](DrawLayer* draw_layer)
     {
-        draw_layer->queue_free();
+        memdelete(draw_layer);
         return false;
     });
 }
@@ -125,6 +141,16 @@ DrawLayer* DrawCanvas::get_active_layer()
         return false;
     });
     return active_layer;
+}
+
+void DrawCanvas::set_active_layer(DrawLayer *draw_layer)
+{
+    DrawLayer* active_layer = get_active_layer();
+    if(active_layer != nullptr)
+    {
+        active_layer->set_active(false);
+    }
+    draw_layer->set_active(true);
 }
 
 void DrawCanvas::scale_layers(Vector2 p_scale)

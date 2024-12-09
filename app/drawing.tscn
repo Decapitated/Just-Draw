@@ -49,9 +49,10 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="DrawCanvas" type="DrawCanvas" parent="Canvas/CenterContainer"]
+[node name="DrawCanvas" type="DrawCanvas" parent="Canvas/CenterContainer" node_paths=PackedStringArray("active_layer")]
 minimum_draw_distance = 10.0
 smooth_steps = 5
+active_layer = NodePath("DrawLayer")
 custom_minimum_size = Vector2(500, 500)
 layout_mode = 2
 
@@ -97,6 +98,9 @@ layout_mode = 2
 [node name="Background" parent="Controls/VBoxContainer/CanvasControls/Control/SubViewportContainer/SubViewport" index="0" node_paths=PackedStringArray("canvas")]
 canvas = NodePath("../../../../../../../Canvas/CenterContainer/DrawCanvas")
 
+[node name="LayerContainer" parent="Controls/VBoxContainer/CanvasControls/Control" index="2" node_paths=PackedStringArray("draw_canvas")]
+draw_canvas = NodePath("../../../../../Canvas/CenterContainer/DrawCanvas")
+
 [node name="ZoomControl" parent="Controls/VBoxContainer/CanvasControls/Control" index="3" node_paths=PackedStringArray("camera")]
 camera = NodePath("../../../../../Camera2D")
 
@@ -126,6 +130,7 @@ modal_background = NodePath("../..")
 
 [connection signal="pressed" from="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer/Copy" to="Controls/VBoxContainer/CanvasControls/Control/SubViewportContainer/SubViewport/Background" method="duplicate_drawing"]
 [connection signal="pressed" from="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer/Load" to="Controls/VBoxContainer/CanvasControls/Control/SubViewportContainer/SubViewport/Background" method="load_drawing"]
+[connection signal="pressed" from="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer/Button3" to="Controls/VBoxContainer/CanvasControls/Control/LayerContainer" method="setup_layers"]
 
 [editable path="Controls/VBoxContainer/Toolbar"]
 [editable path="Controls/VBoxContainer/CanvasControls"]

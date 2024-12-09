@@ -74,6 +74,7 @@ namespace JustDraw
             void clear_canvas();
 
             DrawLayer* get_active_layer();
+            void set_active_layer(DrawLayer* draw_layer);
 
             void scale_layers(Vector2 p_scale);
             void offset_layers(Vector2 p_offset);

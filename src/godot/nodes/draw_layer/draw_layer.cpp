@@ -9,6 +9,8 @@
 using namespace JustDraw;
 using namespace godot;
 
+VARIANT_ENUM_CAST(DrawLayer::PenMode);
+
 void DrawLayer::_bind_methods()
 {
     #pragma region Getters and Setters
@@ -241,7 +243,7 @@ bool DrawLayer::UpdateErase(Vector2 pen_position, LineIterator line_it)
         {
             auto curr = (*line_it)[i];
             bool is_last_slice = slice_start > 0 && i == line_it->size() - 1;
-            if(is_last_slice || (curr.distance_squared_to(pen_position) < powf(canvas->eraser_size, 2.0f)))
+            if(is_last_slice || (curr.distance_squared_to(pen_position) < powf(canvas->eraser_size + line_it->width / 3.0f, 2.0f)))
             {
                 sliced = true;
                 int end = is_last_slice ? i + 1 : i;
