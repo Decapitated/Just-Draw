@@ -1,10 +1,15 @@
-[gd_scene load_steps=6 format=3 uid="uid://b1fwia5qj8s06"]
+[gd_scene load_steps=10 format=3 uid="uid://b1fwia5qj8s06"]
 
 [ext_resource type="Script" path="res://scripts/draw_cam.gd" id="1_hampg"]
-[ext_resource type="Script" path="res://scripts/file_manager.gd" id="2_k3gg7"]
-[ext_resource type="Script" path="res://duplicate_drawing.gd" id="2_uaca0"]
-[ext_resource type="PackedScene" uid="uid://cgf8cuhalbgj1" path="res://controls/Layers/layer_container.tscn" id="4_6l18o"]
-[ext_resource type="PackedScene" uid="uid://32mj3r685gx5" path="res://controls/Zoom/zoom_control.res" id="6_0dv2d"]
+[ext_resource type="Script" path="res://scripts/pen_cursor.gd" id="2_3c6d4"]
+[ext_resource type="Script" path="res://scripts/canvas_viewport.gd" id="4_ojijs"]
+[ext_resource type="PackedScene" uid="uid://kfammk62injs" path="res://controls/Toolbar/toolbar.res" id="5_beobf"]
+[ext_resource type="Script" path="res://scripts/copy_canvas.gd" id="5_lrsg0"]
+[ext_resource type="PackedScene" uid="uid://dpclvyw36hn2" path="res://controls/Canvas/canvas_control.res" id="6_p8k4q"]
+[ext_resource type="PackedScene" uid="uid://b11vt5ijj8o6e" path="res://controls/modals/CanvasSize/canvas_size.res" id="10_djrmi"]
+[ext_resource type="PackedScene" uid="uid://b7oses0r5deqt" path="res://controls/modals/ImageSize/image_size.res" id="11_pv3qw"]
+
+[sub_resource type="LayerData" id="LayerData_4s7c5"]
 
 [node name="Control" type="Control"]
 layout_mode = 3
@@ -13,6 +18,23 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="SubViewport" type="SubViewport" parent="." node_paths=PackedStringArray("canvas")]
+msaa_2d = 3
+size = Vector2i(500, 500)
+size_2d_override = Vector2i(500, 500)
+size_2d_override_stretch = true
+render_target_update_mode = 4
+script = ExtResource("4_ojijs")
+canvas = NodePath("../Canvas/CenterContainer/DrawCanvas")
+
+[node name="CopyCanvas" type="ColorRect" parent="SubViewport"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("5_lrsg0")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 editor_draw_screen = false
@@ -29,19 +51,26 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="DrawCanvas" type="DrawCanvas" parent="Canvas/CenterContainer"]
-smooth_min_distance = 0.001
+[node name="DrawCanvas" type="DrawCanvas" parent="Canvas/CenterContainer" node_paths=PackedStringArray("active_layer")]
+minimum_draw_distance = 10.0
+smooth_steps = 5
+active_layer = NodePath("DrawLayer")
 custom_minimum_size = Vector2(500, 500)
 layout_mode = 2
 
 [node name="DrawLayer" type="DrawLayer" parent="Canvas/CenterContainer/DrawCanvas"]
 active = true
+layer_data = SubResource("LayerData_4s7c5")
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="PenCursor" type="Node2D" parent="Canvas" node_paths=PackedStringArray("draw_canvas")]
+script = ExtResource("2_3c6d4")
+draw_canvas = NodePath("../CenterContainer/DrawCanvas")
 
 [node name="Controls" type="CanvasLayer" parent="."]
 layer = 2
@@ -55,185 +84,44 @@ grow_vertical = 2
 mouse_filter = 2
 theme_override_constants/separation = 0
 
-[node name="Toolbar" type="PanelContainer" parent="Controls/VBoxContainer"]
+[node name="Toolbar" parent="Controls/VBoxContainer" instance=ExtResource("5_beobf")]
 layout_mode = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="Controls/VBoxContainer/Toolbar"]
-layout_mode = 2
-theme_override_constants/margin_left = 8
-theme_override_constants/margin_top = 4
-theme_override_constants/margin_right = 8
-theme_override_constants/margin_bottom = 4
-
-[node name="HBoxContainer" type="HBoxContainer" parent="Controls/VBoxContainer/Toolbar/MarginContainer"]
-layout_mode = 2
-
-[node name="FileMenu" type="MenuButton" parent="Controls/VBoxContainer/Toolbar/MarginContainer/HBoxContainer" node_paths=PackedStringArray("draw_canvas")]
-custom_minimum_size = Vector2(32, 0)
-layout_mode = 2
-mouse_default_cursor_shape = 2
-text = "File"
-switch_on_hover = true
-item_count = 3
-popup/item_0/text = "Open..."
-popup/item_1/text = "Save as..."
-popup/item_1/id = 1
-popup/item_2/text = "Export as..."
-popup/item_2/id = 2
-script = ExtResource("2_k3gg7")
+[node name="File" parent="Controls/VBoxContainer/Toolbar/MarginContainer/HBoxContainer" index="0" node_paths=PackedStringArray("draw_canvas", "subviewport")]
 draw_canvas = NodePath("../../../../../../Canvas/CenterContainer/DrawCanvas")
+subviewport = NodePath("../../../../../../SubViewport")
 
-[node name="FileDialog" type="FileDialog" parent="Controls/VBoxContainer/Toolbar/MarginContainer/HBoxContainer/FileMenu"]
-title = "Open a File"
-size = Vector2i(324, 180)
-ok_button_text = "Open"
-file_mode = 0
-access = 2
-filters = PackedStringArray("*.tres, *.res; Resource")
-use_native_dialog = true
+[node name="Edit" parent="Controls/VBoxContainer/Toolbar/MarginContainer/HBoxContainer" index="1" node_paths=PackedStringArray("canvas_size_modal", "image_size_modal")]
+canvas_size_modal = NodePath("../../../../../Modals/CenterContainer/CanvasSize")
+image_size_modal = NodePath("../../../../../Modals/CenterContainer/ImageSize")
 
-[node name="CanvasControls" type="MarginContainer" parent="Controls/VBoxContainer"]
+[node name="CanvasControls" parent="Controls/VBoxContainer" node_paths=PackedStringArray("draw_canvas", "camera") instance=ExtResource("6_p8k4q")]
 layout_mode = 2
-size_flags_vertical = 3
-mouse_filter = 2
-theme_override_constants/margin_left = 8
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 8
-theme_override_constants/margin_bottom = 8
+draw_canvas = NodePath("../../../Canvas/CenterContainer/DrawCanvas")
+camera = NodePath("../../../Camera2D")
 
-[node name="Control" type="Control" parent="Controls/VBoxContainer/CanvasControls"]
-layout_mode = 2
-size_flags_vertical = 3
-mouse_filter = 2
-
-[node name="LeftContainer" type="PanelContainer" parent="Controls/VBoxContainer/CanvasControls/Control"]
-layout_mode = 1
-anchors_preset = 4
-anchor_top = 0.5
-anchor_bottom = 0.5
-offset_top = -164.0
-offset_right = 58.0
-offset_bottom = 164.0
-grow_vertical = 2
-size_flags_vertical = 4
-
-[node name="MarginContainer" type="MarginContainer" parent="Controls/VBoxContainer/CanvasControls/Control/LeftContainer"]
-layout_mode = 2
-theme_override_constants/margin_left = 4
-theme_override_constants/margin_top = 4
-theme_override_constants/margin_right = 4
-theme_override_constants/margin_bottom = 4
-
-[node name="VBoxContainer" type="VBoxContainer" parent="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer"]
-layout_mode = 2
-theme_override_constants/separation = 4
-
-[node name="Copy" type="Button" parent="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer"]
-custom_minimum_size = Vector2(50, 50)
-layout_mode = 2
-size_flags_vertical = 3
-text = "Copy"
-
-[node name="Load" type="Button" parent="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer"]
-custom_minimum_size = Vector2(50, 50)
-layout_mode = 2
-size_flags_vertical = 3
-text = "Load"
-
-[node name="Open" type="Button" parent="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer"]
-custom_minimum_size = Vector2(50, 50)
-layout_mode = 2
-size_flags_vertical = 3
-text = "Open"
-
-[node name="Button4" type="Button" parent="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer"]
-custom_minimum_size = Vector2(50, 50)
-layout_mode = 2
-size_flags_vertical = 3
-text = "D"
-
-[node name="Button5" type="Button" parent="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer"]
-custom_minimum_size = Vector2(50, 50)
-layout_mode = 2
-size_flags_vertical = 3
-text = "E"
-
-[node name="Button6" type="Button" parent="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer"]
-custom_minimum_size = Vector2(50, 50)
-layout_mode = 2
-size_flags_vertical = 3
-text = "F"
-
-[node name="SubViewportContainer" type="SubViewportContainer" parent="Controls/VBoxContainer/CanvasControls/Control"]
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -150.0
-offset_bottom = 150.0
-grow_horizontal = 0
-mouse_filter = 2
-stretch = true
-
-[node name="SubViewport" type="SubViewport" parent="Controls/VBoxContainer/CanvasControls/Control/SubViewportContainer"]
-handle_input_locally = false
-snap_2d_transforms_to_pixel = true
-snap_2d_vertices_to_pixel = true
-msaa_2d = 3
-size = Vector2i(150, 150)
-size_2d_override = Vector2i(500, 500)
-size_2d_override_stretch = true
-render_target_update_mode = 4
-
-[node name="Background" type="ColorRect" parent="Controls/VBoxContainer/CanvasControls/Control/SubViewportContainer/SubViewport" node_paths=PackedStringArray("canvas")]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-script = ExtResource("2_uaca0")
-canvas = NodePath("../../../../../../../Canvas/CenterContainer/DrawCanvas")
-
-[node name="LayerContainer" parent="Controls/VBoxContainer/CanvasControls/Control" instance=ExtResource("4_6l18o")]
-layout_mode = 1
-anchors_preset = 6
-anchor_left = 1.0
-anchor_top = 0.5
-anchor_right = 1.0
-anchor_bottom = 0.5
-offset_left = -208.0
-offset_top = -145.0
-offset_right = 0.0
-offset_bottom = 145.0
-grow_horizontal = 0
-grow_vertical = 2
-
-[node name="ZoomControl" parent="Controls/VBoxContainer/CanvasControls/Control" node_paths=PackedStringArray("camera") instance=ExtResource("6_0dv2d")]
-layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -240.0
-offset_top = -33.0
-offset_right = 0.0
-offset_bottom = 0.0
-grow_horizontal = 0
-grow_vertical = 0
-camera = NodePath("../../../../../Camera2D")
-
-[node name="PanelContainer" type="PanelContainer" parent="Controls"]
+[node name="Modals" type="PanelContainer" parent="Controls"]
 visible = false
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_force_pass_scroll_events = false
 
-[node name="CenterContainer" type="CenterContainer" parent="Controls/PanelContainer"]
+[node name="CenterContainer" type="CenterContainer" parent="Controls/Modals"]
 layout_mode = 2
 
-[connection signal="pressed" from="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer/Copy" to="Controls/VBoxContainer/CanvasControls/Control/SubViewportContainer/SubViewport/Background" method="duplicate_drawing"]
-[connection signal="pressed" from="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer/Load" to="Controls/VBoxContainer/CanvasControls/Control/SubViewportContainer/SubViewport/Background" method="load_drawing"]
-[connection signal="pressed" from="Controls/VBoxContainer/CanvasControls/Control/LeftContainer/MarginContainer/VBoxContainer/Open" to="Controls/VBoxContainer/Toolbar/MarginContainer/HBoxContainer/FileMenu/FileDialog" method="set_visible" binds= [true]]
+[node name="CanvasSize" parent="Controls/Modals/CenterContainer" node_paths=PackedStringArray("draw_canvas", "modal_background") instance=ExtResource("10_djrmi")]
+visible = false
+layout_mode = 2
+draw_canvas = NodePath("../../../../Canvas/CenterContainer/DrawCanvas")
+modal_background = NodePath("../..")
+
+[node name="ImageSize" parent="Controls/Modals/CenterContainer" node_paths=PackedStringArray("export_viewport", "modal_background") instance=ExtResource("11_pv3qw")]
+visible = false
+layout_mode = 2
+export_viewport = NodePath("../../../../SubViewport")
+modal_background = NodePath("../..")
+
+[editable path="Controls/VBoxContainer/Toolbar"]

@@ -1,11 +1,19 @@
-[gd_scene load_steps=3 format=3 uid="uid://cgf8cuhalbgj1"]
+[gd_scene load_steps=4 format=3 uid="uid://cgf8cuhalbgj1"]
 
-[ext_resource type="PackedScene" uid="uid://dnjllqtckn1n5" path="res://controls/Layers/layer.res" id="1_jbc1y"]
+[ext_resource type="PackedScene" uid="uid://dnjllqtckn1n5" path="res://controls/Canvas/Layers/Layer/layer.res" id="1_jbc1y"]
+[ext_resource type="Script" path="res://controls/Canvas/Layers/layer_manager.gd" id="1_yr6b4"]
 [ext_resource type="FontFile" uid="uid://bh3o75v57v5c4" path="res://MaterialSymbolsRounded-VariableFont_FILL,GRAD,opsz,wght.ttf" id="2_xybhc"]
 
-[node name="LayerContainer" type="PanelContainer"]
-offset_right = 208.0
-offset_bottom = 290.0
+[node name="LayerContainer" type="PanelContainer" node_paths=PackedStringArray("layer_list", "create_button", "delete_button", "move_up_button", "move_down_button")]
+offset_right = 132.0
+offset_bottom = 40.0
+script = ExtResource("1_yr6b4")
+layer_list = NodePath("MarginContainer/VBoxContainer/ScrollContainer/LayerContainer")
+layer_control = ExtResource("1_jbc1y")
+create_button = NodePath("MarginContainer/VBoxContainer/ActionContainer/Create")
+delete_button = NodePath("MarginContainer/VBoxContainer/ActionContainer/Delete")
+move_up_button = NodePath("MarginContainer/VBoxContainer/ActionContainer/MoveUp")
+move_down_button = NodePath("MarginContainer/VBoxContainer/ActionContainer/MoveDown")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 2
@@ -18,7 +26,7 @@ theme_override_constants/margin_bottom = 4
 layout_mode = 2
 
 [node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/VBoxContainer"]
-custom_minimum_size = Vector2(200, 250)
+custom_minimum_size = Vector2(0, 200)
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 0
@@ -29,28 +37,10 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Layer" parent="MarginContainer/VBoxContainer/ScrollContainer/LayerContainer" instance=ExtResource("1_jbc1y")]
-layout_mode = 2
-
-[node name="Layer2" parent="MarginContainer/VBoxContainer/ScrollContainer/LayerContainer" instance=ExtResource("1_jbc1y")]
-layout_mode = 2
-
-[node name="Layer3" parent="MarginContainer/VBoxContainer/ScrollContainer/LayerContainer" instance=ExtResource("1_jbc1y")]
-layout_mode = 2
-
-[node name="Layer4" parent="MarginContainer/VBoxContainer/ScrollContainer/LayerContainer" instance=ExtResource("1_jbc1y")]
-layout_mode = 2
-
-[node name="Layer5" parent="MarginContainer/VBoxContainer/ScrollContainer/LayerContainer" instance=ExtResource("1_jbc1y")]
-layout_mode = 2
-
-[node name="Layer6" parent="MarginContainer/VBoxContainer/ScrollContainer/LayerContainer" instance=ExtResource("1_jbc1y")]
-layout_mode = 2
-
 [node name="ActionContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Button" type="Button" parent="MarginContainer/VBoxContainer/ActionContainer"]
+[node name="Create" type="Button" parent="MarginContainer/VBoxContainer/ActionContainer"]
 custom_minimum_size = Vector2(28, 28)
 layout_mode = 2
 size_flags_horizontal = 0
@@ -58,7 +48,7 @@ size_flags_vertical = 4
 theme_override_fonts/font = ExtResource("2_xybhc")
 text = "library_add"
 
-[node name="Button2" type="Button" parent="MarginContainer/VBoxContainer/ActionContainer"]
+[node name="Delete" type="Button" parent="MarginContainer/VBoxContainer/ActionContainer"]
 custom_minimum_size = Vector2(28, 28)
 layout_mode = 2
 size_flags_horizontal = 0
@@ -66,7 +56,7 @@ size_flags_vertical = 4
 theme_override_fonts/font = ExtResource("2_xybhc")
 text = "delete"
 
-[node name="Button3" type="Button" parent="MarginContainer/VBoxContainer/ActionContainer"]
+[node name="MoveUp" type="Button" parent="MarginContainer/VBoxContainer/ActionContainer"]
 custom_minimum_size = Vector2(28, 28)
 layout_mode = 2
 size_flags_horizontal = 0
@@ -74,7 +64,7 @@ size_flags_vertical = 4
 theme_override_fonts/font = ExtResource("2_xybhc")
 text = "arrow_upward_alt"
 
-[node name="Button4" type="Button" parent="MarginContainer/VBoxContainer/ActionContainer"]
+[node name="MoveDown" type="Button" parent="MarginContainer/VBoxContainer/ActionContainer"]
 custom_minimum_size = Vector2(28, 28)
 layout_mode = 2
 size_flags_horizontal = 0

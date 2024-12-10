@@ -5,116 +5,101 @@
 using namespace JustDraw;
 using namespace godot;
 
+const char* DrawCanvas::DATA_LOADED_SIGNAL = "data_loaded";
+
 void DrawCanvas::_bind_methods()
 {
     #pragma region Getters and Setters
 
     ClassDB::bind_method(D_METHOD("set_line_color", "p_color"), &DrawCanvas::set_line_color);
     ClassDB::bind_method(D_METHOD("get_line_color"), &DrawCanvas::get_line_color);
-    ADD_PROPERTY(PropertyInfo(Variant::COLOR, "pen_color"), "set_line_color", "get_line_color");
+    ADD_PROPERTY(PropertyInfo(Variant::COLOR, "line_color"),
+                 "set_line_color", "get_line_color");
 
 	ClassDB::bind_method(D_METHOD("set_line_width", "p_width"), &DrawCanvas::set_line_width);
     ClassDB::bind_method(D_METHOD("get_line_width"), &DrawCanvas::get_line_width);
-    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "line_width"), "set_line_width", "get_line_width");
+    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "line_width"),
+                 "set_line_width", "get_line_width");
 
 	ClassDB::bind_method(D_METHOD("set_cap_scale", "p_width"), &DrawCanvas::set_cap_scale);
     ClassDB::bind_method(D_METHOD("get_cap_scale"), &DrawCanvas::get_cap_scale);
-    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "cap_scale"), "set_cap_scale", "get_cap_scale");
+    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "cap_scale"),
+                 "set_cap_scale", "get_cap_scale");
 
     ClassDB::bind_method(D_METHOD("set_eraser_size", "p_width"), &DrawCanvas::set_eraser_size);
     ClassDB::bind_method(D_METHOD("get_eraser_size"), &DrawCanvas::get_eraser_size);
-    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "eraser_size"), "set_eraser_size", "get_eraser_size");
+    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "eraser_size"),
+                 "set_eraser_size", "get_eraser_size");
 
     ClassDB::bind_method(D_METHOD("set_min_draw_distance", "p_distance"), &DrawCanvas::set_min_draw_distance);
     ClassDB::bind_method(D_METHOD("get_min_draw_distance"), &DrawCanvas::get_min_draw_distance);
-    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "minimum_draw_distance"), "set_min_draw_distance", "get_min_draw_distance");
+    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "minimum_draw_distance"),
+                 "set_min_draw_distance", "get_min_draw_distance");
 
     ClassDB::bind_method(D_METHOD("set_max_draw_angle", "p_angle"), &DrawCanvas::set_max_draw_angle);
     ClassDB::bind_method(D_METHOD("get_max_draw_angle"), &DrawCanvas::get_max_draw_angle);
-    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "maximum_draw_angle"), "set_max_draw_angle", "get_max_draw_angle");
+    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "maximum_draw_angle"),
+                 "set_max_draw_angle", "get_max_draw_angle");
 
     ClassDB::bind_method(D_METHOD("set_smooth_steps", "p_steps"), &DrawCanvas::set_smooth_steps);
     ClassDB::bind_method(D_METHOD("get_smooth_steps"), &DrawCanvas::get_smooth_steps);
-    ADD_PROPERTY(PropertyInfo(Variant::INT, "smooth_steps"), "set_smooth_steps", "get_smooth_steps");
+    ADD_PROPERTY(PropertyInfo(Variant::INT, "smooth_steps"),
+                 "set_smooth_steps", "get_smooth_steps");
 
     ClassDB::bind_method(D_METHOD("set_smooth_ratio", "p_ratio"), &DrawCanvas::set_smooth_ratio);
     ClassDB::bind_method(D_METHOD("get_smooth_ratio"), &DrawCanvas::get_smooth_ratio);
-    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "smooth_ratio"), "set_smooth_ratio", "get_smooth_ratio");
-
-    ClassDB::bind_method(D_METHOD("set_smooth_min_distance", "p_distance"), &DrawCanvas::set_smooth_min_distance);
-    ClassDB::bind_method(D_METHOD("get_smooth_min_distance"), &DrawCanvas::get_smooth_min_distance);
-    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "smooth_min_distance"), "set_smooth_min_distance", "get_smooth_min_distance");
+    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "smooth_ratio"),
+                 "set_smooth_ratio", "get_smooth_ratio");
     
+    ClassDB::bind_method(D_METHOD("get_active_layer"), &DrawCanvas::get_active_layer);
+    ClassDB::bind_method(D_METHOD("set_active_layer", "p_layer"), &DrawCanvas::set_active_layer);
+    ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "active_layer", PROPERTY_HINT_NODE_TYPE, "DrawLayer",
+                              (PROPERTY_USAGE_DEFAULT ^ PROPERTY_USAGE_EDITOR) | PROPERTY_USAGE_NO_EDITOR),
+                 "set_active_layer", "get_active_layer");
+
+    #pragma endregion
+
     ClassDB::bind_method(D_METHOD("create_canvas_data"), &DrawCanvas::create_canvas_data);
     ClassDB::bind_method(D_METHOD("load_canvas_data", "p_canvas_data"), &DrawCanvas::load_canvas_data);
     ClassDB::bind_method(D_METHOD("clear_canvas"), &DrawCanvas::clear_canvas);
 
-    #pragma endregion
+    ClassDB::bind_method(D_METHOD("scale_layers", "p_scale"), &DrawCanvas::scale_layers);
+    ClassDB::bind_method(D_METHOD("offset_layers", "p_offset"), &DrawCanvas::offset_layers);
+
+    ADD_SIGNAL(MethodInfo(DATA_LOADED_SIGNAL));
 }
 
 DrawCanvas::DrawCanvas()
 {
     set_mouse_filter(MOUSE_FILTER_PASS);
-    set_default_cursor_shape(CURSOR_CROSS);
 }
 
 DrawCanvas::~DrawCanvas() {}
 
-Line DrawCanvas::SmoothLineStep(Line line, int smooth_start)
+void DrawCanvas::CallOnLayers(LayerCallback callback)
 {
-    // Clamp ratio, then minus one so it doesn't go past midpoint.
-    float ratio = fmaxf(0.0, fminf(1.0, smooth_ratio));
-    if (ratio > 0.5f) ratio = 1.0f - ratio;
-    auto smoothed_line = Line();
-    smoothed_line.push_back(line[0]); // Add first point to new line.
-    for (int i = 1; i < line.size() - 1; i++)
-    {
-        if (i < smooth_start)
-        {
-            smoothed_line.push_back(line[i]);
-            continue;
-        }
-        Vector2 prev = line[i - 1], curr = line[i], next = line[i + 1];
-        float dist_squared = prev.distance_squared_to(curr);
-        if(dist_squared < powf(smooth_min_distance, 2.0f))
-        {
-            smoothed_line.push_back(curr);
-            continue;
-        }
-        smoothed_line.push_back(curr.lerp(prev, ratio));
-        smoothed_line.push_back(curr.lerp(next, ratio));
-    }
-    smoothed_line.push_back(line[line.size() - 1]); // Add last point to new line.
-    return smoothed_line;
-}
-
-Line DrawCanvas::SmoothLine(Line line)
-{
-    for (int i = 0; i < smooth_steps; i++)
-    {
-        int smooth_start = line.size() - 2;
-        line = SmoothLineStep(line, smooth_start);
-    }
-    return line;
-}
-
-Ref<CanvasData> JustDraw::DrawCanvas::create_canvas_data()
-{
-    auto layers = TypedArray<LayerData>();
-    // Get layer data from children DrawLayers.
     auto draw_layers = find_children("*", "DrawLayer", false, false);
     for(int i = 0; i < draw_layers.size(); i++)
     {
         auto draw_layer = dynamic_cast<DrawLayer*>((Object*)draw_layers[i]);
         if(draw_layer != nullptr)
         {
-            layers.push_back(draw_layer->get_layer_data());
+            bool should_break = callback(draw_layer);
+            if(should_break) break;
         }
     }
+}
 
-    Ref<CanvasData> canvas_data = memnew(CanvasData);
-    canvas_data->set_size(get_size());
-    canvas_data->set_layers(layers);
+Ref<CanvasData> JustDraw::DrawCanvas::create_canvas_data()
+{
+    auto layers = TypedArray<LayerData>();
+    CallOnLayers([&layers](DrawLayer* draw_layer)
+    {
+        layers.push_back(draw_layer->get_layer_data());
+        return false;
+    });
+
+    Ref<CanvasData> canvas_data = memnew(CanvasData(get_size(), layers, get_color()));
     return canvas_data;
 }
 
@@ -122,6 +107,7 @@ void DrawCanvas::load_canvas_data(Ref<CanvasData> canvas_data)
 {
     clear_canvas();
 
+    set_color(canvas_data->get_color());
     set_custom_minimum_size(canvas_data->get_size());
     auto layers = canvas_data->get_layers();
     for(int i = 0; i < layers.size(); i++)
@@ -131,17 +117,57 @@ void DrawCanvas::load_canvas_data(Ref<CanvasData> canvas_data)
         add_child(draw_layer);
         draw_layer->load_layer_data(layers[i]);
     }
+    emit_signal(DATA_LOADED_SIGNAL);
 }
 
 void DrawCanvas::clear_canvas()
 {
-    auto draw_layers = find_children("*", "DrawLayer", false, false);
-    for(int i = 0; i < draw_layers.size(); i++)
+    CallOnLayers([](DrawLayer* draw_layer)
     {
-        auto draw_layer = dynamic_cast<DrawLayer*>((Object*)draw_layers[i]);
-        if(draw_layer != nullptr)
+        memdelete(draw_layer);
+        return false;
+    });
+}
+
+DrawLayer* DrawCanvas::get_active_layer()
+{
+    DrawLayer* active_layer = nullptr;
+    CallOnLayers([&active_layer](DrawLayer* draw_layer)
+    {
+        if(draw_layer->get_active())
         {
-            draw_layer->queue_free();
+            active_layer = draw_layer;
+            return true;
         }
+        return false;
+    });
+    return active_layer;
+}
+
+void DrawCanvas::set_active_layer(DrawLayer *draw_layer)
+{
+    DrawLayer* active_layer = get_active_layer();
+    if(active_layer != nullptr)
+    {
+        active_layer->set_active(false);
     }
+    draw_layer->set_active(true);
+}
+
+void DrawCanvas::scale_layers(Vector2 p_scale)
+{
+    CallOnLayers([p_scale](DrawLayer* draw_layer)
+    {
+        draw_layer->scale_lines(p_scale);
+        return false;
+    });
+}
+
+void DrawCanvas::offset_layers(Vector2 p_offset)
+{
+    CallOnLayers([p_offset](DrawLayer* draw_layer)
+    {
+        draw_layer->offset_lines(p_offset);
+        return false;
+    });
 }

@@ -54,11 +54,14 @@ namespace JustDraw
     class DrawLayer : public Control
     {
         GDCLASS(DrawLayer, Control);
+        public:
+            enum PenMode { NONE, DRAW, ERASE };
         private:
+            static const char* UPDATED_SIGNAL;
+
             Lines lines = Lines();
 
-            enum PenMode { NONE, DRAW, ERASE };
-            PenMode mode = NONE;
+            PenMode mode = PenMode::NONE;
 
             bool active = false;
 
@@ -73,6 +76,9 @@ namespace JustDraw
 
             void UpdateErase(Vector2 pen_position);
             bool UpdateErase(Vector2 pen_position, LineIterator line_it);
+
+            void FinishDraw();
+            void FinishErase();
 
             TypedArray<PackedVector2Array> GetLines();
             TypedArray<Dictionary> GetPens();
@@ -92,12 +98,20 @@ namespace JustDraw
             Ref<LayerData> get_layer_data() { return memnew(LayerData(GetLines(), GetPens())); }
             void load_layer_data(Ref<LayerData> p_layer_data);
 
+            PenMode get_pen_mode() { return mode; }
+
             #pragma endregion
 
             PackedStringArray _get_configuration_warnings() const override;
             void _process(double p_delta) override;
             void _unhandled_input(const Ref<InputEvent> &p_event) override;
             void _draw() override;
+            
+            static void SmoothLineStep(Line &line, float smooth_ratio, float smooth_min_distance, int smooth_start = 0);
+            void SmoothLine(Line &line, int smooth_start = 0);
+
+            void scale_lines(Vector2 scale);
+            void offset_lines(Vector2 offset);
     };
 }
 
