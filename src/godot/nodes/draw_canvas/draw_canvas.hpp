@@ -19,6 +19,8 @@ namespace JustDraw
         private:
             friend class DrawLayer;
 
+            static const char* DATA_LOADED_SIGNAL;
+
             Color line_color = Color();
             
             float line_width = 5.0f;

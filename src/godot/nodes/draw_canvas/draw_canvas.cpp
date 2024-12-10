@@ -5,6 +5,8 @@
 using namespace JustDraw;
 using namespace godot;
 
+const char* DrawCanvas::DATA_LOADED_SIGNAL = "data_loaded";
+
 void DrawCanvas::_bind_methods()
 {
     #pragma region Getters and Setters
@@ -64,7 +66,7 @@ void DrawCanvas::_bind_methods()
     ClassDB::bind_method(D_METHOD("scale_layers", "p_scale"), &DrawCanvas::scale_layers);
     ClassDB::bind_method(D_METHOD("offset_layers", "p_offset"), &DrawCanvas::offset_layers);
 
-    ADD_SIGNAL(MethodInfo("data_loaded"));
+    ADD_SIGNAL(MethodInfo(DATA_LOADED_SIGNAL));
 }
 
 DrawCanvas::DrawCanvas()
@@ -118,7 +120,7 @@ void DrawCanvas::load_canvas_data(Ref<CanvasData> canvas_data)
         add_child(draw_layer);
         draw_layer->load_layer_data(layers[i]);
     }
-    emit_signal("data_loaded");
+    emit_signal(DATA_LOADED_SIGNAL);
 }
 
 void DrawCanvas::clear_canvas()

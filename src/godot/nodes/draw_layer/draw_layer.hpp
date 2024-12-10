@@ -57,6 +57,8 @@ namespace JustDraw
         public:
             enum PenMode { NONE, DRAW, ERASE };
         private:
+            static const char* UPDATED_SIGNAL;
+
             Lines lines = Lines();
 
             PenMode mode = PenMode::NONE;
@@ -76,6 +78,7 @@ namespace JustDraw
             bool UpdateErase(Vector2 pen_position, LineIterator line_it);
 
             void FinishDraw();
+            void FinishErase();
 
             TypedArray<PackedVector2Array> GetLines();
             TypedArray<Dictionary> GetPens();

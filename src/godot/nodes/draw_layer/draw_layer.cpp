@@ -11,6 +11,8 @@ using namespace godot;
 
 VARIANT_ENUM_CAST(DrawLayer::PenMode);
 
+const char* DrawLayer::UPDATED_SIGNAL = "updated";
+
 void DrawLayer::_bind_methods()
 {
     #pragma region Getters and Setters
@@ -22,6 +24,8 @@ void DrawLayer::_bind_methods()
     ClassDB::bind_method(D_METHOD("get_layer_data"), &DrawLayer::get_layer_data);
     ClassDB::bind_method(D_METHOD("load_layer_data", "p_layer_data"), &DrawLayer::load_layer_data);
 
+    #pragma endregion
+    
     BIND_ENUM_CONSTANT(NONE);
     BIND_ENUM_CONSTANT(DRAW);
     BIND_ENUM_CONSTANT(ERASE);
@@ -30,7 +34,7 @@ void DrawLayer::_bind_methods()
     ClassDB::bind_method(D_METHOD("scale_lines", "p_scale"), &DrawLayer::scale_lines);
     ClassDB::bind_method(D_METHOD("offset_lines", "p_offset"), &DrawLayer::offset_lines);
 
-    #pragma endregion
+    ADD_SIGNAL(MethodInfo(UPDATED_SIGNAL));
 }
 
 DrawLayer::DrawLayer()
@@ -120,8 +124,11 @@ void DrawLayer::HandleMouseMotion(const InputEventMouseMotion &event)
         if(is_pen_inverted && pen_pressure > 0.0f)
         {
             UpdateErase(pen_position);
-            queue_redraw();
-        } else { mode = NONE; }
+        } else {
+            mode = NONE;
+            FinishDraw();
+        }
+        queue_redraw();
     }
     else if(mode == DRAW)
     {
@@ -272,6 +279,12 @@ void DrawLayer::FinishDraw()
             SmoothLine(static_cast<Line&>(line));
         }
     }
+    emit_signal(UPDATED_SIGNAL);
+}
+
+void DrawLayer::FinishErase()
+{
+    emit_signal(UPDATED_SIGNAL);
 }
 
 void DrawLayer::SmoothLineStep(Line &line, float smooth_ratio, float smooth_min_distance, int smooth_start)
