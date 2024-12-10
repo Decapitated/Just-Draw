@@ -23,6 +23,7 @@ void DrawLayer::_bind_methods()
 
     ClassDB::bind_method(D_METHOD("get_layer_data"), &DrawLayer::get_layer_data);
     ClassDB::bind_method(D_METHOD("load_layer_data", "p_layer_data"), &DrawLayer::load_layer_data);
+    ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "layer_data", PROPERTY_HINT_RESOURCE_TYPE, "LayerData", (PROPERTY_USAGE_DEFAULT ^ PROPERTY_USAGE_EDITOR) | PROPERTY_USAGE_NO_EDITOR), "load_layer_data", "get_layer_data");
 
     #pragma endregion
     
@@ -353,6 +354,7 @@ TypedArray<Dictionary> DrawLayer::GetPens()
 
 void DrawLayer::load_layer_data(Ref<LayerData> p_layer_data)
 {
+    if(p_layer_data.is_null() || !p_layer_data.is_valid()) return;
     Lines new_lines = Lines();
     auto p_lines = p_layer_data->get_lines();
     auto p_pens = p_layer_data->get_pens();
