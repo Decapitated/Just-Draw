@@ -17,7 +17,7 @@ namespace JustDraw
         GDCLASS(CanvasData, Resource);
         private:
             Vector2i size;
-            Color color;
+            Color color = Color(1.0f, 1.0f, 1.0f, 1.0f);
             TypedArray<LayerData> layers;
 
         protected:
@@ -25,8 +25,8 @@ namespace JustDraw
 
         public:
             CanvasData() {}
-            CanvasData(Vector2i p_size, TypedArray<LayerData> p_layers)
-                : size(p_size), layers(p_layers) {}
+            CanvasData(Vector2i p_size, TypedArray<LayerData> p_layers, Color p_color)
+                : size(p_size), layers(p_layers), color(p_color) {}
             ~CanvasData() {}
 
             #pragma region Getters and Setters

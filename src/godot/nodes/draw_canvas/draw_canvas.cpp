@@ -99,10 +99,7 @@ Ref<CanvasData> JustDraw::DrawCanvas::create_canvas_data()
         return false;
     });
 
-    Ref<CanvasData> canvas_data = memnew(CanvasData);
-    canvas_data->set_size(get_size());
-    canvas_data->set_layers(layers);
-    canvas_data->set_color(get_color());
+    Ref<CanvasData> canvas_data = memnew(CanvasData(get_size(), layers, get_color()));
     return canvas_data;
 }
 
