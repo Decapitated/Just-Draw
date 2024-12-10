@@ -100,6 +100,7 @@ Ref<CanvasData> JustDraw::DrawCanvas::create_canvas_data()
     Ref<CanvasData> canvas_data = memnew(CanvasData);
     canvas_data->set_size(get_size());
     canvas_data->set_layers(layers);
+    canvas_data->set_color(get_color());
     return canvas_data;
 }
 
@@ -107,6 +108,7 @@ void DrawCanvas::load_canvas_data(Ref<CanvasData> canvas_data)
 {
     clear_canvas();
 
+    set_color(canvas_data->get_color());
     set_custom_minimum_size(canvas_data->get_size());
     auto layers = canvas_data->get_layers();
     for(int i = 0; i < layers.size(); i++)
