@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://b1fwia5qj8s06"]
+[gd_scene load_steps=9 format=3 uid="uid://b1fwia5qj8s06"]
 
 [ext_resource type="Script" path="res://scripts/draw_cam.gd" id="1_hampg"]
 [ext_resource type="Script" path="res://scripts/pen_cursor.gd" id="2_3c6d4"]
@@ -8,8 +8,6 @@
 [ext_resource type="PackedScene" uid="uid://dpclvyw36hn2" path="res://controls/Canvas/canvas_control.res" id="6_p8k4q"]
 [ext_resource type="PackedScene" uid="uid://b11vt5ijj8o6e" path="res://controls/modals/CanvasSize/canvas_size.res" id="10_djrmi"]
 [ext_resource type="PackedScene" uid="uid://b7oses0r5deqt" path="res://controls/modals/ImageSize/image_size.res" id="11_pv3qw"]
-
-[sub_resource type="LayerData" id="LayerData_4s7c5"]
 
 [node name="Control" type="Control"]
 layout_mode = 3
@@ -51,22 +49,11 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="DrawCanvas" type="DrawCanvas" parent="Canvas/CenterContainer" node_paths=PackedStringArray("active_layer")]
+[node name="DrawCanvas" type="DrawCanvas" parent="Canvas/CenterContainer"]
 minimum_draw_distance = 10.0
 smooth_steps = 5
-active_layer = NodePath("DrawLayer")
 custom_minimum_size = Vector2(500, 500)
 layout_mode = 2
-
-[node name="DrawLayer" type="DrawLayer" parent="Canvas/CenterContainer/DrawCanvas"]
-active = true
-layer_data = SubResource("LayerData_4s7c5")
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
 
 [node name="PenCursor" type="Node2D" parent="Canvas" node_paths=PackedStringArray("draw_canvas")]
 script = ExtResource("2_3c6d4")
