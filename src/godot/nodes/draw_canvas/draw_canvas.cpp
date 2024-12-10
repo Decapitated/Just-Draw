@@ -54,8 +54,8 @@ void DrawCanvas::_bind_methods()
     ClassDB::bind_method(D_METHOD("get_active_layer"), &DrawCanvas::get_active_layer);
     ClassDB::bind_method(D_METHOD("set_active_layer", "p_layer"), &DrawCanvas::set_active_layer);
     ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "active_layer", PROPERTY_HINT_NODE_TYPE, "DrawLayer",
-                              PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_READ_ONLY),
-                "set_active_layer", "get_active_layer");
+                              (PROPERTY_USAGE_DEFAULT ^ PROPERTY_USAGE_EDITOR) | PROPERTY_USAGE_NO_EDITOR),
+                 "set_active_layer", "get_active_layer");
 
     #pragma endregion
 
