@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://b1fwia5qj8s06"]
+[gd_scene load_steps=10 format=3 uid="uid://b1fwia5qj8s06"]
 
 [ext_resource type="Script" path="res://scripts/draw_cam.gd" id="1_hampg"]
 [ext_resource type="Script" path="res://scripts/pen_cursor.gd" id="2_3c6d4"]
@@ -8,6 +8,8 @@
 [ext_resource type="PackedScene" uid="uid://dpclvyw36hn2" path="res://controls/Canvas/canvas_control.res" id="6_p8k4q"]
 [ext_resource type="PackedScene" uid="uid://b11vt5ijj8o6e" path="res://controls/modals/CanvasSize/canvas_size.res" id="10_djrmi"]
 [ext_resource type="PackedScene" uid="uid://b7oses0r5deqt" path="res://controls/modals/ImageSize/image_size.res" id="11_pv3qw"]
+
+[sub_resource type="LayerData" id="LayerData_78uet"]
 
 [node name="Control" type="Control"]
 layout_mode = 3
@@ -58,6 +60,7 @@ layout_mode = 2
 
 [node name="DrawLayer" type="DrawLayer" parent="Canvas/CenterContainer/DrawCanvas"]
 active = true
+layer_data = SubResource("LayerData_78uet")
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -92,17 +95,10 @@ subviewport = NodePath("../../../../../../SubViewport")
 canvas_size_modal = NodePath("../../../../../Modals/CenterContainer/CanvasSize")
 image_size_modal = NodePath("../../../../../Modals/CenterContainer/ImageSize")
 
-[node name="CanvasControls" parent="Controls/VBoxContainer" instance=ExtResource("6_p8k4q")]
+[node name="CanvasControls" parent="Controls/VBoxContainer" node_paths=PackedStringArray("draw_canvas", "camera") instance=ExtResource("6_p8k4q")]
 layout_mode = 2
-
-[node name="PenControl" parent="Controls/VBoxContainer/CanvasControls/Control" index="0" node_paths=PackedStringArray("draw_canvas")]
-draw_canvas = NodePath("../../../../../Canvas/CenterContainer/DrawCanvas")
-
-[node name="LayerContainer" parent="Controls/VBoxContainer/CanvasControls/Control" index="1" node_paths=PackedStringArray("draw_canvas")]
-draw_canvas = NodePath("../../../../../Canvas/CenterContainer/DrawCanvas")
-
-[node name="ZoomControl" parent="Controls/VBoxContainer/CanvasControls/Control" index="2" node_paths=PackedStringArray("camera")]
-camera = NodePath("../../../../../Camera2D")
+draw_canvas = NodePath("../../../Canvas/CenterContainer/DrawCanvas")
+camera = NodePath("../../../Camera2D")
 
 [node name="Modals" type="PanelContainer" parent="Controls"]
 visible = false
@@ -129,4 +125,3 @@ export_viewport = NodePath("../../../../SubViewport")
 modal_background = NodePath("../..")
 
 [editable path="Controls/VBoxContainer/Toolbar"]
-[editable path="Controls/VBoxContainer/CanvasControls"]

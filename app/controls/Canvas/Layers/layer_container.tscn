@@ -5,8 +5,8 @@
 [ext_resource type="FontFile" uid="uid://bh3o75v57v5c4" path="res://MaterialSymbolsRounded-VariableFont_FILL,GRAD,opsz,wght.ttf" id="2_xybhc"]
 
 [node name="LayerContainer" type="PanelContainer" node_paths=PackedStringArray("layer_list", "create_button", "delete_button", "move_up_button", "move_down_button")]
-offset_right = 208.0
-offset_bottom = 290.0
+offset_right = 132.0
+offset_bottom = 40.0
 script = ExtResource("1_yr6b4")
 layer_list = NodePath("MarginContainer/VBoxContainer/ScrollContainer/LayerContainer")
 layer_control = ExtResource("1_jbc1y")
@@ -26,7 +26,7 @@ theme_override_constants/margin_bottom = 4
 layout_mode = 2
 
 [node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/VBoxContainer"]
-custom_minimum_size = Vector2(200, 250)
+custom_minimum_size = Vector2(0, 200)
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 0
