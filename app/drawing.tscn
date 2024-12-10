@@ -9,7 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://b11vt5ijj8o6e" path="res://controls/modals/CanvasSize/canvas_size.res" id="10_djrmi"]
 [ext_resource type="PackedScene" uid="uid://b7oses0r5deqt" path="res://controls/modals/ImageSize/image_size.res" id="11_pv3qw"]
 
-[sub_resource type="LayerData" id="LayerData_78uet"]
+[sub_resource type="LayerData" id="LayerData_4s7c5"]
 
 [node name="Control" type="Control"]
 layout_mode = 3
@@ -60,7 +60,7 @@ layout_mode = 2
 
 [node name="DrawLayer" type="DrawLayer" parent="Canvas/CenterContainer/DrawCanvas"]
 active = true
-layer_data = SubResource("LayerData_78uet")
+layer_data = SubResource("LayerData_4s7c5")
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0

@@ -3,10 +3,11 @@ class_name DuplicateLayer extends ColorRect
 var layer: DrawLayer
 
 func _process(_delta):
-	if layer:
-		var parent = get_parent_control()
+	if is_instance_valid(layer):
+		var parent = layer.get_parent_control()
 		if parent && parent is DrawCanvas:
 			color = parent.color
+			(get_parent() as SubViewport).size_2d_override = parent.size
 
 func _draw():
 	if layer:

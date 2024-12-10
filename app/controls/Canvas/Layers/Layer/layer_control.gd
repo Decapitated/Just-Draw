@@ -18,9 +18,6 @@ func _process(_delta):
             add_theme_stylebox_override("panel", active_flat_panel)
         else:
             remove_theme_stylebox_override("panel")
-        var parent = get_parent_control()
-        if parent && parent is DrawCanvas:
-            (layer_view.get_parent() as SubViewport).size = parent.size
 
 func _gui_input(event):
     if event is InputEventMouseButton && event.button_index == MOUSE_BUTTON_LEFT && event.pressed:
