@@ -1,0 +1,56 @@
+[gd_scene load_steps=2 format=3 uid="uid://d0w1xovp835nv"]
+
+[ext_resource type="Script" path="res://controls/Canvas/PenSettings/pen_settings.gd" id="1_jajrf"]
+
+[node name="PenControl" type="PanelContainer" node_paths=PackedStringArray("line_color", "line_width", "cap_scale", "eraser_size")]
+offset_right = 75.0
+offset_bottom = 145.0
+size_flags_vertical = 4
+script = ExtResource("1_jajrf")
+line_color = NodePath("MarginContainer/VBoxContainer/AspectRatioContainer/LineColor")
+line_width = NodePath("MarginContainer/VBoxContainer/LineWidth")
+cap_scale = NodePath("MarginContainer/VBoxContainer/CapScale")
+eraser_size = NodePath("MarginContainer/VBoxContainer/EraseSize")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="AspectRatioContainer" type="AspectRatioContainer" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 83)
+layout_mode = 2
+stretch_mode = 3
+
+[node name="LineColor" type="ColorPickerButton" parent="MarginContainer/VBoxContainer/AspectRatioContainer"]
+layout_mode = 2
+
+[node name="LineWidth" type="SpinBox" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+min_value = 1.0
+step = 0.1
+value = 5.0
+allow_greater = true
+alignment = 1
+update_on_text_changed = true
+
+[node name="CapScale" type="SpinBox" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+step = 0.1
+value = 1.0
+allow_greater = true
+alignment = 1
+
+[node name="EraseSize" type="SpinBox" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+min_value = 1.0
+step = 0.5
+value = 10.0
+allow_greater = true
+alignment = 1

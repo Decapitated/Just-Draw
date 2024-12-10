@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://cgf8cuhalbgj1"]
 
-[ext_resource type="PackedScene" uid="uid://dnjllqtckn1n5" path="res://controls/Layers/Layer/layer.res" id="1_jbc1y"]
-[ext_resource type="Script" path="res://controls/Layers/layer_manager.gd" id="1_yr6b4"]
+[ext_resource type="PackedScene" uid="uid://dnjllqtckn1n5" path="res://controls/Canvas/Layers/Layer/layer.res" id="1_jbc1y"]
+[ext_resource type="Script" path="res://controls/Canvas/Layers/layer_manager.gd" id="1_yr6b4"]
 [ext_resource type="FontFile" uid="uid://bh3o75v57v5c4" path="res://MaterialSymbolsRounded-VariableFont_FILL,GRAD,opsz,wght.ttf" id="2_xybhc"]
 
 [node name="LayerContainer" type="PanelContainer" node_paths=PackedStringArray("layer_list", "create_button", "delete_button", "move_up_button", "move_down_button")]
