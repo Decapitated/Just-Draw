@@ -101,9 +101,10 @@ void DrawLayer::HandleMouseButton(const InputEventMouseButton &event)
 
 void DrawLayer::HandleMouseMotion(const InputEventMouseMotion &event)
 {
-    const bool is_left_button_pressed = (event.get_button_mask() & MOUSE_BUTTON_MASK_RIGHT) == MOUSE_BUTTON_MASK_RIGHT;
-    const float pen_pressure = event.get_pressure() || is_left_button_pressed;
-    const float is_pen_inverted = event.get_pen_inverted() || is_left_button_pressed;
+    const bool is_left_button_pressed = (event.get_button_mask() & MOUSE_BUTTON_MASK_LEFT) == MOUSE_BUTTON_MASK_LEFT;
+    const bool is_right_button_pressed = (event.get_button_mask() & MOUSE_BUTTON_MASK_RIGHT) == MOUSE_BUTTON_MASK_RIGHT;
+    const float pen_pressure = event.get_pressure() || is_left_button_pressed || is_right_button_pressed;
+    const float is_pen_inverted = event.get_pen_inverted() || is_right_button_pressed;
     const Vector2 pen_position = event.get_position();
     if(mode == NONE)
     {
