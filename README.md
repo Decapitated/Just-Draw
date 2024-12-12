@@ -1,5 +1,5 @@
 # Just Draw
-An app for drawing. Opinionated design. For my ADHD mind.
+A no-frills app for drawing. Opinionated design, for my ADHD mind.
 
 <img src="docs/images/canvas_ui.png">
 
