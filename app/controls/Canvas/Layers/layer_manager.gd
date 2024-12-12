@@ -41,7 +41,6 @@ func setup_buttons():
         move_down_button.pressed.connect(move_layer_down)
 
 func create_layer():
-    print("create layer")
     if is_valid():
         var draw_canvas = canvas_controls.draw_canvas
         var new_draw_layer = DrawLayer.new()
