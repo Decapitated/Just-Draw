@@ -11,6 +11,7 @@ config_version=5
 [application]
 
 config/name="Just Draw"
+run/main_scene="res://drawing.tscn"
 config/features=PackedStringArray("4.3", "GL Compatibility")
 config/icon="res://icon.svg"
 
@@ -24,7 +25,3 @@ FPSCounter="*res://debug/FPSCounter/FPSCounter.tscn"
 window/size/viewport_width=1280
 window/size/viewport_height=720
 window/vsync/vsync_mode=0
-
-[rendering]
-
-renderer/rendering_method.mobile="gl_compatibility"
