@@ -3,6 +3,7 @@ class_name LayerControl extends Control
 signal layer_selected(layer: DrawLayer)
 
 @export var layer_view: DuplicateLayer
+@export var visibility_button: Button
 
 var layer: DrawLayer
 
@@ -14,6 +15,8 @@ func _ready():
         
 func _process(_delta):
     if is_instance_valid(layer):
+        layer.visible = visibility_button.button_pressed
+        visibility_button.text = "visibility" if visibility_button.button_pressed else "visibility_off"
         if layer.active:
             add_theme_stylebox_override("panel", active_flat_panel)
         else:
