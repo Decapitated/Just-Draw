@@ -45,6 +45,7 @@ custom_minimum_size = Vector2(28, 28)
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 4
+tooltip_text = "Create Layer"
 theme_override_fonts/font = ExtResource("2_xybhc")
 text = "library_add"
 
@@ -53,6 +54,7 @@ custom_minimum_size = Vector2(28, 28)
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 4
+tooltip_text = "Delete Layer"
 theme_override_fonts/font = ExtResource("2_xybhc")
 text = "delete"
 
@@ -61,6 +63,7 @@ custom_minimum_size = Vector2(28, 28)
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 4
+tooltip_text = "Move Up"
 theme_override_fonts/font = ExtResource("2_xybhc")
 text = "arrow_upward_alt"
 
@@ -69,5 +72,6 @@ custom_minimum_size = Vector2(28, 28)
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 4
+tooltip_text = "Move Down"
 theme_override_fonts/font = ExtResource("2_xybhc")
 text = "arrow_downward_alt"
