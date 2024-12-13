@@ -84,18 +84,20 @@ void DrawLayer::_process(double p_delta)
 
 void DrawLayer::HandleMouseButton(const InputEventMouseButton &event)
 {
-    if(mode == NONE && event.is_pressed())
+    if(!event.is_pressed())
     {
-        const Vector2 pen_position = event.get_position();
-        if(event.get_button_index() == MOUSE_BUTTON_LEFT && !event.is_double_click())
+        if(mode == DRAW)
         {
-            StartDraw(pen_position);
+            mode = NONE;
+            FinishDraw();
+            queue_redraw();
         }
-        else if(event.get_button_index() == MOUSE_BUTTON_RIGHT)
+        else if(mode == ERASE)
         {
-            StartErase(pen_position);
+            mode = NONE;
+            FinishErase();
+            queue_redraw();
         }
-        queue_redraw();
     }
 }
 
@@ -104,44 +106,49 @@ void DrawLayer::HandleMouseMotion(const InputEventMouseMotion &event)
     const bool is_left_button_pressed = (event.get_button_mask() & MOUSE_BUTTON_MASK_LEFT) == MOUSE_BUTTON_MASK_LEFT;
     const bool is_right_button_pressed = (event.get_button_mask() & MOUSE_BUTTON_MASK_RIGHT) == MOUSE_BUTTON_MASK_RIGHT;
     const float pen_pressure = event.get_pressure() || is_left_button_pressed || is_right_button_pressed;
-    const float is_pen_inverted = event.get_pen_inverted() || is_right_button_pressed;
+    const bool pen_inverted = event.get_pen_inverted();
     const Vector2 pen_position = event.get_position();
-    if(mode == NONE)
+    
+    if(pen_pressure > 0.0f)
     {
-        if(pen_pressure > 0.0f)
-        {
-            // If eraser.
-            if(is_pen_inverted)
-            {
-                StartErase(pen_position);
-            } else
-            {
-                StartDraw(pen_position);
-            }
-            queue_redraw();
-        }
-    }
-    else if(mode == ERASE)
-    {
-        if(is_pen_inverted && pen_pressure > 0.0f)
+        if(mode == ERASE)
         {
             UpdateErase(pen_position);
-        } else {
-            mode = NONE;
-            FinishDraw();
+            queue_redraw();
         }
-        queue_redraw();
-    }
-    else if(mode == DRAW)
-    {
-        if(!is_pen_inverted && pen_pressure > 0.0f)
+        else if(mode == DRAW)
         {
             UpdateDraw(pen_position);
-        } else {
+            queue_redraw();
+        }
+        else if(mode == NONE)
+        {
+            if(is_left_button_pressed && !pen_inverted)
+            {
+                StartDraw(pen_position);
+                queue_redraw();
+            }
+            else if(is_right_button_pressed || pen_inverted)
+            {
+                StartErase(pen_position);
+                queue_redraw();
+            }
+        }
+    }
+    else
+    {
+        if(mode == ERASE)
+        {
+            mode = NONE;
+            FinishErase();
+            queue_redraw();
+        }
+        else if(mode == DRAW)
+        {
             mode = NONE;
             FinishDraw();
+            queue_redraw();
         }
-        queue_redraw();
     }
 }
 
