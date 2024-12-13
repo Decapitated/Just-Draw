@@ -45,6 +45,18 @@ DrawLayer::DrawLayer()
 
 DrawLayer::~DrawLayer() {}
 
+void DrawLayer::_notification(int p_what)
+{
+    if(p_what == NOTIFICATION_DRAG_BEGIN)
+    {
+        dragging = true;
+    }
+    else if(p_what == NOTIFICATION_DRAG_END)
+    {
+        dragging = false;
+    }
+}
+
 PackedStringArray DrawLayer::_get_configuration_warnings() const
 {
     auto warnings = PackedStringArray();
@@ -58,7 +70,7 @@ PackedStringArray DrawLayer::_get_configuration_warnings() const
 
 void DrawLayer::_unhandled_input(const Ref<InputEvent> &p_event)
 {
-    if(active && p_event->get_device() != InputEvent::DEVICE_ID_EMULATION)
+    if(active && !dragging && p_event->get_device() != InputEvent::DEVICE_ID_EMULATION)
     {
         const Ref<InputEvent> event = make_input_local(*p_event);
         if(auto e = dynamic_cast<InputEventMouseButton*>(*event))
