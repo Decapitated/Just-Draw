@@ -129,6 +129,40 @@ body {
                     });
                 });
             })();
+
+            (() => {
+                // Function to download data to a file
+                function download(data, filename, type) {
+                    var file = new Blob([data], {type: type});
+                    if (window.navigator.msSaveOrOpenBlob) // IE10+
+                        window.navigator.msSaveOrOpenBlob(file, filename);
+                    else { // Others
+                        var a = document.createElement("a"),
+                            url = URL.createObjectURL(file);
+                        a.href = url;
+                        a.download = filename;
+                        document.body.appendChild(a);
+                        a.click();
+                        setTimeout(function() {
+                            document.body.removeChild(a);
+                            window.URL.revokeObjectURL(url);  
+                        }, 0); 
+                    }
+                }
+
+                function base64ToArrayBuffer(base64) {
+                    var binaryString = atob(base64);
+                    var bytes = new Uint8Array(binaryString.length);
+                    for (var i = 0; i < binaryString.length; i++) {
+                        bytes[i] = binaryString.charCodeAt(i);
+                    }
+                    return bytes.buffer;
+                }
+
+                window.downloadFile = (data, filename) => {
+                    download(base64ToArrayBuffer(data), filename, 'text/plain');
+                };
+            })();
         </script>
     </head>
     <body>
