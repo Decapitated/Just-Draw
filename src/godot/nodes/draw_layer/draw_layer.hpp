@@ -64,6 +64,7 @@ namespace JustDraw
             PenMode mode = PenMode::NONE;
 
             bool active = false;
+            bool dragging = false;
 
             void HandleMouseButton(const InputEventMouseButton &event);
             void HandleMouseMotion(const InputEventMouseMotion &event);
@@ -85,6 +86,7 @@ namespace JustDraw
 
         protected:
             static void _bind_methods();
+	        void _notification(int p_what);
 
         public:
             DrawLayer();

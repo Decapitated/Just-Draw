@@ -1,7 +1,7 @@
 [gd_scene load_steps=9 format=3 uid="uid://b1fwia5qj8s06"]
 
 [ext_resource type="Script" path="res://scripts/draw_cam.gd" id="1_hampg"]
-[ext_resource type="Script" path="res://scripts/pen_cursor.gd" id="2_3c6d4"]
+[ext_resource type="Script" uid="uid://lp2gsmru6sv7" path="res://scripts/pen_cursor.gd" id="2_3c6d4"]
 [ext_resource type="Script" path="res://scripts/canvas_viewport.gd" id="4_ojijs"]
 [ext_resource type="PackedScene" uid="uid://kfammk62injs" path="res://controls/Toolbar/toolbar.res" id="5_beobf"]
 [ext_resource type="Script" path="res://scripts/copy_canvas.gd" id="5_lrsg0"]
