@@ -77,6 +77,27 @@ body {
 }
         </style>
         $GODOT_HEAD_INCLUDE
+        <script>
+            (() => {
+                var lastFileBuffer = null;
+
+                window.setupOpenFile = (callback) => {
+                    window.openFileInput = document.createElement('input');
+                    openFileInput.type = 'file';
+                    openFileInput.accept = '.res';
+                    openFileInput.onchange = (e) => {
+                        var file = e.target.files[0];
+                        file.arrayBuffer().then((buffer) => {
+                            lastFileBuffer = buffer;
+                            callback();
+                            openFileInput.value = '';
+                        });
+                    };
+                };
+
+                window.getFileBuffer = () => lastFileBuffer;
+            })();
+        </script>
     </head>
     <body>
         <canvas id="canvas">
