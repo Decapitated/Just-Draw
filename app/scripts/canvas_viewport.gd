@@ -10,7 +10,7 @@ func update_viewport():
     background.current_canvas = canvas_data
     background.queue_redraw()
 
-func save_canvas(path: String):
+func save_canvas(path: String) -> int:
     await background.finished_drawing
     await RenderingServer.frame_post_draw
     var texture = get_texture()
@@ -18,8 +18,9 @@ func save_canvas(path: String):
     var extension = path.split(".")[-1].to_lower()
     match extension:
         "png":
-            image.save_png(path)
+            return image.save_png(path)
         "jpg", "jpeg":
-            image.save_jpg(path)
+            return image.save_jpg(path)
         "webp":
-            image.save_webp(path)
+            return image.save_webp(path)
+    return ERR_FILE_UNRECOGNIZED

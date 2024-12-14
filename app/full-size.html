@@ -159,8 +159,8 @@ body {
                     return bytes.buffer;
                 }
 
-                window.downloadFile = (data, filename) => {
-                    download(base64ToArrayBuffer(data), filename, 'text/plain');
+                window.downloadFile = (data, filename, type) => {
+                    download(base64ToArrayBuffer(data), filename, type);
                 };
             })();
         </script>
