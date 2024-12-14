@@ -8,6 +8,7 @@
 #include <godot_cpp/classes/input_event_mouse_motion.hpp>
 #include <godot_cpp/classes/input_event_mouse_button.hpp>
 #include <godot_cpp/classes/input_event_key.hpp>
+#include <godot_cpp/classes/rendering_server.hpp>
 
 #include <list>
 #include <vector>
@@ -48,7 +49,38 @@ namespace JustDraw
             virtual ~CappedPenLine() {}
     };
 
-    using Lines = list<CappedPenLine>;
+    class RSLine
+    {
+        private:
+            RID canvas_item = RID();
+
+        public:
+            CappedPenLine line;
+            RSLine(CappedPenLine p_line, RID p_canvas_item) :
+                line(p_line), canvas_item(p_canvas_item) {};
+            ~RSLine()
+            {
+                auto rs = RenderingServer::get_singleton();
+                if(rs == nullptr) return;
+                rs->free_rid(canvas_item);
+            }
+
+            void Clear(RenderingServer* rs)
+            {
+                if(rs == nullptr || !canvas_item.is_valid()) return;
+                rs->canvas_item_clear(canvas_item);
+            }
+
+            void Update(RenderingServer* rs);
+
+            void Redraw(RenderingServer* rs)
+            {
+                Clear(rs);
+                Update(rs);
+            }
+    };
+
+    using Lines = list<shared_ptr<RSLine>>;
     using LineIterator = Lines::iterator;
 
     class DrawLayer : public Control
@@ -69,6 +101,8 @@ namespace JustDraw
             void HandleMouseButton(const InputEventMouseButton &event);
             void HandleMouseMotion(const InputEventMouseMotion &event);
             void HandleKey(const InputEventKey &event);
+
+            void Redraw();
 
             void StartDraw(Vector2 pen_position);
             void StartErase(Vector2 pen_position);
@@ -107,7 +141,7 @@ namespace JustDraw
             PackedStringArray _get_configuration_warnings() const override;
             void _process(double p_delta) override;
             void _unhandled_input(const Ref<InputEvent> &p_event) override;
-            void _draw() override;
+            // void _draw() override;
             
             static void SmoothLineStep(Line &line, float smooth_ratio, float smooth_min_distance, int smooth_start = 0);
             void SmoothLine(Line &line, int smooth_start = 0);
