@@ -80,8 +80,10 @@ body {
         <script>
             (() => {
                 var lastFileBuffer = null;
+                var loadFileCallback = null;
 
                 window.setupOpenFile = (callback) => {
+                    loadFileCallback = callback;
                     window.openFileInput = document.createElement('input');
                     openFileInput.type = 'file';
                     openFileInput.accept = '.res';
@@ -89,13 +91,43 @@ body {
                         var file = e.target.files[0];
                         file.arrayBuffer().then((buffer) => {
                             lastFileBuffer = buffer;
-                            callback();
+                            if(loadFileCallback) {
+                                loadFileCallback();
+                            }
                             openFileInput.value = '';
                         });
                     };
                 };
 
                 window.getFileBuffer = () => lastFileBuffer;
+
+                // Wait for the DOM to be ready before attaching event listeners to body.
+                document.addEventListener('DOMContentLoaded', () => {
+                    document.body.addEventListener('dragenter', (e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        e.dataTransfer.dropEffect = 'copy';
+                    });
+
+                    document.body.addEventListener('dragover', (e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        e.dataTransfer.dropEffect = 'copy';
+                    })
+
+                    document.body.addEventListener('drop', (e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+
+                        var file = e.dataTransfer.files[0];
+                        file.arrayBuffer().then((buffer) => {
+                            lastFileBuffer = buffer;
+                            if(loadFileCallback) {
+                                loadFileCallback();
+                            }
+                        });
+                    });
+                });
             })();
         </script>
     </head>
