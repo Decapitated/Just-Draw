@@ -97,7 +97,7 @@ namespace JustDraw
             bool get_active() { return active; }
             void set_active(bool p_active) { active = p_active; }
 
-            Ref<LayerData> get_layer_data() { return memnew(LayerData(GetLines(), GetPens())); }
+            Ref<LayerData> create_layer_data() { return memnew(LayerData(GetLines(), GetPens())); }
             void load_layer_data(Ref<LayerData> p_layer_data);
 
             PenMode get_pen_mode() { return mode; }
