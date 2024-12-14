@@ -18,6 +18,7 @@ func _ready():
     else:
         open_save_dialog.file_selected.connect(_on_open_save_file_selected)
         export_dialog.file_selected.connect(_on_export_file_selected)
+        get_viewport().files_dropped.connect(_on_files_dropped)
 
 func _on_id_pressed(id: int):
     if draw_canvas:
@@ -50,6 +51,9 @@ func _on_open_save_file_selected(path: String):
 func _on_export_file_selected(path: String):
     subviewport.update_viewport()
     subviewport.save_canvas(path)
+
+func _on_files_dropped(files: PackedStringArray):
+    _on_open_save_file_selected(files[0])
 
 const TEMP_FILE = "temp_load_dhova5k2f7igh.res"
 const TEMP_FILE_PATH = "user://" + TEMP_FILE
