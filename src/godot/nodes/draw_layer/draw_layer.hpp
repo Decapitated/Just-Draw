@@ -8,6 +8,7 @@
 #include <godot_cpp/classes/input_event_mouse_motion.hpp>
 #include <godot_cpp/classes/input_event_mouse_button.hpp>
 #include <godot_cpp/classes/input_event_key.hpp>
+#include <godot_cpp/classes/rendering_server.hpp>
 
 #include <list>
 #include <vector>
@@ -48,7 +49,45 @@ namespace JustDraw
             virtual ~CappedPenLine() {}
     };
 
-    using Lines = list<CappedPenLine>;
+    class RSLine
+    {
+        private:
+            RID canvas_item = RID();
+
+        public:
+            CappedPenLine line;
+            Rect2 rect = Rect2();
+
+            RSLine(CappedPenLine p_line, RID p_canvas_item) : line(p_line), canvas_item(p_canvas_item)
+            {
+                rect = CalculateRect(line);
+            }
+
+            ~RSLine()
+            {
+                auto rs = RenderingServer::get_singleton();
+                if(rs == nullptr) return;
+                rs->free_rid(canvas_item);
+            }
+
+            void Clear(RenderingServer* rs)
+            {
+                if(rs == nullptr || !canvas_item.is_valid()) return;
+                rs->canvas_item_clear(canvas_item);
+            }
+
+            void Update(RenderingServer* rs);
+
+            void Redraw(RenderingServer* rs)
+            {
+                Clear(rs);
+                Update(rs);
+            }
+
+            static Rect2 CalculateRect(const Line &p_line);
+    };
+
+    using Lines = list<shared_ptr<RSLine>>;
     using LineIterator = Lines::iterator;
 
     class DrawLayer : public Control
@@ -97,7 +136,7 @@ namespace JustDraw
             bool get_active() { return active; }
             void set_active(bool p_active) { active = p_active; }
 
-            Ref<LayerData> get_layer_data() { return memnew(LayerData(GetLines(), GetPens())); }
+            Ref<LayerData> create_layer_data() { return memnew(LayerData(GetLines(), GetPens())); }
             void load_layer_data(Ref<LayerData> p_layer_data);
 
             PenMode get_pen_mode() { return mode; }
@@ -107,7 +146,7 @@ namespace JustDraw
             PackedStringArray _get_configuration_warnings() const override;
             void _process(double p_delta) override;
             void _unhandled_input(const Ref<InputEvent> &p_event) override;
-            void _draw() override;
+            // void _draw() override;
             
             static void SmoothLineStep(Line &line, float smooth_ratio, float smooth_min_distance, int smooth_start = 0);
             void SmoothLine(Line &line, int smooth_start = 0);

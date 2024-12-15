@@ -21,9 +21,11 @@ void DrawLayer::_bind_methods()
     ClassDB::bind_method(D_METHOD("get_active"), &DrawLayer::get_active);
     ADD_PROPERTY(PropertyInfo(Variant::BOOL, "active"), "set_active", "get_active");
 
-    ClassDB::bind_method(D_METHOD("get_layer_data"), &DrawLayer::get_layer_data);
+    ClassDB::bind_method(D_METHOD("create_layer_data"), &DrawLayer::create_layer_data);
     ClassDB::bind_method(D_METHOD("load_layer_data", "p_layer_data"), &DrawLayer::load_layer_data);
-    ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "layer_data", PROPERTY_HINT_RESOURCE_TYPE, "LayerData", (PROPERTY_USAGE_DEFAULT ^ PROPERTY_USAGE_EDITOR) | PROPERTY_USAGE_NO_EDITOR), "load_layer_data", "get_layer_data");
+    ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "layer_data", PROPERTY_HINT_RESOURCE_TYPE, "LayerData",
+                              PROPERTY_USAGE_NO_EDITOR),
+                 "load_layer_data", "create_layer_data");
 
     #pragma endregion
     
@@ -102,13 +104,11 @@ void DrawLayer::HandleMouseButton(const InputEventMouseButton &event)
         {
             mode = NONE;
             FinishDraw();
-            queue_redraw();
         }
         else if(mode == ERASE)
         {
             mode = NONE;
             FinishErase();
-            queue_redraw();
         }
     }
 }
@@ -126,24 +126,20 @@ void DrawLayer::HandleMouseMotion(const InputEventMouseMotion &event)
         if(mode == ERASE)
         {
             UpdateErase(pen_position);
-            queue_redraw();
         }
         else if(mode == DRAW)
         {
             UpdateDraw(pen_position);
-            queue_redraw();
         }
         else if(mode == NONE)
         {
             if(is_left_button_pressed && !pen_inverted)
             {
                 StartDraw(pen_position);
-                queue_redraw();
             }
             else if(is_right_button_pressed || pen_inverted)
             {
                 StartErase(pen_position);
-                queue_redraw();
             }
         }
     }
@@ -153,49 +149,49 @@ void DrawLayer::HandleMouseMotion(const InputEventMouseMotion &event)
         {
             mode = NONE;
             FinishErase();
-            queue_redraw();
         }
         else if(mode == DRAW)
         {
             mode = NONE;
             FinishDraw();
-            queue_redraw();
         }
     }
 }
 
 void DrawLayer::HandleKey(const InputEventKey &event) {}
 
-void DrawLayer::_draw()
+RID create_canvas_item(RID parent_item)
 {
-    auto parent = get_parent(); 
-    for(CappedPenLine& line : lines)
+    auto rs = RenderingServer::get_singleton();
+    if(parent_item.is_valid() && rs != nullptr)
     {
-        if(line.size() >= 2)
+        auto canvas_item = rs->canvas_item_create();
+        if(canvas_item.is_valid())
         {
-            draw_circle(line[0], line.cap_radius, line.color);
-            draw_polyline(line, line.color, line.width);
-            draw_circle(line[line.size() - 1], line.cap_radius, line.color);
-        }
-        else if(line.size() == 1)
-        {
-            draw_circle(line[0], line.width / 2.0f, line.color);
+            rs->canvas_item_set_parent(canvas_item, parent_item);
+            return canvas_item;
         }
     }
+    return RID();
 }
 
 void DrawLayer::StartDraw(Vector2 pen_position)
 {
     auto canvas = dynamic_cast<DrawCanvas*>(get_parent_control());
-    if(canvas != nullptr)
+    auto rs = RenderingServer::get_singleton();
+    if(canvas != nullptr && rs != nullptr)
     {
         mode = DRAW;
         // Create a new pen line, and set line properties.
-        auto line = CappedPenLine(canvas->line_color, canvas->line_width, (canvas->line_width / 2.0f) * canvas->cap_scale);
+        auto new_line = CappedPenLine(canvas->line_color, canvas->line_width, (canvas->line_width / 2.0f) * canvas->cap_scale);
         // Add the mouse position as the first point of the line.
-        line.append(pen_position);
+        new_line.append(pen_position);
+        // Create canvas item directly on RenderingServer.
+        auto canvas_item = create_canvas_item(get_canvas_item());
+        auto new_rs_line = shared_ptr<RSLine>(new RSLine(new_line, canvas_item));
+        new_rs_line->Update(rs);
         // Add the line to the list.
-        lines.push_back(line);
+        lines.push_back(new_rs_line);
     }
 }
 
@@ -208,55 +204,75 @@ void DrawLayer::StartErase(Vector2 pen_position)
 void DrawLayer::UpdateDraw(Vector2 pen_position)
 {
     auto canvas = dynamic_cast<DrawCanvas*>(get_parent_control());
-    if(canvas != nullptr)
+    auto rs = RenderingServer::get_singleton();
+    if(canvas != nullptr && rs != nullptr)
     {
         auto cam = get_viewport()->get_camera_2d();
         const float min_dist = canvas->min_draw_distance * (1.0f / cam->get_zoom().x);
-        // const float min_dist = canvas->get_min_draw_distance();
-        CappedPenLine& line = lines.back();
-        auto prev_pos = line[line.size() - 1];
+        shared_ptr<RSLine> rs_line = lines.back();
+        auto prev_pos = rs_line->line[rs_line->line.size() - 1];
         auto dist = prev_pos.distance_squared_to(pen_position);
         if(dist >= powf(min_dist, 2.0))
         {
             // Clamp the angle between the line and the pen.
-            if(line.size() >= 2)
+            if(rs_line->line.size() >= 2)
             {
-                Vector2 prev = line[line.size() - 2], curr = prev_pos, next = pen_position;
+                Vector2 prev = rs_line->line[rs_line->line.size() - 2], curr = prev_pos, next = pen_position;
                 float curr_dot = (curr - prev).normalized().dot((next - curr).normalized());
                 curr_dot = (1.0f - (curr_dot * 0.5f + 0.5f)) * 180.0f;
                 if(curr_dot > canvas->max_draw_angle)
                 {
                     FinishDraw();
                     // Create a new pen line, and set line properties.
-                    auto new_line = CappedPenLine(line.color, line.width, line.cap_radius);
-                    new_line.append(line[line.size() - 1]);
-                    // Add the mouse position as the second point of the line.
+                    auto new_line = CappedPenLine(rs_line->line.color, rs_line->line.width, rs_line->line.cap_radius);
+                    new_line.append(rs_line->line[rs_line->line.size() - 1]);
                     new_line.append(next);
+                    // Create canvas item directly on RenderingServer.
+                    auto canvas_item = create_canvas_item(get_canvas_item());
+                    auto new_rs_line = shared_ptr<RSLine>(new RSLine(new_line, canvas_item));
+                    new_rs_line->Update(rs);
                     // Add the line to the list.
-                    lines.push_back(new_line);
+                    lines.push_back(new_rs_line);
                     return;
                 }
             }
-            line.append(pen_position);
+            rs_line->line.append(pen_position);
+            rs_line->rect.expand_to(pen_position);
+            rs_line->Redraw(rs);
         }
     }
 }
 
 void DrawLayer::UpdateErase(Vector2 pen_position)
 {
+    auto canvas = dynamic_cast<DrawCanvas*>(get_parent_control());
+    if(canvas == nullptr) return;
     LineIterator line_it = lines.begin();
     int loop_count = 0;
     while(line_it != lines.end())
     {
-        bool should_erase = UpdateErase(pen_position, line_it);
-        if(should_erase)
+        // Check if the pen position is inside the line bounding rect.
+        Rect2 line_rect = (*line_it)->rect;
+        bool contains = line_rect.has_point(pen_position);
+        if(!contains)
         {
-            line_it = lines.erase(line_it);
+            Vector2 center = line_rect.get_center();
+            Vector2 closest = Vector2(
+                max(center.x - line_rect.size.x / 2.0f, min(pen_position.x, center.x + line_rect.size.x / 2.0f)),
+                max(center.y - line_rect.size.y / 2.0f, min(pen_position.y, center.y + line_rect.size.y / 2.0f))
+            );
+            contains = closest.distance_squared_to(pen_position) < powf(canvas->eraser_size + (*line_it)->line.width / 3.0f, 2.0f);
         }
-        else
+        if(contains)
         {
-            line_it++;
+            bool should_erase = UpdateErase(pen_position, line_it);
+            if(should_erase)
+            {
+                line_it = lines.erase(line_it);
+                continue;
+            }
         }
+        line_it++;
     }
 }
 
@@ -264,40 +280,53 @@ bool DrawLayer::UpdateErase(Vector2 pen_position, LineIterator line_it)
 {
     bool sliced = false;
     auto canvas = dynamic_cast<DrawCanvas*>(get_parent_control());
-    if(canvas != nullptr)
+    auto rs = RenderingServer::get_singleton();
+    if(canvas != nullptr && rs != nullptr)
     {
         int slice_start = 0;
-        for(int i = 0; i < line_it->size(); i++)
+        bool slicing = false;
+        for(int i = 0; i < (*line_it)->line.size(); i++)
         {
-            auto curr = (*line_it)[i];
-            bool is_last_slice = slice_start > 0 && i == line_it->size() - 1;
-            if(is_last_slice || (curr.distance_squared_to(pen_position) < powf(canvas->eraser_size + line_it->width / 3.0f, 2.0f)))
+            auto curr = (*line_it)->line[i];
+            bool is_last_slice = i == (*line_it)->line.size() - 1 && slice_start > 0;
+            if(is_last_slice || (curr.distance_squared_to(pen_position) < powf(canvas->eraser_size + (*line_it)->line.width / 3.0f, 2.0f)))
             {
-                sliced = true;
-                int end = is_last_slice ? i + 1 : i;
-                auto new_line = CappedPenLine(line_it->slice(slice_start, end), line_it->color, line_it->width, line_it->cap_radius);
-                auto new_line_it = lines.insert(line_it, new_line);
-                bool should_erase = UpdateErase(pen_position, new_line_it);
-                if(should_erase)
+                if(slicing)
                 {
-                    lines.erase(new_line_it);
+                    int end = is_last_slice ? i + 1 : i;
+                    auto new_line = CappedPenLine((*line_it)->line.slice(slice_start, end), (*line_it)->line.color, (*line_it)->line.width, (*line_it)->line.cap_radius);
+                    // Create canvas item directly on RenderingServer.
+                    auto canvas_item = create_canvas_item(get_canvas_item());
+                    auto new_rs_line = shared_ptr<RSLine>(new RSLine(new_line, canvas_item));
+
+                    auto new_line_it = lines.insert(line_it, new_rs_line);
+                    (*new_line_it)->Update(rs);
+
+                    slicing = false;
                 }
-                slice_start = i + 1;
+                sliced = true;
+            }
+            else if(!slicing)
+            {
+                slice_start = i;
+                slicing = true;
             }
         }
     }
-    return sliced || line_it->size() == 0;
+    return sliced || (*line_it)->line.size() == 0;
 }
 
 void DrawLayer::FinishDraw()
 {
-    if(lines.size() > 0)
+    auto rs = RenderingServer::get_singleton();
+    if(lines.size() > 0 && rs != nullptr)
     {   
-        CappedPenLine& line = lines.back();
+        shared_ptr<RSLine> rs_line = lines.back();
         // If the line has 3 or more points, smooth it.
-        if(line.size() >= 3)
+        if(rs_line->line.size() >= 3)
         {
-            SmoothLine(static_cast<Line&>(line));
+            SmoothLine(static_cast<Line&>(rs_line->line));
+            rs_line->Redraw(rs);
         }
     }
     emit_signal(UPDATED_SIGNAL);
@@ -351,9 +380,9 @@ void DrawLayer::SmoothLine(Line &line, int smooth_start)
 TypedArray<PackedVector2Array> DrawLayer::GetLines()
 {
     TypedArray<PackedVector2Array> lines_array;
-    for(const auto &line : lines)
+    for(const auto rs_line : lines)
     {
-        lines_array.append(line);
+        lines_array.append(rs_line->line);
     }
     return lines_array;
 }
@@ -361,12 +390,12 @@ TypedArray<PackedVector2Array> DrawLayer::GetLines()
 TypedArray<Dictionary> DrawLayer::GetPens()
 {
     TypedArray<Dictionary> pens_array;
-    for(const auto &line : lines)
+    for(const auto rs_line : lines)
     {
         auto pen = Dictionary();
-        pen["color"] = line.color;
-        pen["width"] = line.width;
-        pen["cap_radius"] = line.cap_radius;
+        pen["color"] = rs_line->line.color;
+        pen["width"] = rs_line->line.width;
+        pen["cap_radius"] = rs_line->line.cap_radius;
         pens_array.append(pen);
     }
     return pens_array;
@@ -375,6 +404,8 @@ TypedArray<Dictionary> DrawLayer::GetPens()
 void DrawLayer::load_layer_data(Ref<LayerData> p_layer_data)
 {
     if(p_layer_data.is_null() || !p_layer_data.is_valid()) return;
+    auto rs = RenderingServer::get_singleton();
+    if(rs == nullptr) return;
     Lines new_lines = Lines();
     auto p_lines = p_layer_data->get_lines();
     auto p_pens = p_layer_data->get_pens();
@@ -383,10 +414,14 @@ void DrawLayer::load_layer_data(Ref<LayerData> p_layer_data)
         auto color = static_cast<Color>(p_pens[i].get("color"));
         auto width = static_cast<float>(p_pens[i].get("width"));
         auto cap_radius = static_cast<float>(p_pens[i].get("cap_radius"));
-        new_lines.push_back(CappedPenLine(p_lines[i], color, width, cap_radius));
+        auto new_line = CappedPenLine(p_lines[i], color, width, cap_radius);
+        // Create canvas item directly on RenderingServer.
+        auto canvas_item = create_canvas_item(get_canvas_item());
+        auto new_rs_line = shared_ptr<RSLine>(new RSLine(new_line, canvas_item));
+        new_rs_line->Update(rs);
+        new_lines.push_back(new_rs_line);
     }
     lines = new_lines;
-    queue_redraw();
 }
 
 void DrawLayer::scale_lines(Vector2 scale)
@@ -394,9 +429,9 @@ void DrawLayer::scale_lines(Vector2 scale)
     LineIterator line_it = lines.begin();
     while(line_it != lines.end())
     {
-        for(int i = 0; i < line_it->size(); i++)
+        for(int i = 0; i < (*line_it)->line.size(); i++)
         {
-            (*line_it)[i] *= scale;
+            (*line_it)->line[i] *= scale;
         }
         line_it++;
     }
@@ -407,10 +442,38 @@ void DrawLayer::offset_lines(Vector2 offset)
     LineIterator line_it = lines.begin();
     while(line_it != lines.end())
     {
-        for(int i = 0; i < line_it->size(); i++)
+        for(int i = 0; i < (*line_it)->line.size(); i++)
         {
-            (*line_it)[i] += offset;
+            (*line_it)->line[i] += offset;
         }
         line_it++;
     }
+}
+
+void RSLine::Update(RenderingServer* rs)
+{
+    if(rs == nullptr || !canvas_item.is_valid()) return;
+    if(line.size() >= 2)
+    {
+        rs->canvas_item_add_circle(canvas_item, line[0], line.cap_radius, line.color);
+        auto colors = PackedColorArray();
+        colors.resize(line.size());
+        colors.fill(line.color);
+        rs->canvas_item_add_polyline(canvas_item, line, colors, line.width);
+        rs->canvas_item_add_circle(canvas_item, line[line.size() - 1], line.cap_radius, line.color);
+    }
+    else if(line.size() == 1)
+    {
+        rs->canvas_item_add_circle(canvas_item, line[0], line.width / 2.0f, line.color);
+    }
+}
+
+Rect2 RSLine::CalculateRect(const Line &p_line)
+{
+    auto rect = Rect2();
+    for(int i = 0; i < p_line.size(); i++)
+    {
+        rect.expand_to(p_line[i]);
+    }
+    return rect;
 }

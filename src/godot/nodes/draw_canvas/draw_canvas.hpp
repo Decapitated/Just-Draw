@@ -66,18 +66,19 @@ namespace JustDraw
             float get_smooth_ratio() { return smooth_ratio; }
             void set_smooth_ratio(float p_ratio) { smooth_ratio = min(max(p_ratio, 0.0f), 1.0f); }
 
-            #pragma endregion
-
-            using LayerCallback = function<bool(DrawLayer*)>;
-            void CallOnLayers(LayerCallback callback);
-
             Ref<CanvasData> create_canvas_data();
             void load_canvas_data(Ref<CanvasData> canvas_data);
-            void clear_canvas();
 
             DrawLayer* get_active_layer();
             void set_active_layer(DrawLayer* draw_layer);
 
+            #pragma endregion
+
+            using ShouldBreak = bool;
+            using LayerCallback = function<ShouldBreak(DrawLayer*)>;
+            void CallOnLayers(LayerCallback callback);
+
+            void clear_canvas();
             void scale_layers(Vector2 p_scale);
             void offset_layers(Vector2 p_offset);
     };
