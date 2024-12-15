@@ -1,0 +1,58 @@
+[gd_scene load_steps=3 format=3 uid="uid://dlsmwh7px182s"]
+
+[ext_resource type="Script" path="res://controls/Toolbar/file_manager.gd" id="1_shaul"]
+[ext_resource type="Script" path="res://controls/Toolbar/edit_manager.gd" id="2_12ov8"]
+
+[node name="Toolbar" type="PanelContainer"]
+offset_right = 93.0
+offset_bottom = 39.0
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 4
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="File" type="MenuButton" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+text = "File"
+flat = false
+item_count = 3
+popup/item_0/text = "Open..."
+popup/item_1/text = "Save as..."
+popup/item_1/id = 1
+popup/item_2/text = "Export as..."
+popup/item_2/id = 2
+script = ExtResource("1_shaul")
+
+[node name="OpenSaveFileDialog" type="FileDialog" parent="MarginContainer/HBoxContainer/File"]
+auto_translate_mode = 1
+title = "Open a File"
+size = Vector2i(324, 180)
+ok_button_text = "Open"
+file_mode = 0
+access = 2
+filters = PackedStringArray("*.res; Resource")
+use_native_dialog = true
+
+[node name="ExportFileDialog" type="FileDialog" parent="MarginContainer/HBoxContainer/File"]
+auto_translate_mode = 1
+size = Vector2i(324, 180)
+ok_button_text = "Save"
+access = 2
+filters = PackedStringArray("*.png; PNG", "*.jpg, *.jpeg; JPEG", "*.webp; WebP")
+use_native_dialog = true
+
+[node name="Edit" type="MenuButton" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+text = "Edit"
+flat = false
+item_count = 2
+popup/item_0/text = "Canvas Size"
+popup/item_1/text = "Image Size"
+popup/item_1/id = 1
+script = ExtResource("2_12ov8")

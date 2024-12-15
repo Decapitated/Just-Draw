@@ -3,8 +3,8 @@
 [ext_resource type="Script" path="res://scripts/draw_cam.gd" id="1_hampg"]
 [ext_resource type="Script" uid="uid://lp2gsmru6sv7" path="res://scripts/pen_cursor.gd" id="2_3c6d4"]
 [ext_resource type="Script" path="res://scripts/canvas_viewport.gd" id="4_ojijs"]
-[ext_resource type="PackedScene" uid="uid://kfammk62injs" path="res://controls/Toolbar/toolbar.res" id="5_beobf"]
 [ext_resource type="Script" path="res://scripts/copy_canvas.gd" id="5_lrsg0"]
+[ext_resource type="PackedScene" uid="uid://dlsmwh7px182s" path="res://controls/Toolbar/toolbar.tscn" id="5_try7y"]
 [ext_resource type="PackedScene" uid="uid://dpclvyw36hn2" path="res://controls/Canvas/canvas_control.res" id="6_p8k4q"]
 [ext_resource type="PackedScene" uid="uid://bogyjl2smag1s" path="res://controls/modals/CanvasSize/canvas_size.tscn" id="7_6lv80"]
 [ext_resource type="PackedScene" uid="uid://b7oses0r5deqt" path="res://controls/modals/ImageSize/image_size.res" id="11_pv3qw"]
@@ -71,7 +71,7 @@ grow_vertical = 2
 mouse_filter = 2
 theme_override_constants/separation = 0
 
-[node name="Toolbar" parent="Controls/VBoxContainer" instance=ExtResource("5_beobf")]
+[node name="Toolbar" parent="Controls/VBoxContainer" instance=ExtResource("5_try7y")]
 layout_mode = 2
 
 [node name="File" parent="Controls/VBoxContainer/Toolbar/MarginContainer/HBoxContainer" index="0" node_paths=PackedStringArray("draw_canvas", "subviewport")]
