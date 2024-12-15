@@ -102,8 +102,6 @@ namespace JustDraw
             void HandleMouseMotion(const InputEventMouseMotion &event);
             void HandleKey(const InputEventKey &event);
 
-            void Redraw();
-
             void StartDraw(Vector2 pen_position);
             void StartErase(Vector2 pen_position);
 

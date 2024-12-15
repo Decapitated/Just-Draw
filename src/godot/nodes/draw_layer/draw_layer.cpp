@@ -104,13 +104,11 @@ void DrawLayer::HandleMouseButton(const InputEventMouseButton &event)
         {
             mode = NONE;
             FinishDraw();
-            queue_redraw();
         }
         else if(mode == ERASE)
         {
             mode = NONE;
             FinishErase();
-            queue_redraw();
         }
     }
 }
@@ -128,24 +126,20 @@ void DrawLayer::HandleMouseMotion(const InputEventMouseMotion &event)
         if(mode == ERASE)
         {
             UpdateErase(pen_position);
-            queue_redraw();
         }
         else if(mode == DRAW)
         {
             UpdateDraw(pen_position);
-            queue_redraw();
         }
         else if(mode == NONE)
         {
             if(is_left_button_pressed && !pen_inverted)
             {
                 StartDraw(pen_position);
-                queue_redraw();
             }
             else if(is_right_button_pressed || pen_inverted)
             {
                 StartErase(pen_position);
-                queue_redraw();
             }
         }
     }
@@ -155,74 +149,28 @@ void DrawLayer::HandleMouseMotion(const InputEventMouseMotion &event)
         {
             mode = NONE;
             FinishErase();
-            queue_redraw();
         }
         else if(mode == DRAW)
         {
             mode = NONE;
             FinishDraw();
-            queue_redraw();
         }
     }
 }
 
 void DrawLayer::HandleKey(const InputEventKey &event) {}
 
-void DrawLayer::Redraw()
-{
-    auto rs = RenderingServer::get_singleton();
-    if(rs == nullptr) return;
-    for(auto line : lines)
-    {
-        line->Redraw(rs);
-    }
-}
-
-// void DrawLayer::_draw()
-// {
-//     auto parent = get_parent(); 
-//     for(CappedPenLine& line : lines)
-//     {
-//         if(line.size() >= 2)
-//         {
-//             draw_circle(line[0], line.cap_radius, line.color);
-//             draw_polyline(line, line.color, line.width);
-//             draw_circle(line[line.size() - 1], line.cap_radius, line.color);
-//         }
-//         else if(line.size() == 1)
-//         {
-//             draw_circle(line[0], line.width / 2.0f, line.color);
-//         }
-//     }
-// }
-
 RID create_canvas_item(RID parent_item)
 {
-    if(parent_item.is_valid())
+    auto rs = RenderingServer::get_singleton();
+    if(parent_item.is_valid() && rs != nullptr)
     {
-        // Create canvas item directly on RenderingServer.
-        auto rs = RenderingServer::get_singleton();
-        if(rs != nullptr)
+        auto canvas_item = rs->canvas_item_create();
+        if(canvas_item.is_valid())
         {
-            auto canvas_item = rs->canvas_item_create();
-            if(canvas_item.is_valid())
-            {
-                rs->canvas_item_set_parent(canvas_item, parent_item);
-                return canvas_item;
-            }
-            else
-            {
-                UtilityFunctions::printerr("Unable to create canvas item.");
-            }
+            rs->canvas_item_set_parent(canvas_item, parent_item);
+            return canvas_item;
         }
-        else
-        {
-            UtilityFunctions::printerr("Unable to retrieve RenderingServer.");
-        }
-    }
-    else
-    {
-        UtilityFunctions::printerr("Invalid parent canvas item.");
     }
     return RID();
 }
@@ -357,8 +305,7 @@ bool DrawLayer::UpdateErase(Vector2 pen_position, LineIterator line_it)
 void DrawLayer::FinishDraw()
 {
     auto rs = RenderingServer::get_singleton();
-    if(rs == nullptr) return;
-    if(lines.size() > 0)
+    if(lines.size() > 0 && rs != nullptr)
     {   
         shared_ptr<RSLine> rs_line = lines.back();
         // If the line has 3 or more points, smooth it.
@@ -461,7 +408,6 @@ void DrawLayer::load_layer_data(Ref<LayerData> p_layer_data)
         new_lines.push_back(new_rs_line);
     }
     lines = new_lines;
-    // queue_redraw();
 }
 
 void DrawLayer::scale_lines(Vector2 scale)
