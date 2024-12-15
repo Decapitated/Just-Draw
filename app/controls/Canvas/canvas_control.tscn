@@ -1,0 +1,66 @@
+[gd_scene load_steps=5 format=3 uid="uid://cpmpcpcbtb3jj"]
+
+[ext_resource type="Script" uid="uid://dw2j5ylofxagv" path="res://controls/Canvas/canvas_controls.gd" id="1_uliih"]
+[ext_resource type="PackedScene" uid="uid://d0w1xovp835nv" path="res://controls/Canvas/PenSettings/pen_control.tscn" id="2_cad3o"]
+[ext_resource type="PackedScene" uid="uid://cgf8cuhalbgj1" path="res://controls/Canvas/Layers/layer_container.tscn" id="3_l4fky"]
+[ext_resource type="PackedScene" uid="uid://32mj3r685gx5" path="res://controls/Canvas/Zoom/zoom_control.res" id="4_fj02o"]
+
+[node name="CanvasControls" type="MarginContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+script = ExtResource("1_uliih")
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="PenControl" parent="Control" node_paths=PackedStringArray("canvas_controls") instance=ExtResource("2_cad3o")]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -72.5
+offset_bottom = 72.5
+grow_vertical = 2
+canvas_controls = NodePath("../..")
+
+[node name="LayerContainer" parent="Control" node_paths=PackedStringArray("canvas_controls") instance=ExtResource("3_l4fky")]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -132.0
+offset_top = -120.0
+offset_right = 0.0
+offset_bottom = 120.0
+grow_horizontal = 0
+grow_vertical = 2
+canvas_controls = NodePath("../..")
+
+[node name="ZoomControl" parent="Control" node_paths=PackedStringArray("canvas_controls") instance=ExtResource("4_fj02o")]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -240.0
+offset_top = -33.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 0
+grow_vertical = 0
+canvas_controls = NodePath("../..")
