@@ -426,6 +426,8 @@ void DrawLayer::load_layer_data(Ref<LayerData> p_layer_data)
 
 void DrawLayer::scale_lines(Vector2 scale)
 {
+    auto rs = RenderingServer::get_singleton();
+    if(rs == nullptr) return;
     LineIterator line_it = lines.begin();
     while(line_it != lines.end())
     {
@@ -433,12 +435,15 @@ void DrawLayer::scale_lines(Vector2 scale)
         {
             (*line_it)->line[i] *= scale;
         }
+        (*line_it)->Redraw(rs);
         line_it++;
     }
 }
 
 void DrawLayer::offset_lines(Vector2 offset)
 {
+    auto rs = RenderingServer::get_singleton();
+    if(rs == nullptr) return;
     LineIterator line_it = lines.begin();
     while(line_it != lines.end())
     {
@@ -446,6 +451,7 @@ void DrawLayer::offset_lines(Vector2 offset)
         {
             (*line_it)->line[i] += offset;
         }
+        (*line_it)->Redraw(rs);
         line_it++;
     }
 }
