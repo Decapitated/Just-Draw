@@ -209,7 +209,6 @@ void DrawLayer::UpdateDraw(Vector2 pen_position)
     {
         auto cam = get_viewport()->get_camera_2d();
         const float min_dist = canvas->min_draw_distance * (1.0f / cam->get_zoom().x);
-        // const float min_dist = canvas->get_min_draw_distance();
         shared_ptr<RSLine> rs_line = lines.back();
         auto prev_pos = rs_line->line[rs_line->line.size() - 1];
         auto dist = prev_pos.distance_squared_to(pen_position);
@@ -238,6 +237,7 @@ void DrawLayer::UpdateDraw(Vector2 pen_position)
                 }
             }
             rs_line->line.append(pen_position);
+            rs_line->rect.expand_to(pen_position);
             rs_line->Redraw(rs);
         }
     }
@@ -245,25 +245,37 @@ void DrawLayer::UpdateDraw(Vector2 pen_position)
 
 void DrawLayer::UpdateErase(Vector2 pen_position)
 {
+    auto canvas = dynamic_cast<DrawCanvas*>(get_parent_control());
+    if(canvas == nullptr) return;
     LineIterator line_it = lines.begin();
     int loop_count = 0;
     while(line_it != lines.end())
     {
-        bool should_erase = UpdateErase(pen_position, line_it);
-        if(should_erase)
+        // Check if the pen position is inside the line bounding rect.
+        Rect2 line_rect = (*line_it)->rect;
+        bool contains = line_rect.has_point(pen_position);
+        if(!contains)
         {
-            line_it = lines.erase(line_it);
+            Vector2 center = line_rect.get_center();
+            Vector2 closest = Vector2(
+                max(center.x - line_rect.size.x / 2.0f, min(pen_position.x, center.x + line_rect.size.x / 2.0f)),
+                max(center.y - line_rect.size.y / 2.0f, min(pen_position.y, center.y + line_rect.size.y / 2.0f))
+            );
+            contains = closest.distance_squared_to(pen_position) < powf(canvas->eraser_size + (*line_it)->line.width / 3.0f, 2.0f);
         }
-        else
+        if(contains)
         {
-            line_it++;
+            bool should_erase = UpdateErase(pen_position, line_it);
+            if(should_erase)
+            {
+                line_it = lines.erase(line_it);
+                continue;
+            }
         }
+        line_it++;
     }
 }
 
-// ALERT: I think this can be improved.
-// Reinserting after each point is a bit inefficient.
-// Should do something like keep checking next point until the true end of the slice.
 bool DrawLayer::UpdateErase(Vector2 pen_position, LineIterator line_it)
 {
     bool sliced = false;
@@ -272,30 +284,32 @@ bool DrawLayer::UpdateErase(Vector2 pen_position, LineIterator line_it)
     if(canvas != nullptr && rs != nullptr)
     {
         int slice_start = 0;
+        bool slicing = false;
         for(int i = 0; i < (*line_it)->line.size(); i++)
         {
             auto curr = (*line_it)->line[i];
-            bool is_last_slice = slice_start > 0 && i == (*line_it)->line.size() - 1;
+            bool is_last_slice = i == (*line_it)->line.size() - 1 && slice_start > 0;
             if(is_last_slice || (curr.distance_squared_to(pen_position) < powf(canvas->eraser_size + (*line_it)->line.width / 3.0f, 2.0f)))
             {
-                sliced = true;
-                int end = is_last_slice ? i + 1 : i;
-                auto new_line = CappedPenLine((*line_it)->line.slice(slice_start, end), (*line_it)->line.color, (*line_it)->line.width, (*line_it)->line.cap_radius);
-                // Create canvas item directly on RenderingServer.
-                auto canvas_item = create_canvas_item(get_canvas_item());
-                auto new_rs_line = shared_ptr<RSLine>(new RSLine(new_line, canvas_item));
-                
-                auto new_line_it = lines.insert(line_it, new_rs_line);
-                bool should_erase = UpdateErase(pen_position, new_line_it);
-                if(should_erase)
+                if(slicing)
                 {
-                    lines.erase(new_line_it);
-                }
-                else
-                {
+                    int end = is_last_slice ? i + 1 : i;
+                    auto new_line = CappedPenLine((*line_it)->line.slice(slice_start, end), (*line_it)->line.color, (*line_it)->line.width, (*line_it)->line.cap_radius);
+                    // Create canvas item directly on RenderingServer.
+                    auto canvas_item = create_canvas_item(get_canvas_item());
+                    auto new_rs_line = shared_ptr<RSLine>(new RSLine(new_line, canvas_item));
+
+                    auto new_line_it = lines.insert(line_it, new_rs_line);
                     (*new_line_it)->Update(rs);
+
+                    slicing = false;
                 }
-                slice_start = i + 1;
+                sliced = true;
+            }
+            else if(!slicing)
+            {
+                slice_start = i;
+                slicing = true;
             }
         }
     }
@@ -452,4 +466,14 @@ void RSLine::Update(RenderingServer* rs)
     {
         rs->canvas_item_add_circle(canvas_item, line[0], line.width / 2.0f, line.color);
     }
+}
+
+Rect2 RSLine::CalculateRect(const Line &p_line)
+{
+    auto rect = Rect2();
+    for(int i = 0; i < p_line.size(); i++)
+    {
+        rect.expand_to(p_line[i]);
+    }
+    return rect;
 }

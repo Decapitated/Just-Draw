@@ -56,8 +56,13 @@ namespace JustDraw
 
         public:
             CappedPenLine line;
-            RSLine(CappedPenLine p_line, RID p_canvas_item) :
-                line(p_line), canvas_item(p_canvas_item) {};
+            Rect2 rect = Rect2();
+
+            RSLine(CappedPenLine p_line, RID p_canvas_item) : line(p_line), canvas_item(p_canvas_item)
+            {
+                rect = CalculateRect(line);
+            }
+
             ~RSLine()
             {
                 auto rs = RenderingServer::get_singleton();
@@ -78,6 +83,8 @@ namespace JustDraw
                 Clear(rs);
                 Update(rs);
             }
+
+            static Rect2 CalculateRect(const Line &p_line);
     };
 
     using Lines = list<shared_ptr<RSLine>>;
