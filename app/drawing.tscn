@@ -3,11 +3,11 @@
 [ext_resource type="Script" path="res://scripts/draw_cam.gd" id="1_hampg"]
 [ext_resource type="Script" uid="uid://lp2gsmru6sv7" path="res://scripts/pen_cursor.gd" id="2_3c6d4"]
 [ext_resource type="Script" path="res://scripts/canvas_viewport.gd" id="4_ojijs"]
-[ext_resource type="PackedScene" uid="uid://kfammk62injs" path="res://controls/Toolbar/toolbar.res" id="5_beobf"]
 [ext_resource type="Script" path="res://scripts/copy_canvas.gd" id="5_lrsg0"]
-[ext_resource type="PackedScene" uid="uid://dpclvyw36hn2" path="res://controls/Canvas/canvas_control.res" id="6_p8k4q"]
-[ext_resource type="PackedScene" uid="uid://b11vt5ijj8o6e" path="res://controls/modals/CanvasSize/canvas_size.res" id="10_djrmi"]
-[ext_resource type="PackedScene" uid="uid://b7oses0r5deqt" path="res://controls/modals/ImageSize/image_size.res" id="11_pv3qw"]
+[ext_resource type="PackedScene" uid="uid://dlsmwh7px182s" path="res://controls/Toolbar/toolbar.tscn" id="5_try7y"]
+[ext_resource type="PackedScene" uid="uid://cpmpcpcbtb3jj" path="res://controls/Canvas/canvas_control.tscn" id="6_b64ae"]
+[ext_resource type="PackedScene" uid="uid://bogyjl2smag1s" path="res://controls/modals/CanvasSize/canvas_size.tscn" id="7_6lv80"]
+[ext_resource type="PackedScene" uid="uid://co8kevc7p1lup" path="res://controls/modals/ImageSize/image_size.tscn" id="8_8b6um"]
 
 [node name="Control" type="Control"]
 layout_mode = 3
@@ -71,7 +71,7 @@ grow_vertical = 2
 mouse_filter = 2
 theme_override_constants/separation = 0
 
-[node name="Toolbar" parent="Controls/VBoxContainer" instance=ExtResource("5_beobf")]
+[node name="Toolbar" parent="Controls/VBoxContainer" instance=ExtResource("5_try7y")]
 layout_mode = 2
 
 [node name="File" parent="Controls/VBoxContainer/Toolbar/MarginContainer/HBoxContainer" index="0" node_paths=PackedStringArray("draw_canvas", "subviewport")]
@@ -82,7 +82,7 @@ subviewport = NodePath("../../../../../../SubViewport")
 canvas_size_modal = NodePath("../../../../../Modals/CenterContainer/CanvasSize")
 image_size_modal = NodePath("../../../../../Modals/CenterContainer/ImageSize")
 
-[node name="CanvasControls" parent="Controls/VBoxContainer" node_paths=PackedStringArray("draw_canvas", "camera") instance=ExtResource("6_p8k4q")]
+[node name="CanvasControls" parent="Controls/VBoxContainer" node_paths=PackedStringArray("draw_canvas", "camera") instance=ExtResource("6_b64ae")]
 layout_mode = 2
 draw_canvas = NodePath("../../../Canvas/CenterContainer/DrawCanvas")
 camera = NodePath("../../../Camera2D")
@@ -99,13 +99,13 @@ mouse_force_pass_scroll_events = false
 [node name="CenterContainer" type="CenterContainer" parent="Controls/Modals"]
 layout_mode = 2
 
-[node name="CanvasSize" parent="Controls/Modals/CenterContainer" node_paths=PackedStringArray("draw_canvas", "modal_background") instance=ExtResource("10_djrmi")]
+[node name="CanvasSize" parent="Controls/Modals/CenterContainer" node_paths=PackedStringArray("draw_canvas", "modal_background") instance=ExtResource("7_6lv80")]
 visible = false
 layout_mode = 2
 draw_canvas = NodePath("../../../../Canvas/CenterContainer/DrawCanvas")
 modal_background = NodePath("../..")
 
-[node name="ImageSize" parent="Controls/Modals/CenterContainer" node_paths=PackedStringArray("export_viewport", "modal_background") instance=ExtResource("11_pv3qw")]
+[node name="ImageSize" parent="Controls/Modals/CenterContainer" node_paths=PackedStringArray("export_viewport", "modal_background") instance=ExtResource("8_8b6um")]
 visible = false
 layout_mode = 2
 export_viewport = NodePath("../../../../SubViewport")
