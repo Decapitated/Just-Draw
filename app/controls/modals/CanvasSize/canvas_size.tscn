@@ -1,0 +1,89 @@
+[gd_scene load_steps=2 format=3 uid="uid://bogyjl2smag1s"]
+
+[ext_resource type="Script" path="res://controls/modals/CanvasSize/canvas_size_modal.gd" id="1_vbo3k"]
+
+[node name="CanvasSize" type="PanelContainer" node_paths=PackedStringArray("draw_options", "width_spinbox", "height_spinbox", "cancel_button", "apply_button")]
+script = ExtResource("1_vbo3k")
+draw_options = NodePath("MarginContainer/VBoxContainer/DrawingOptions")
+width_spinbox = NodePath("MarginContainer/VBoxContainer/WidthContainer/Width")
+height_spinbox = NodePath("MarginContainer/VBoxContainer/HeightContainer/Height")
+cancel_button = NodePath("MarginContainer/VBoxContainer/Actions/Cancel")
+apply_button = NodePath("MarginContainer/VBoxContainer/Actions/Apply")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Canvas Size"
+horizontal_alignment = 1
+
+[node name="WidthContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/WidthContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Width:"
+
+[node name="Width" type="SpinBox" parent="MarginContainer/VBoxContainer/WidthContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 1.0
+max_value = 1000.0
+value = 500.0
+allow_greater = true
+alignment = 1
+update_on_text_changed = true
+select_all_on_focus = true
+
+[node name="HeightContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HeightContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Height:
+"
+
+[node name="Height" type="SpinBox" parent="MarginContainer/VBoxContainer/HeightContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 1.0
+max_value = 1000.0
+value = 500.0
+allow_greater = true
+alignment = 1
+update_on_text_changed = true
+select_all_on_focus = true
+
+[node name="DrawingOptions" type="OptionButton" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+selected = 0
+item_count = 3
+popup/item_0/text = "None"
+popup/item_1/text = "Keep Centered"
+popup/item_1/id = 1
+popup/item_2/text = "Scale"
+popup/item_2/id = 2
+
+[node name="Actions" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Cancel" type="Button" parent="MarginContainer/VBoxContainer/Actions"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Cancel
+"
+
+[node name="Apply" type="Button" parent="MarginContainer/VBoxContainer/Actions"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Apply"
