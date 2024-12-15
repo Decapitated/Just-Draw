@@ -7,7 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://dlsmwh7px182s" path="res://controls/Toolbar/toolbar.tscn" id="5_try7y"]
 [ext_resource type="PackedScene" uid="uid://dpclvyw36hn2" path="res://controls/Canvas/canvas_control.res" id="6_p8k4q"]
 [ext_resource type="PackedScene" uid="uid://bogyjl2smag1s" path="res://controls/modals/CanvasSize/canvas_size.tscn" id="7_6lv80"]
-[ext_resource type="PackedScene" uid="uid://b7oses0r5deqt" path="res://controls/modals/ImageSize/image_size.res" id="11_pv3qw"]
+[ext_resource type="PackedScene" uid="uid://co8kevc7p1lup" path="res://controls/modals/ImageSize/image_size.tscn" id="8_8b6um"]
 
 [node name="Control" type="Control"]
 layout_mode = 3
@@ -105,8 +105,7 @@ layout_mode = 2
 draw_canvas = NodePath("../../../../Canvas/CenterContainer/DrawCanvas")
 modal_background = NodePath("../..")
 
-[node name="ImageSize" parent="Controls/Modals/CenterContainer" node_paths=PackedStringArray("export_viewport", "modal_background") instance=ExtResource("11_pv3qw")]
-visible = false
+[node name="ImageSize" parent="Controls/Modals/CenterContainer" node_paths=PackedStringArray("export_viewport", "modal_background") instance=ExtResource("8_8b6um")]
 layout_mode = 2
 export_viewport = NodePath("../../../../SubViewport")
 modal_background = NodePath("../..")
