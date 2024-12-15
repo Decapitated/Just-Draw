@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://dw2j5ylofxagv" path="res://controls/Canvas/canvas_controls.gd" id="1_uliih"]
 [ext_resource type="PackedScene" uid="uid://d0w1xovp835nv" path="res://controls/Canvas/PenSettings/pen_control.tscn" id="2_cad3o"]
 [ext_resource type="PackedScene" uid="uid://cgf8cuhalbgj1" path="res://controls/Canvas/Layers/layer_container.tscn" id="3_l4fky"]
-[ext_resource type="PackedScene" uid="uid://32mj3r685gx5" path="res://controls/Canvas/Zoom/zoom_control.res" id="4_fj02o"]
+[ext_resource type="PackedScene" uid="uid://d34b0l3di3bon" path="res://controls/Canvas/Zoom/zoom_control.tscn" id="4_l6g57"]
 
 [node name="CanvasControls" type="MarginContainer"]
 anchors_preset = 15
@@ -50,7 +50,7 @@ grow_horizontal = 0
 grow_vertical = 2
 canvas_controls = NodePath("../..")
 
-[node name="ZoomControl" parent="Control" node_paths=PackedStringArray("canvas_controls") instance=ExtResource("4_fj02o")]
+[node name="ZoomControl" parent="Control" node_paths=PackedStringArray("canvas_controls") instance=ExtResource("4_l6g57")]
 layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0

@@ -1,0 +1,36 @@
+[gd_scene load_steps=3 format=3 uid="uid://d34b0l3di3bon"]
+
+[ext_resource type="Script" uid="uid://pmsxkaljcbck" path="res://controls/Canvas/Zoom/zoom_control.gd" id="1_8ynk6"]
+[ext_resource type="FontFile" uid="uid://bh3o75v57v5c4" path="res://MaterialSymbolsRounded-VariableFont_FILL,GRAD,opsz,wght.ttf" id="2_vw3yo"]
+
+[node name="ZoomControl" type="HBoxContainer"]
+offset_right = 240.0
+offset_bottom = 33.0
+script = ExtResource("1_8ynk6")
+
+[node name="Zoom Out" type="Button" parent="."]
+custom_minimum_size = Vector2(33.333, 33.333)
+layout_mode = 2
+tooltip_text = "Zoom Out"
+theme_override_fonts/font = ExtResource("2_vw3yo")
+text = "zoom_out"
+
+[node name="Zoom Slider" type="HSlider" parent="."]
+custom_minimum_size = Vector2(166.667, 33.333)
+layout_mode = 2
+min_value = 1.0
+step = 0.01
+value = 1.0
+exp_edit = true
+allow_greater = true
+allow_lesser = true
+scrollable = false
+tick_count = 10
+ticks_on_borders = true
+
+[node name="Zoom In" type="Button" parent="."]
+custom_minimum_size = Vector2(33.333, 33.333)
+layout_mode = 2
+tooltip_text = "Zoom In"
+theme_override_fonts/font = ExtResource("2_vw3yo")
+text = "zoom_in"
