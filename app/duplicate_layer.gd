@@ -13,13 +13,6 @@ func _draw():
 	if layer:
 		var layer_data = layer.layer_data
 		var lines = layer_data.lines
-		var pens = layer_data.pens
+		var pens: Array[Pen] = layer_data.pens
 		for i in range(lines.size()):
-			var line: PackedVector2Array = lines[i]
-			var pen = pens[i]
-			if line.size() >= 2:
-				draw_circle(line[0], pen.cap_radius, pen.color)
-				draw_polyline(line, pen.color, pen.width)
-				draw_circle(line[line.size() - 1], pen.cap_radius, pen.color)
-			elif line.size() == 1:
-				draw_circle(line[0], pen.width / 2.0, pen.color)
+			pens[i].draw(get_canvas_item(), lines[i])

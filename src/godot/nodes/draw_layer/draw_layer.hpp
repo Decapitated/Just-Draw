@@ -15,15 +15,14 @@
 #include <algorithm>
 
 #include "godot/resources/layer_data/layer_data.hpp"
-
-#include "just_draw/rs_line/rs_line.hpp"
+#include "just_draw/rs_pen/rs_pen.hpp"
 
 using namespace std;
 using namespace godot;
 
 namespace JustDraw
 {
-    using Lines = list<shared_ptr<RSLine>>;
+    using Lines = list<shared_ptr<RSPen>>;
     using LineIterator = Lines::iterator;
 
     class DrawLayer : public Control
@@ -56,8 +55,8 @@ namespace JustDraw
             void FinishDraw();
             void FinishErase();
 
-            TypedArray<PackedVector2Array> GetLines();
-            TypedArray<Dictionary> GetPens();
+            TypedArray<Line> GetLines();
+            TypedArray<Pen> GetPens();
 
         protected:
             static void _bind_methods();

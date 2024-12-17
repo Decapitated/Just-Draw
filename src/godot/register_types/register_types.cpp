@@ -2,8 +2,12 @@
 
 #include <godot_cpp/classes/engine.hpp>
 
-#include "godot/resources/layer_data/layer_data.hpp"
+#include "godot/resources/pens/pen/pen.hpp"
+#include "godot/resources/pens/line_pen/line_pen.hpp"
+
 #include "godot/resources/canvas_data/canvas_data.hpp"
+#include "godot/resources/layer_data/layer_data.hpp"
+
 #include "godot/nodes/draw_layer/draw_layer.hpp"
 #include "godot/nodes/draw_canvas/draw_canvas.hpp"
 
@@ -13,9 +17,13 @@ void initialize_justdraw_module(ModuleInitializationLevel p_level) {
 	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
 		return;
 	}
-    
-    GDREGISTER_CLASS(JustDraw::LayerData);
+
+    GDREGISTER_ABSTRACT_CLASS(JustDraw::Pen);
+    GDREGISTER_CLASS(JustDraw::LinePen);
+
     GDREGISTER_CLASS(JustDraw::CanvasData);
+    GDREGISTER_CLASS(JustDraw::LayerData);
+
     GDREGISTER_CLASS(JustDraw::DrawLayer);
     GDREGISTER_CLASS(JustDraw::DrawCanvas);
 }
