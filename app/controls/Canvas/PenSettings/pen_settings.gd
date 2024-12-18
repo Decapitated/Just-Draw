@@ -9,15 +9,16 @@ class_name PenSettings extends Control
 
 func _ready():
     if canvas_controls:
-        var draw_canvas = canvas_controls.draw_canvas
-        if draw_canvas:
-            line_color.color = draw_canvas.line_color
+        var draw_canvas := canvas_controls.draw_canvas
+        if draw_canvas and draw_canvas.pen is LinePen:
+            var line_pen: LinePen = draw_canvas.pen
+            line_color.color = line_pen.color
             line_color.color_changed.connect(_on_line_color_changed)
 
-            line_width.value = draw_canvas.line_width
+            line_width.value = line_pen.width
             line_width.value_changed.connect(_on_line_width_changed)
 
-            cap_scale.value = draw_canvas.cap_scale
+            cap_scale.value = line_pen.cap_scale
             cap_scale.value_changed.connect(_on_cap_scale_changed)
 
             eraser_size.value = draw_canvas.eraser_size
@@ -26,23 +27,26 @@ func _ready():
 func _on_line_color_changed(color):
     if canvas_controls:
         var draw_canvas = canvas_controls.draw_canvas
-        if draw_canvas:
-            draw_canvas.line_color = color
-            line_color.color = draw_canvas.line_color
+        if draw_canvas and draw_canvas.pen is LinePen:
+            var line_pen: LinePen = draw_canvas.pen
+            line_pen.color = color
+            line_color.color = line_pen.color
 
 func _on_line_width_changed(value):
     if canvas_controls:
         var draw_canvas = canvas_controls.draw_canvas
-        if draw_canvas:
-            draw_canvas.line_width = value
-            line_width.value = draw_canvas.line_width
+        if draw_canvas and draw_canvas.pen is LinePen:
+            var line_pen: LinePen = draw_canvas.pen
+            line_pen.width = value
+            line_width.value = line_pen.width
 
 func _on_cap_scale_changed(value):
     if canvas_controls:
         var draw_canvas = canvas_controls.draw_canvas
-        if draw_canvas:
-            draw_canvas.cap_scale = value
-            cap_scale.value = draw_canvas.cap_scale
+        if draw_canvas and draw_canvas.pen is LinePen:
+            var line_pen: LinePen = draw_canvas.pen
+            line_pen.cap_scale = value
+            cap_scale.value = line_pen.cap_scale
 
 func _on_eraser_size_changed(value):
     if canvas_controls:

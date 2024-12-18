@@ -22,12 +22,7 @@ namespace JustDraw
 
             static const char* DATA_LOADED_SIGNAL;
 
-            Ref<Pen> pen = memnew(LinePen()); // The pen to draw with.
-
-            Color line_color = Color();
-            
-            float line_width = 5.0f;
-            float cap_scale = 1.0f;
+            Ref<Pen> pen; // The pen to draw with.
 
             float eraser_size = 10.0f;
             float min_draw_distance = 5.0f;
@@ -47,15 +42,6 @@ namespace JustDraw
 
             Ref<Pen> get_pen() { return pen; }
             void set_pen(Ref<Pen> p_pen) { pen = p_pen; }
-
-            Color get_line_color() { return line_color; }
-            void set_line_color(Color p_color) { line_color = p_color; }
-
-            float get_line_width() { return line_width; }
-            void set_line_width(float p_width) { line_width = p_width; }
-
-            float get_cap_scale() { return cap_scale; }
-            void set_cap_scale(float p_scale) { cap_scale = max(p_scale, 0.0f); }
 
             float get_eraser_size() { return eraser_size; }
             void set_eraser_size(float p_size) { eraser_size = max(p_size, 0.0f); }

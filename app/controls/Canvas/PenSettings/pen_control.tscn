@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://d0w1xovp835nv"]
 
-[ext_resource type="Script" uid="uid://pj0imhpml6ff" path="res://controls/Canvas/PenSettings/pen_settings.gd" id="1_jajrf"]
+[ext_resource type="Script" path="res://controls/Canvas/PenSettings/pen_settings.gd" id="1_jajrf"]
 
 [node name="PenControl" type="PanelContainer" node_paths=PackedStringArray("line_color", "line_width", "cap_scale", "eraser_size")]
 offset_right = 75.0

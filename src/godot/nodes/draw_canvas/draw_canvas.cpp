@@ -16,21 +16,6 @@ void DrawCanvas::_bind_methods()
     ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "pen", PROPERTY_HINT_RESOURCE_TYPE, "Pen"),
                  "set_pen", "get_pen");
 
-    ClassDB::bind_method(D_METHOD("set_line_color", "p_color"), &DrawCanvas::set_line_color);
-    ClassDB::bind_method(D_METHOD("get_line_color"), &DrawCanvas::get_line_color);
-    ADD_PROPERTY(PropertyInfo(Variant::COLOR, "line_color"),
-                 "set_line_color", "get_line_color");
-
-	ClassDB::bind_method(D_METHOD("set_line_width", "p_width"), &DrawCanvas::set_line_width);
-    ClassDB::bind_method(D_METHOD("get_line_width"), &DrawCanvas::get_line_width);
-    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "line_width"),
-                 "set_line_width", "get_line_width");
-
-	ClassDB::bind_method(D_METHOD("set_cap_scale", "p_width"), &DrawCanvas::set_cap_scale);
-    ClassDB::bind_method(D_METHOD("get_cap_scale"), &DrawCanvas::get_cap_scale);
-    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "cap_scale"),
-                 "set_cap_scale", "get_cap_scale");
-
     ClassDB::bind_method(D_METHOD("set_eraser_size", "p_width"), &DrawCanvas::set_eraser_size);
     ClassDB::bind_method(D_METHOD("get_eraser_size"), &DrawCanvas::get_eraser_size);
     ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "eraser_size"),
