@@ -22,8 +22,7 @@ void LinePen::_draw(const RID &p_parent_item, const RID &p_canvas_item, const in
     auto rs = RenderingServer::get_singleton();
     if(rs == nullptr) return;
     rs->canvas_item_set_parent(p_canvas_item, p_parent_item);
-    rs->canvas_item_set_z_as_relative_to_parent(p_canvas_item, true);
-    rs->canvas_item_set_z_index(p_canvas_item, p_index);
+    rs->canvas_item_set_draw_index(p_canvas_item, p_index);
     if(p_line.size() == 1)
     {
         rs->canvas_item_add_circle(p_canvas_item, p_line[0], width / 2.0f, color);

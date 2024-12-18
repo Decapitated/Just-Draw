@@ -42,7 +42,7 @@ void RSPen::UpdateIndex(const int p_index)
     auto rs = RenderingServer::get_singleton();
     if(rs == nullptr) return;
     if(!canvas_item.is_valid()) return;
-    rs->canvas_item_set_z_index(canvas_item, p_index);
+    rs->canvas_item_set_draw_index(canvas_item, p_index);
 }
 
 Rect2 RSPen::CalculateRect() const
