@@ -36,7 +36,7 @@ namespace JustDraw
 
             #pragma endregion
 
-            virtual void _draw(const RID &p_canvas_item, const Line &p_line) override;
+            virtual void _draw(const RID &p_parent_item, const RID &p_canvas_item, const int p_index, const Line &p_line) override;
     };
 }
 

@@ -19,13 +19,14 @@ namespace JustDraw
             Ref<Pen> pen;
             Rect2 rect;
 
-            RSPen(const Line &p_line, const Ref<Pen> &p_pen, const RID &p_canvas_item) :
-                line(p_line), pen(p_pen), canvas_item(p_canvas_item), rect(CalculateRect()) {};
+            RSPen(const Line &p_line, const Ref<Pen> &p_pen);
             ~RSPen();
 
             void Clear() const;
-            void Update() const;
-            void Redraw() const;
+            void Update(const RID &p_parent_item, const int p_index) const;
+            void Redraw(const RID &p_parent_item, const int p_index) const;
+
+            void UpdateIndex(const int p_index);
 
             Rect2 CalculateRect() const;
     };

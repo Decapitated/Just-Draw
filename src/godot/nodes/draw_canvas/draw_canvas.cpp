@@ -11,6 +11,11 @@ void DrawCanvas::_bind_methods()
 {
     #pragma region Getters and Setters
 
+    ClassDB::bind_method(D_METHOD("set_pen", "p_pen"), &DrawCanvas::set_pen);
+    ClassDB::bind_method(D_METHOD("get_pen"), &DrawCanvas::get_pen);
+    ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "pen", PROPERTY_HINT_RESOURCE_TYPE, "Pen"),
+                 "set_pen", "get_pen");
+
     ClassDB::bind_method(D_METHOD("set_line_color", "p_color"), &DrawCanvas::set_line_color);
     ClassDB::bind_method(D_METHOD("get_line_color"), &DrawCanvas::get_line_color);
     ADD_PROPERTY(PropertyInfo(Variant::COLOR, "line_color"),

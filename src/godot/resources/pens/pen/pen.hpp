@@ -24,9 +24,9 @@ namespace JustDraw
             Pen() {}
             virtual ~Pen() {}
 
-            GDVIRTUAL2(_draw, RID, Line);
-            virtual void _draw(const RID &p_canvas_item, const Line &p_line) {};
-            void Draw(const RID &p_canvas_item, const Line &p_line);
+            GDVIRTUAL4(_draw, RID, RID, int, Line);
+            virtual void _draw(const RID &p_parent_item, const RID &p_canvas_item, const int p_index, const Line &p_line) {};
+            void Draw(const RID &p_parent_item, const RID &p_canvas_item, const int p_index, const Line &p_line);
     };
 
 }

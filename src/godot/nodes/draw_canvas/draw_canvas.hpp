@@ -5,6 +5,7 @@
 
 #include "godot/nodes/draw_layer/draw_layer.hpp"
 #include "godot/resources/canvas_data/canvas_data.hpp"
+#include "godot/resources/pens/line_pen/line_pen.hpp"
 
 #include <functional>
 
@@ -20,6 +21,8 @@ namespace JustDraw
             friend class DrawLayer;
 
             static const char* DATA_LOADED_SIGNAL;
+
+            Ref<Pen> pen = memnew(LinePen()); // The pen to draw with.
 
             Color line_color = Color();
             
@@ -41,6 +44,9 @@ namespace JustDraw
             ~DrawCanvas();
 
             #pragma region Getters and Setters
+
+            Ref<Pen> get_pen() { return pen; }
+            void set_pen(Ref<Pen> p_pen) { pen = p_pen; }
 
             Color get_line_color() { return line_color; }
             void set_line_color(Color p_color) { line_color = p_color; }
