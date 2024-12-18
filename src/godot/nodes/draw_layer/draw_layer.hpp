@@ -15,79 +15,14 @@
 #include <algorithm>
 
 #include "godot/resources/layer_data/layer_data.hpp"
+#include "just_draw/rs_pen/rs_pen.hpp"
 
 using namespace std;
 using namespace godot;
 
 namespace JustDraw
 {
-    using Line = PackedVector2Array;
-
-    class PenLine : public Line
-    {
-        public:
-            Color color = Color();
-            float width = 5.0f;
-
-            PenLine() {}
-            PenLine(const Color &p_color, float p_width) : color(p_color), width(p_width) {}
-            PenLine(const Line &p_line, const Color &p_color, float p_width) : Line(p_line), color(p_color), width(p_width) {}
-            PenLine(const PenLine &p_line) : PenLine(p_line, p_line.color, p_line.width) {}
-            virtual ~PenLine() {}
-    };
-
-    class CappedPenLine : public PenLine
-    {
-        public:
-            float cap_radius = 0.0f;
-
-            CappedPenLine() {};
-            CappedPenLine(const Color &p_color, float p_width, float p_cap_radius) : PenLine(p_color, p_width), cap_radius(p_cap_radius) {}
-            CappedPenLine(const Line &p_line, const Color &p_color, float p_width, float p_cap_radius) : PenLine(p_line, p_color, p_width), cap_radius(p_cap_radius) {}
-            CappedPenLine(const PenLine &p_line, float p_cap_radius) : PenLine(p_line), cap_radius(p_cap_radius) {}
-            CappedPenLine(const CappedPenLine &p_line) : CappedPenLine(p_line, p_line.color, p_line.width, p_line.cap_radius) {}
-            virtual ~CappedPenLine() {}
-    };
-
-    class RSLine
-    {
-        private:
-            RID canvas_item = RID();
-
-        public:
-            CappedPenLine line;
-            Rect2 rect = Rect2();
-
-            RSLine(CappedPenLine p_line, RID p_canvas_item) : line(p_line), canvas_item(p_canvas_item)
-            {
-                rect = CalculateRect(line);
-            }
-
-            ~RSLine()
-            {
-                auto rs = RenderingServer::get_singleton();
-                if(rs == nullptr) return;
-                rs->free_rid(canvas_item);
-            }
-
-            void Clear(RenderingServer* rs)
-            {
-                if(rs == nullptr || !canvas_item.is_valid()) return;
-                rs->canvas_item_clear(canvas_item);
-            }
-
-            void Update(RenderingServer* rs);
-
-            void Redraw(RenderingServer* rs)
-            {
-                Clear(rs);
-                Update(rs);
-            }
-
-            static Rect2 CalculateRect(const Line &p_line);
-    };
-
-    using Lines = list<shared_ptr<RSLine>>;
+    using Lines = list<shared_ptr<RSPen>>;
     using LineIterator = Lines::iterator;
 
     class DrawLayer : public Control
@@ -120,8 +55,10 @@ namespace JustDraw
             void FinishDraw();
             void FinishErase();
 
-            TypedArray<PackedVector2Array> GetLines();
-            TypedArray<Dictionary> GetPens();
+            void UpdateIndexes(LineIterator line_it);
+
+            TypedArray<Line> GetLines();
+            TypedArray<Pen> GetPens();
 
         protected:
             static void _bind_methods();
@@ -146,10 +83,6 @@ namespace JustDraw
             PackedStringArray _get_configuration_warnings() const override;
             void _process(double p_delta) override;
             void _unhandled_input(const Ref<InputEvent> &p_event) override;
-            // void _draw() override;
-            
-            static void SmoothLineStep(Line &line, float smooth_ratio, float smooth_min_distance, int smooth_start = 0);
-            void SmoothLine(Line &line, int smooth_start = 0);
 
             void scale_lines(Vector2 scale);
             void offset_lines(Vector2 offset);

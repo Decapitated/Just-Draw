@@ -2,20 +2,27 @@ class_name CopyCanvas extends ColorRect
 
 var current_canvas: CanvasData
 
+var items: Array[RID] = []
+
 signal finished_drawing
 
+func _exit_tree() -> void:
+	clear_items()
+
 func _draw():
-    if current_canvas != null:
-        for layer_data in current_canvas.layers:
-            var lines = layer_data.lines
-            var pens = layer_data.pens
-            for i in range(lines.size()):
-                var line: PackedVector2Array = lines[i]
-                var pen = pens[i]
-                if line.size() >= 2:
-                    draw_circle(line[0], pen.cap_radius, pen.color)
-                    draw_polyline(line, pen.color, pen.width)
-                    draw_circle(line[line.size() - 1], pen.cap_radius, pen.color)
-                elif line.size() == 1:
-                    draw_circle(line[0], pen.width / 2.0, pen.color)
-        finished_drawing.emit()
+	clear_items()
+	if current_canvas != null:
+		var global_index = 0
+		for layer_data in current_canvas.layers:
+			var lines = layer_data.lines
+			var pens = layer_data.pens
+			for i in range(lines.size()):
+				var item = RenderingServer.canvas_item_create()
+				items.append(item)
+				pens[i].draw(get_canvas_item(), item, global_index, lines[i])
+				global_index += 1
+		finished_drawing.emit()
+
+func clear_items():
+	for item in items:
+		RenderingServer.free_rid(item)

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import os
 import sys
+import fnmatch
 
 env = SConscript("godot-cpp/SConstruct")
 
@@ -14,10 +15,11 @@ env = SConscript("godot-cpp/SConstruct")
 
 # tweak this if you want to use different folders, or more folders, to store your source code in.
 env.Append(CPPPATH=["src/"])
-sources = Glob("src/*.cpp")               # src/file.cpp
-sources = sources + Glob("src/*/*.cpp")   # src/folder/file.cpp
-sources = sources + Glob("src/*/*/*.cpp") # src/folder/subfolder/file.cpp
-sources = sources + Glob("src/*/*/*/*.cpp") # src/folder/subfolder/subfolder/file.cpp
+# Add source files recursively from src/
+sources = []
+for dirpath, dirs, files in os.walk('src'):
+  for file in fnmatch.filter(files, '*.cpp'):
+    sources = sources + [os.path.join(dirpath, file)]
 
 if env["platform"] == "macos":
     library = env.SharedLibrary(

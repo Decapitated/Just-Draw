@@ -5,6 +5,7 @@
 
 #include "godot/nodes/draw_layer/draw_layer.hpp"
 #include "godot/resources/canvas_data/canvas_data.hpp"
+#include "godot/resources/pens/line_pen/line_pen.hpp"
 
 #include <functional>
 
@@ -21,18 +22,11 @@ namespace JustDraw
 
             static const char* DATA_LOADED_SIGNAL;
 
-            Color line_color = Color();
-            
-            float line_width = 5.0f;
-            float cap_scale = 1.0f;
+            Ref<Pen> pen = memnew(LinePen()); // The pen to draw with.
 
             float eraser_size = 10.0f;
             float min_draw_distance = 5.0f;
             float max_draw_angle = 135.0f;
-
-            int smooth_steps = 1;
-            float smooth_ratio = 0.333333f;
-            const float smooth_min_distance = 0.001f;
 
         protected:
             static void _bind_methods();
@@ -42,14 +36,14 @@ namespace JustDraw
 
             #pragma region Getters and Setters
 
-            Color get_line_color() { return line_color; }
-            void set_line_color(Color p_color) { line_color = p_color; }
-
-            float get_line_width() { return line_width; }
-            void set_line_width(float p_width) { line_width = p_width; }
-
-            float get_cap_scale() { return cap_scale; }
-            void set_cap_scale(float p_scale) { cap_scale = max(p_scale, 0.0f); }
+            Ref<Pen> get_pen() { return pen; }
+            void set_pen(Ref<Pen> p_pen)
+            {
+                if(p_pen.is_valid())
+                {
+                    pen = p_pen;
+                }
+            }
 
             float get_eraser_size() { return eraser_size; }
             void set_eraser_size(float p_size) { eraser_size = max(p_size, 0.0f); }
@@ -59,12 +53,6 @@ namespace JustDraw
 
             float get_max_draw_angle() { return max_draw_angle; }
             void set_max_draw_angle(float p_angle) { max_draw_angle = min(max(p_angle, 0.0f), 180.0f); }
-
-            int get_smooth_steps() { return smooth_steps; }
-            void set_smooth_steps(int p_steps) { smooth_steps = max(p_steps, 0); }
-
-            float get_smooth_ratio() { return smooth_ratio; }
-            void set_smooth_ratio(float p_ratio) { smooth_ratio = min(max(p_ratio, 0.0f), 1.0f); }
 
             Ref<CanvasData> create_canvas_data();
             void load_canvas_data(Ref<CanvasData> canvas_data);

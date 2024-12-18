@@ -11,20 +11,10 @@ void DrawCanvas::_bind_methods()
 {
     #pragma region Getters and Setters
 
-    ClassDB::bind_method(D_METHOD("set_line_color", "p_color"), &DrawCanvas::set_line_color);
-    ClassDB::bind_method(D_METHOD("get_line_color"), &DrawCanvas::get_line_color);
-    ADD_PROPERTY(PropertyInfo(Variant::COLOR, "line_color"),
-                 "set_line_color", "get_line_color");
-
-	ClassDB::bind_method(D_METHOD("set_line_width", "p_width"), &DrawCanvas::set_line_width);
-    ClassDB::bind_method(D_METHOD("get_line_width"), &DrawCanvas::get_line_width);
-    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "line_width"),
-                 "set_line_width", "get_line_width");
-
-	ClassDB::bind_method(D_METHOD("set_cap_scale", "p_width"), &DrawCanvas::set_cap_scale);
-    ClassDB::bind_method(D_METHOD("get_cap_scale"), &DrawCanvas::get_cap_scale);
-    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "cap_scale"),
-                 "set_cap_scale", "get_cap_scale");
+    ClassDB::bind_method(D_METHOD("set_pen", "p_pen"), &DrawCanvas::set_pen);
+    ClassDB::bind_method(D_METHOD("get_pen"), &DrawCanvas::get_pen);
+    ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "pen", PROPERTY_HINT_RESOURCE_TYPE, "Pen"),
+                 "set_pen", "get_pen");
 
     ClassDB::bind_method(D_METHOD("set_eraser_size", "p_width"), &DrawCanvas::set_eraser_size);
     ClassDB::bind_method(D_METHOD("get_eraser_size"), &DrawCanvas::get_eraser_size);
@@ -40,16 +30,6 @@ void DrawCanvas::_bind_methods()
     ClassDB::bind_method(D_METHOD("get_max_draw_angle"), &DrawCanvas::get_max_draw_angle);
     ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "maximum_draw_angle"),
                  "set_max_draw_angle", "get_max_draw_angle");
-
-    ClassDB::bind_method(D_METHOD("set_smooth_steps", "p_steps"), &DrawCanvas::set_smooth_steps);
-    ClassDB::bind_method(D_METHOD("get_smooth_steps"), &DrawCanvas::get_smooth_steps);
-    ADD_PROPERTY(PropertyInfo(Variant::INT, "smooth_steps"),
-                 "set_smooth_steps", "get_smooth_steps");
-
-    ClassDB::bind_method(D_METHOD("set_smooth_ratio", "p_ratio"), &DrawCanvas::set_smooth_ratio);
-    ClassDB::bind_method(D_METHOD("get_smooth_ratio"), &DrawCanvas::get_smooth_ratio);
-    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "smooth_ratio"),
-                 "set_smooth_ratio", "get_smooth_ratio");
     
     ClassDB::bind_method(D_METHOD("get_active_layer"), &DrawCanvas::get_active_layer);
     ClassDB::bind_method(D_METHOD("set_active_layer", "p_layer"), &DrawCanvas::set_active_layer);
@@ -57,12 +37,12 @@ void DrawCanvas::_bind_methods()
                               PROPERTY_USAGE_NO_EDITOR),
                  "set_active_layer", "get_active_layer");
 
-    #pragma endregion
-
     ClassDB::bind_method(D_METHOD("create_canvas_data"), &DrawCanvas::create_canvas_data);
     ClassDB::bind_method(D_METHOD("load_canvas_data", "p_canvas_data"), &DrawCanvas::load_canvas_data);
-    ClassDB::bind_method(D_METHOD("clear_canvas"), &DrawCanvas::clear_canvas);
 
+    #pragma endregion
+
+    ClassDB::bind_method(D_METHOD("clear_canvas"), &DrawCanvas::clear_canvas);
     ClassDB::bind_method(D_METHOD("scale_layers", "p_scale"), &DrawCanvas::scale_layers);
     ClassDB::bind_method(D_METHOD("offset_layers", "p_offset"), &DrawCanvas::offset_layers);
 

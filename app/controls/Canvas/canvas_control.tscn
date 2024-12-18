@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://cpmpcpcbtb3jj"]
 
-[ext_resource type="Script" uid="uid://dw2j5ylofxagv" path="res://controls/Canvas/canvas_controls.gd" id="1_uliih"]
+[ext_resource type="Script" path="res://controls/Canvas/canvas_controls.gd" id="1_uliih"]
 [ext_resource type="PackedScene" uid="uid://d0w1xovp835nv" path="res://controls/Canvas/PenSettings/pen_control.tscn" id="2_cad3o"]
 [ext_resource type="PackedScene" uid="uid://cgf8cuhalbgj1" path="res://controls/Canvas/Layers/layer_container.tscn" id="3_l4fky"]
 [ext_resource type="PackedScene" uid="uid://d34b0l3di3bon" path="res://controls/Canvas/Zoom/zoom_control.tscn" id="4_l6g57"]
