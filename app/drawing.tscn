@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://b1fwia5qj8s06"]
+[gd_scene load_steps=9 format=3 uid="uid://b1fwia5qj8s06"]
 
 [ext_resource type="Script" path="res://scripts/draw_cam.gd" id="1_hampg"]
 [ext_resource type="Script" path="res://scripts/pen_cursor.gd" id="2_3c6d4"]
@@ -9,8 +9,6 @@
 [ext_resource type="PackedScene" uid="uid://bogyjl2smag1s" path="res://controls/modals/CanvasSize/canvas_size.tscn" id="7_6lv80"]
 [ext_resource type="PackedScene" uid="uid://co8kevc7p1lup" path="res://controls/modals/ImageSize/image_size.tscn" id="8_8b6um"]
 
-[sub_resource type="LinePen" id="LinePen_yc00a"]
-
 [node name="Control" type="Control"]
 layout_mode = 3
 anchors_preset = 15
@@ -20,6 +18,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="SubViewport" type="SubViewport" parent="." node_paths=PackedStringArray("canvas")]
+transparent_bg = true
 msaa_2d = 3
 size = Vector2i(500, 500)
 size_2d_override = Vector2i(500, 500)
@@ -52,9 +51,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="DrawCanvas" type="DrawCanvas" parent="Canvas/CenterContainer"]
-pen = SubResource("LinePen_yc00a")
 minimum_draw_distance = 10.0
-smooth_steps = 5
 custom_minimum_size = Vector2(500, 500)
 layout_mode = 2
 

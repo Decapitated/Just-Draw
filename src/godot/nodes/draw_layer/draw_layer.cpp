@@ -298,16 +298,9 @@ bool DrawLayer::UpdateErase(Vector2 pen_position, LineIterator line_it)
 
 void DrawLayer::FinishDraw()
 {
-    if(lines.size() > 0)
-    {   
-        shared_ptr<RSPen> rs_line = lines.back();
-        // If the line has 3 or more points, smooth it.
-        if(rs_line->line.size() >= 3)
-        {
-            SmoothLine(rs_line->line);
-            rs_line->Redraw(get_canvas_item(), lines.size() - 1);
-        }
-    }
+    auto rs_line = lines.back();
+    rs_line->line = rs_line->pen->FinishDraw(rs_line->line);
+    rs_line->Redraw(get_canvas_item(), lines.size() - 1);
     emit_signal(UPDATED_SIGNAL);
 }
 
@@ -324,46 +317,6 @@ void DrawLayer::UpdateIndexes(LineIterator line_it)
         (*line_it)->UpdateIndex(index);
         line_it = next(line_it);
         index++;
-    }
-}
-
-void DrawLayer::SmoothLineStep(Line &line, float smooth_ratio, float smooth_min_distance, int smooth_start)
-{
-    // Clamp ratio, then minus one so it doesn't go past midpoint.
-    float ratio = fmaxf(0.0, fminf(1.0, smooth_ratio));
-    if (ratio > 0.5f) ratio = 1.0f - ratio;
-    auto smoothed_line = Line();
-    smoothed_line.push_back(line[0]); // Add first point to new line.
-    for (int i = 1; i < line.size() - 1; i++)
-    {
-        if (i < smooth_start)
-        {
-            smoothed_line.push_back(line[i]);
-            continue;
-        }
-        Vector2 prev = line[i - 1], curr = line[i], next = line[i + 1];
-        float dist_squared = prev.distance_squared_to(curr);
-        if(dist_squared < powf(smooth_min_distance, 2.0f))
-        {
-            smoothed_line.push_back(curr);
-            continue;
-        }
-        smoothed_line.push_back(curr.lerp(prev, ratio));
-        smoothed_line.push_back(curr.lerp(next, ratio));
-    }
-    smoothed_line.push_back(line[line.size() - 1]); // Add last point to new line.
-    line = smoothed_line;
-}
-
-void DrawLayer::SmoothLine(Line &line, int smooth_start)
-{
-    auto canvas = dynamic_cast<DrawCanvas*>(get_parent_control());
-    if(canvas != nullptr)
-    {
-        for (int i = 0; i < canvas->smooth_steps; i++)
-        {
-            SmoothLineStep(line, canvas->smooth_ratio, canvas->smooth_min_distance, smooth_start);
-        }
     }
 }
 

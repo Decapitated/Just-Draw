@@ -30,16 +30,6 @@ void DrawCanvas::_bind_methods()
     ClassDB::bind_method(D_METHOD("get_max_draw_angle"), &DrawCanvas::get_max_draw_angle);
     ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "maximum_draw_angle"),
                  "set_max_draw_angle", "get_max_draw_angle");
-
-    ClassDB::bind_method(D_METHOD("set_smooth_steps", "p_steps"), &DrawCanvas::set_smooth_steps);
-    ClassDB::bind_method(D_METHOD("get_smooth_steps"), &DrawCanvas::get_smooth_steps);
-    ADD_PROPERTY(PropertyInfo(Variant::INT, "smooth_steps"),
-                 "set_smooth_steps", "get_smooth_steps");
-
-    ClassDB::bind_method(D_METHOD("set_smooth_ratio", "p_ratio"), &DrawCanvas::set_smooth_ratio);
-    ClassDB::bind_method(D_METHOD("get_smooth_ratio"), &DrawCanvas::get_smooth_ratio);
-    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "smooth_ratio"),
-                 "set_smooth_ratio", "get_smooth_ratio");
     
     ClassDB::bind_method(D_METHOD("get_active_layer"), &DrawCanvas::get_active_layer);
     ClassDB::bind_method(D_METHOD("set_active_layer", "p_layer"), &DrawCanvas::set_active_layer);
@@ -47,12 +37,12 @@ void DrawCanvas::_bind_methods()
                               PROPERTY_USAGE_NO_EDITOR),
                  "set_active_layer", "get_active_layer");
 
-    #pragma endregion
-
     ClassDB::bind_method(D_METHOD("create_canvas_data"), &DrawCanvas::create_canvas_data);
     ClassDB::bind_method(D_METHOD("load_canvas_data", "p_canvas_data"), &DrawCanvas::load_canvas_data);
-    ClassDB::bind_method(D_METHOD("clear_canvas"), &DrawCanvas::clear_canvas);
 
+    #pragma endregion
+
+    ClassDB::bind_method(D_METHOD("clear_canvas"), &DrawCanvas::clear_canvas);
     ClassDB::bind_method(D_METHOD("scale_layers", "p_scale"), &DrawCanvas::scale_layers);
     ClassDB::bind_method(D_METHOD("offset_layers", "p_offset"), &DrawCanvas::offset_layers);
 
