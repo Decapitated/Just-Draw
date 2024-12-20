@@ -2,8 +2,8 @@
 
 using namespace JustDraw;
 
-RSPen::RSPen(const Line &p_line, const Ref<Pen> &p_pen) :
-    line(p_line), pen(p_pen), rect(CalculateRect())
+RSPen::RSPen(const Variant &p_data, const Ref<Pen> &p_pen) :
+    data(p_data), pen(p_pen), rect(pen->CalculateRect(data))
 {
     auto rs = RenderingServer::get_singleton();
     if(rs == nullptr) return;
@@ -28,7 +28,7 @@ void RSPen::Clear() const
 void RSPen::Update(const RID &p_parent_item, const int p_index) const
 {
     if(!canvas_item.is_valid()) return;
-    pen->Draw(p_parent_item, canvas_item, p_index, line);
+    pen->Draw(p_parent_item, canvas_item, p_index, data);
 }
 
 void RSPen::Redraw(const RID &p_parent_item, const int p_index) const
@@ -43,14 +43,4 @@ void RSPen::UpdateIndex(const int p_index)
     if(rs == nullptr) return;
     if(!canvas_item.is_valid()) return;
     rs->canvas_item_set_draw_index(canvas_item, p_index);
-}
-
-Rect2 RSPen::CalculateRect() const
-{
-    auto rect = Rect2();
-    for(int i = 0; i < line.size(); i++)
-    {
-        rect.expand_to(line[i]);
-    }
-    return rect;
 }

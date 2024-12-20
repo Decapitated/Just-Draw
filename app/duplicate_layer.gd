@@ -14,13 +14,13 @@ func _process(_delta):
 func _draw():
 	clear_items()
 	if layer:
-		var layer_data = layer.layer_data
-		var lines = layer_data.lines
-		var pens: Array[Pen] = layer_data.pens
-		for i in range(lines.size()):
+		var layer_data := layer.layer_data
+		var data := layer_data.data
+		var pens := layer_data.pens
+		for i in range(data.size()):
 			var item = RenderingServer.canvas_item_create()
 			items.append(item)
-			pens[i].draw(get_canvas_item(), item, i, lines[i])
+			pens[i].draw(get_canvas_item(), item, i, data[i])
 
 func clear_items():
 	for item in items:

@@ -15,11 +15,11 @@ namespace JustDraw
             RID canvas_item;
 
         public:
-            Line line;
+            Variant data;
             Ref<Pen> pen;
             Rect2 rect;
 
-            RSPen(const Line &p_line, const Ref<Pen> &p_pen);
+            RSPen(const Variant &p_data, const Ref<Pen> &p_pen);
             ~RSPen();
 
             void Clear() const;
@@ -27,8 +27,6 @@ namespace JustDraw
             void Redraw(const RID &p_parent_item, const int p_index) const;
 
             void UpdateIndex(const int p_index);
-
-            Rect2 CalculateRect() const;
     };
 }
 

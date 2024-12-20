@@ -22,8 +22,7 @@ using namespace godot;
 
 namespace JustDraw
 {
-    using Lines = list<shared_ptr<RSPen>>;
-    using LineIterator = Lines::iterator;
+    using DataPens = list<shared_ptr<RSPen>>;
 
     class DrawLayer : public Control
     {
@@ -33,7 +32,7 @@ namespace JustDraw
         private:
             static const char* UPDATED_SIGNAL;
 
-            Lines lines = Lines();
+            DataPens pens = DataPens();
 
             PenMode mode = PenMode::NONE;
 
@@ -50,14 +49,14 @@ namespace JustDraw
             void UpdateDraw(Vector2 pen_position);
 
             void UpdateErase(Vector2 pen_position);
-            bool UpdateErase(Vector2 pen_position, LineIterator line_it);
+            bool UpdateErase(Vector2 pen_position, DataPens::iterator data_it);
 
             void FinishDraw();
             void FinishErase();
 
-            void UpdateIndexes(LineIterator line_it);
+            void UpdateIndexes(DataPens::iterator data_it);
 
-            TypedArray<Line> GetLines();
+            Array GetData();
             TypedArray<Pen> GetPens();
 
         protected:
@@ -73,7 +72,7 @@ namespace JustDraw
             bool get_active() { return active; }
             void set_active(bool p_active) { active = p_active; }
 
-            Ref<LayerData> create_layer_data() { return memnew(LayerData(GetLines(), GetPens())); }
+            Ref<LayerData> create_layer_data() { return memnew(LayerData(GetData(), GetPens())); }
             void load_layer_data(Ref<LayerData> p_layer_data);
 
             PenMode get_pen_mode() { return mode; }
@@ -84,8 +83,8 @@ namespace JustDraw
             void _process(double p_delta) override;
             void _unhandled_input(const Ref<InputEvent> &p_event) override;
 
-            void scale_lines(Vector2 scale);
-            void offset_lines(Vector2 offset);
+            void scale_data(Vector2 scale);
+            void offset_data(Vector2 offset);
     };
 }
 

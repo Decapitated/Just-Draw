@@ -74,28 +74,129 @@ Line LinePen::SmoothLineStep(Line p_line, float p_smooth_ratio, float p_smooth_m
     return smoothed_line;
 }
 
-void LinePen::_draw(const RID &p_parent_item, const RID &p_canvas_item, const int p_index, const Line &p_line)
+void LinePen::_draw(const RID &p_parent_item, const RID &p_canvas_item, const int p_index, const Variant &p_data)
 {
     auto rs = RenderingServer::get_singleton();
-    if(rs == nullptr) return;
-    if(p_line.size() == 1)
+    if(rs == nullptr || p_data.get_type() != Variant::PACKED_VECTOR2_ARRAY) return;
+    Line line = p_data;
+    if(line.size() == 1)
     {
-        rs->canvas_item_add_circle(p_canvas_item, p_line[0], width / 2.0f, color);
+        rs->canvas_item_add_circle(p_canvas_item, line[0], width / 2.0f, color);
     }
-    else if(p_line.size() >= 2)
+    else if(line.size() >= 2)
     {
         auto colors = PackedColorArray();
-        colors.resize(p_line.size());
+        colors.resize(line.size());
         colors.fill(color);
-        rs->canvas_item_add_polyline(p_canvas_item, p_line, colors, width);
-        rs->canvas_item_add_circle(p_canvas_item, p_line[0], width / 2.0f * cap_scale, color);
-        rs->canvas_item_add_circle(p_canvas_item, p_line[p_line.size() - 1], width / 2.0f * cap_scale, color);
+        rs->canvas_item_add_polyline(p_canvas_item, line, colors, width);
+        rs->canvas_item_add_circle(p_canvas_item, line[0], width / 2.0f * cap_scale, color);
+        rs->canvas_item_add_circle(p_canvas_item, line[line.size() - 1], width / 2.0f * cap_scale, color);
     }
 }
 
-Line LinePen::_finish_draw(const Line &p_line)
+Variant LinePen::_start_draw(const Vector2 &p_pen_position)
 {
-    auto smoothed_line = p_line;
-    if(p_line.size() > 2) smoothed_line = SmoothLine(smoothed_line);
+    auto new_line = Line();
+    new_line.append(p_pen_position);
+    return new_line;
+}
+
+Array LinePen::_update_draw(const Vector2 &p_pen_position, const float &p_cam_scale, const Variant &p_current_data)
+{
+    auto new_data = Array();
+    if(p_current_data.get_type() != Variant::PACKED_VECTOR2_ARRAY) return new_data;
+    Line line = p_current_data;
+    auto prev_pos = line[line.size() - 1];
+    auto dist = prev_pos.distance_squared_to(p_pen_position);
+    const float min_dist = 10.0f * p_cam_scale; // ALERT: Update to use min_dist property.
+    if(dist >= powf(min_dist, 2.0))
+    {
+        // Clamp the angle between the line and the pen.
+        if(line.size() >= 2)
+        {
+            Vector2 prev = line[line.size() - 2], curr = prev_pos, next = p_pen_position;
+            float curr_dot = (curr - prev).normalized().dot((next - curr).normalized());
+            curr_dot = (1.0f - (curr_dot * 0.5f + 0.5f)) * 180.0f;
+            if(curr_dot > 135.0f) // ALERT: Change to pen property.
+            {
+                auto new_line = Line();
+                new_line.append(line[line.size() - 1]);
+                new_line.append(next);
+
+                new_data.append(line);
+                new_data.append(new_line);
+                return new_data;
+            }
+        }
+        line.append(p_pen_position);
+        new_data.append(line);
+    }
+
+    return new_data;
+}
+
+Variant LinePen::_finish_draw(const Variant &p_data)
+{
+    if(p_data.get_type() != Variant::PACKED_VECTOR2_ARRAY) return p_data;
+    Line smoothed_line = p_data;
+    if(smoothed_line.size() > 2) smoothed_line = SmoothLine(smoothed_line);
     return smoothed_line;
+}
+
+Variant LinePen::_update_erase(const Vector2 &p_pen_position, const float &p_eraser_size, const Variant &p_current_data)
+{
+    if(p_current_data.get_type() != Variant::PACKED_VECTOR2_ARRAY) return true;
+    Line line = p_current_data;
+    auto new_data = Array();
+    bool sliced = false;
+    int slice_start = 0;
+    bool slicing = false;
+    for(int i = 0; i < line.size(); i++)
+    {
+        auto curr = line[i];
+        bool is_last_slice = i == line.size() - 1 && slice_start > 0;
+        if(is_last_slice || (curr.distance_squared_to(p_pen_position) < powf(p_eraser_size + (width / 2.0f), 2.0f)))
+        {
+            if(slicing)
+            {
+                int end = is_last_slice ? i + 1 : i;
+                auto new_line = line.slice(slice_start, end);
+                new_data.append(new_line);
+                slicing = false;
+            }
+            sliced = true;
+        }
+        else if(!slicing)
+        {
+            slice_start = i;
+            slicing = true;
+        }
+    }
+    if(new_data.size() > 0)
+    {
+        return new_data;
+    }
+    return sliced || line.size() == 0;
+}
+
+Variant LinePen::_scale_data(const Vector2 &p_scale, const Variant &p_current_data)
+{
+    if(p_current_data.get_type() != Variant::PACKED_VECTOR2_ARRAY) return p_current_data;
+    Line line = p_current_data;
+    for(int i = 0; i < line.size(); i++)
+    {
+        line[i] *= p_scale;
+    }
+    return line;
+}
+
+Variant LinePen::_offset_data(const Vector2 &p_offset, const Variant &p_current_data)
+{
+    if(p_current_data.get_type() != Variant::PACKED_VECTOR2_ARRAY) return p_current_data;
+    Line line = p_current_data;
+    for(int i = 0; i < line.size(); i++)
+    {
+        line[i] += p_offset;
+    }
+    return line;
 }

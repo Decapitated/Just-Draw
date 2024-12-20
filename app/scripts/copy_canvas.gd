@@ -14,12 +14,12 @@ func _draw():
 	if current_canvas != null:
 		var global_index = 0
 		for layer_data in current_canvas.layers:
-			var lines = layer_data.lines
+			var data := layer_data.data
 			var pens = layer_data.pens
-			for i in range(lines.size()):
+			for i in range(data.size()):
 				var item = RenderingServer.canvas_item_create()
 				items.append(item)
-				pens[i].draw(get_canvas_item(), item, global_index, lines[i])
+				pens[i].draw(get_canvas_item(), item, global_index, data[i])
 				global_index += 1
 		finished_drawing.emit()
 
