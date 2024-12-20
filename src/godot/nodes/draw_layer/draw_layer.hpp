@@ -15,14 +15,14 @@
 #include <algorithm>
 
 #include "godot/resources/layer_data/layer_data.hpp"
-#include "just_draw/rs_pen/rs_pen.hpp"
+#include "godot/objects/rs_pen/rs_pen.hpp"
 
 using namespace std;
 using namespace godot;
 
 namespace JustDraw
 {
-    using DataPens = list<shared_ptr<RSPen>>;
+    using DataPens = list<Ref<RSPen>>;
 
     class DrawLayer : public Control
     {

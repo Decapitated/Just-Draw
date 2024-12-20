@@ -170,7 +170,7 @@ void DrawLayer::StartDraw(Vector2 pen_position)
         Ref<Pen> new_pen = canvas->pen->duplicate(true);
         auto new_data = new_pen->StartDraw(pen_position);
         if(new_data.get_type() == Variant::NIL) return;
-        auto new_rs_pen = shared_ptr<RSPen>(new RSPen(new_data, new_pen));
+        Ref<RSPen> new_rs_pen = memnew(RSPen(new_data, new_pen));
         new_rs_pen->Update(get_canvas_item(), pens.size());
         // Add the line to the list.
         pens.push_back(new_rs_pen);
@@ -189,26 +189,30 @@ void DrawLayer::UpdateDraw(Vector2 pen_position)
     if(canvas != nullptr)
     {
         auto cam = get_viewport()->get_camera_2d();
-        shared_ptr<RSPen> rs_pen = pens.back();
+        Ref<RSPen> rs_pen = pens.back();
         Array new_data = rs_pen->pen->UpdateDraw(pen_position, 1.0f / cam->get_zoom().x, rs_pen->data);
         if(new_data.size() > 0)
         {
             rs_pen->data = new_data[0];
-            rs_pen->data = rs_pen->pen->FinishDraw(rs_pen->data);
-            rs_pen->rect = rs_pen->pen->CalculateRect(rs_pen->data);
-            rs_pen->Redraw(get_canvas_item(), pens.size() - 1);
-            for(int i = 1; i < new_data.size(); i++)
+            int current_index = pens.size() - 1;
+            if(new_data.size() > 1)
             {
-                auto new_pen = rs_pen->pen->duplicate(true);
-                auto new_rs_pen = shared_ptr<RSPen>(new RSPen(new_data[i], new_pen));
-                pens.push_back(new_rs_pen);
-                if(i != new_data.size() - 1)
+                rs_pen->data = rs_pen->pen->FinishDraw(rs_pen->data);
+                rs_pen->rect = rs_pen->pen->CalculateRect(rs_pen->data);
+                for(int i = 1; i < new_data.size(); i++)
                 {
-                    new_rs_pen->data = new_rs_pen->pen->FinishDraw(new_rs_pen->data);
-                    new_rs_pen->rect = new_rs_pen->pen->CalculateRect(new_rs_pen->data);
-                    new_rs_pen->Redraw(get_canvas_item(), pens.size() - 1);
+                    auto new_pen = rs_pen->pen->duplicate(true);
+                    Ref<RSPen> new_rs_pen = memnew(RSPen(new_data[i], new_pen));
+                    pens.push_back(new_rs_pen);
+                    if(i != new_data.size() - 1)
+                    {
+                        new_rs_pen->data = new_rs_pen->pen->FinishDraw(new_rs_pen->data);
+                        new_rs_pen->rect = new_rs_pen->pen->CalculateRect(new_rs_pen->data);
+                        new_rs_pen->Redraw(get_canvas_item(), pens.size() - 1);
+                    }
                 }
             }
+            rs_pen->Redraw(get_canvas_item(), current_index);
         }
     }
 }
@@ -222,28 +226,35 @@ void DrawLayer::UpdateErase(Vector2 pen_position)
     while(pen_it != pens.end())
     {
         // Check if the pen position is inside the line bounding rect.
-        Rect2 line_rect = (*pen_it)->rect;
-        bool contains = line_rect.has_point(pen_position);
-        if(!contains)
+        // Rect2 line_rect = (*pen_it)->rect;
+        // bool contains = line_rect.has_point(pen_position);
+        // if(!contains)
+        // {
+        //     Vector2 center = line_rect.get_center();
+        //     Vector2 closest = Vector2(
+        //         max(center.x - line_rect.size.x / 2.0f, min(pen_position.x, center.x + line_rect.size.x / 2.0f)),
+        //         max(center.y - line_rect.size.y / 2.0f, min(pen_position.y, center.y + line_rect.size.y / 2.0f))
+        //     );
+        //     auto line_pen = dynamic_cast<LinePen*>((*pen_it)->pen.ptr());
+        //     float pen_dist = (line_pen == nullptr) ? 0.0f : line_pen->get_width() / 2.0f;
+        //     contains = closest.distance_squared_to(pen_position) < powf(canvas->eraser_size + pen_dist, 2.0f);
+        // }
+        // if(contains)
+        // {
+        //     bool should_erase = UpdateErase(pen_position, pen_it);
+        //     if(should_erase)
+        //     {
+        //         pen_it = pens.erase(pen_it);
+        //         UpdateIndexes(pen_it);
+        //         continue;
+        //     }
+        // }
+        bool should_erase = UpdateErase(pen_position, pen_it);
+        if(should_erase)
         {
-            Vector2 center = line_rect.get_center();
-            Vector2 closest = Vector2(
-                max(center.x - line_rect.size.x / 2.0f, min(pen_position.x, center.x + line_rect.size.x / 2.0f)),
-                max(center.y - line_rect.size.y / 2.0f, min(pen_position.y, center.y + line_rect.size.y / 2.0f))
-            );
-            auto line_pen = dynamic_cast<LinePen*>((*pen_it)->pen.ptr());
-            float pen_dist = (line_pen == nullptr) ? 0.0f : line_pen->get_width() / 2.0f;
-            contains = closest.distance_squared_to(pen_position) < powf(canvas->eraser_size + pen_dist, 2.0f);
-        }
-        if(contains)
-        {
-            bool should_erase = UpdateErase(pen_position, pen_it);
-            if(should_erase)
-            {
-                pen_it = pens.erase(pen_it);
-                UpdateIndexes(pen_it);
-                continue;
-            }
+            pen_it = pens.erase(pen_it);
+            UpdateIndexes(pen_it);
+            continue;
         }
         pen_it++;
     }
@@ -266,9 +277,9 @@ bool DrawLayer::UpdateErase(Vector2 pen_position, DataPens::iterator data_it)
             for(int i = 0; i < data_array.size(); i++)
             {
                 auto new_pen = (*data_it)->pen->duplicate(true);
-                auto new_rs_line = shared_ptr<RSPen>(new RSPen(data_array[i], new_pen));
+                Ref<RSPen> new_rs_line = memnew(RSPen(data_array[i], new_pen));
                 new_rs_line->Update(get_canvas_item(), distance(pens.begin(), data_it));
-                auto _new_line_it = pens.insert(data_it, new_rs_line);
+                data_it = pens.insert(data_it, new_rs_line);
             }
             return true;
         }
@@ -328,7 +339,7 @@ void DrawLayer::load_layer_data(Ref<LayerData> p_layer_data)
     auto p_pens = p_layer_data->get_pens();
     for(int i = 0; i < p_data.size(); i++)
     {
-        auto new_rs_line = shared_ptr<RSPen>(new RSPen(p_data[i], p_pens[i]));
+        Ref<RSPen> new_rs_line = memnew(RSPen(p_data[i], p_pens[i]));
         new_rs_line->Update(get_canvas_item(), i);
         new_pens.push_back(new_rs_line);
     }

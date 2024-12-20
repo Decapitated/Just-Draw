@@ -2,6 +2,25 @@
 
 using namespace JustDraw;
 
+void RSPen::_bind_methods()
+{
+    #pragma region Getters and Setters
+
+    ClassDB::bind_method(D_METHOD("set_data", "p_data"), &RSPen::set_data);
+    ClassDB::bind_method(D_METHOD("get_data"), &RSPen::get_data);
+    ADD_PROPERTY(PropertyInfo(Variant::VARIANT_MAX, "data"), "set_data", "get_data");
+
+    ClassDB::bind_method(D_METHOD("set_pen", "p_pen"), &RSPen::set_pen);
+    ClassDB::bind_method(D_METHOD("get_pen"), &RSPen::get_pen);
+    ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "pen", PROPERTY_HINT_RESOURCE_TYPE, "Pen"), "set_pen", "get_pen");
+
+    ClassDB::bind_method(D_METHOD("set_rect", "p_rect"), &RSPen::set_rect);
+    ClassDB::bind_method(D_METHOD("get_rect"), &RSPen::get_rect);
+    ADD_PROPERTY(PropertyInfo(Variant::RECT2, "rect"), "set_rect", "get_rect");
+
+    #pragma endregion
+}
+
 RSPen::RSPen(const Variant &p_data, const Ref<Pen> &p_pen) :
     data(p_data), pen(p_pen), rect(pen->CalculateRect(data))
 {
