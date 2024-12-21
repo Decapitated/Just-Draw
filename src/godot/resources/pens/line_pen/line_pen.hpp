@@ -59,12 +59,12 @@ namespace JustDraw
 
             virtual void _draw(const RID &p_parent_item, const RID &p_canvas_item, const int p_index, const Variant &p_data) override;
             
-            virtual Variant _start_draw(const Vector2 &p_pen_position) override;
-            virtual Array _update_draw(const Vector2 &p_pen_position, const float &p_cam_scale, const Variant &p_current_data);
-            virtual Variant _finish_draw(const Variant &p_data) override;
-            virtual Variant _update_erase(const Vector2 &p_pen_position, const float &p_eraser_size, const Variant &p_current_data) override;
-            virtual Variant _scale_data(const Vector2 &p_scale, const Variant &p_current_data) override;
-            virtual Variant _offset_data(const Vector2 &p_offset, const Variant &p_current_data) override;
+            virtual Variant _start_draw(const Vector2 &p_pen_position, const Ref<RSPen> &p_rs_pen) override;
+            virtual Array _update_draw(const Vector2 &p_pen_position, const float &p_cam_scale, const Ref<RSPen> &p_rs_pen);
+            virtual bool _finish_draw(const Vector2 &p_pen_position, const Ref<RSPen> &p_rs_pen) override;
+            virtual Variant _update_erase(const Vector2 &p_pen_position, const float &p_eraser_size, const Ref<RSPen> &p_rs_pen) override;
+            virtual void _scale_data(const Vector2 &p_scale, const Ref<RSPen> &p_rs_pen) override;
+            virtual void _offset_data(const Vector2 &p_offset, const Ref<RSPen> &p_rs_pen) override;
     };
 }
 

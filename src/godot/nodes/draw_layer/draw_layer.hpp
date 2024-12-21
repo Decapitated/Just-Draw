@@ -51,7 +51,7 @@ namespace JustDraw
             void UpdateErase(Vector2 pen_position);
             bool UpdateErase(Vector2 pen_position, DataPens::iterator data_it);
 
-            void FinishDraw();
+            void FinishDraw(Vector2 pen_position);
             void FinishErase();
 
             void UpdateIndexes(DataPens::iterator data_it);

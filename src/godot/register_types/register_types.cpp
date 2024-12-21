@@ -19,9 +19,9 @@ void initialize_justdraw_module(ModuleInitializationLevel p_level) {
 	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
 		return;
 	}
-    GDREGISTER_INTERNAL_CLASS(JustDraw::RSPen);
+    GDREGISTER_ABSTRACT_CLASS(JustDraw::RSPen);
 
-    GDREGISTER_ABSTRACT_CLASS(JustDraw::Pen);
+    GDREGISTER_CLASS(JustDraw::Pen);
     GDREGISTER_CLASS(JustDraw::LinePen);
 
     GDREGISTER_CLASS(JustDraw::CanvasData);

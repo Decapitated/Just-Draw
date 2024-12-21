@@ -4,12 +4,12 @@
 #include <godot_cpp/classes/ref_counted.hpp>
 #include <godot_cpp/classes/rendering_server.hpp>
 
-#include "godot/resources/pens/pen/pen.hpp"
-
 using namespace godot;
 
 namespace JustDraw
 {
+    class Pen;
+
     class RSPen : public RefCounted
     {
         GDCLASS(RSPen, RefCounted);

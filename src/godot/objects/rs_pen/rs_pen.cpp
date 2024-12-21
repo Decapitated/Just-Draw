@@ -1,5 +1,7 @@
 #include "rs_pen.hpp"
 
+#include "godot/resources/pens/pen/pen.hpp"
+
 using namespace JustDraw;
 
 void RSPen::_bind_methods()

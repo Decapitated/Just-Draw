@@ -94,18 +94,18 @@ void LinePen::_draw(const RID &p_parent_item, const RID &p_canvas_item, const in
     }
 }
 
-Variant LinePen::_start_draw(const Vector2 &p_pen_position)
+Variant LinePen::_start_draw(const Vector2 &p_pen_position, const Ref<RSPen> &p_rs_pen)
 {
     auto new_line = Line();
     new_line.append(p_pen_position);
     return new_line;
 }
 
-Array LinePen::_update_draw(const Vector2 &p_pen_position, const float &p_cam_scale, const Variant &p_current_data)
+Array LinePen::_update_draw(const Vector2 &p_pen_position, const float &p_cam_scale, const Ref<RSPen> &p_rs_pen)
 {
     auto new_data = Array();
-    if(p_current_data.get_type() != Variant::PACKED_VECTOR2_ARRAY) return new_data;
-    Line line = p_current_data;
+    if(p_rs_pen->data.get_type() != Variant::PACKED_VECTOR2_ARRAY) return new_data;
+    Line line = p_rs_pen->data;
     auto prev_pos = line[line.size() - 1];
     auto dist = prev_pos.distance_squared_to(p_pen_position);
     const float min_dist = 10.0f * p_cam_scale; // ALERT: Update to use min_dist property.
@@ -122,31 +122,29 @@ Array LinePen::_update_draw(const Vector2 &p_pen_position, const float &p_cam_sc
                 auto new_line = Line();
                 new_line.append(line[line.size() - 1]);
                 new_line.append(next);
-
-                new_data.append(line);
                 new_data.append(new_line);
                 return new_data;
             }
         }
         line.append(p_pen_position);
-        new_data.append(line);
+        p_rs_pen->data = line;
     }
-
     return new_data;
 }
 
-Variant LinePen::_finish_draw(const Variant &p_data)
+bool LinePen::_finish_draw(const Vector2 &p_pen_position, const Ref<RSPen> &p_rs_pen)
 {
-    if(p_data.get_type() != Variant::PACKED_VECTOR2_ARRAY) return p_data;
-    Line smoothed_line = p_data;
+    if(p_rs_pen->data.get_type() != Variant::PACKED_VECTOR2_ARRAY) return true;
+    Line smoothed_line = p_rs_pen->data;
     if(smoothed_line.size() > 2) smoothed_line = SmoothLine(smoothed_line);
-    return smoothed_line;
+    p_rs_pen->data = smoothed_line;
+    return false;
 }
 
-Variant LinePen::_update_erase(const Vector2 &p_pen_position, const float &p_eraser_size, const Variant &p_current_data)
+Variant LinePen::_update_erase(const Vector2 &p_pen_position, const float &p_eraser_size, const Ref<RSPen> &p_rs_pen)
 {
-    if(p_current_data.get_type() != Variant::PACKED_VECTOR2_ARRAY) return true;
-    Line line = p_current_data;
+    if(p_rs_pen->data.get_type() != Variant::PACKED_VECTOR2_ARRAY) return true;
+    Line line = p_rs_pen->data;
     auto new_data = Array();
     bool sliced = false;
     int slice_start = 0;
@@ -179,24 +177,24 @@ Variant LinePen::_update_erase(const Vector2 &p_pen_position, const float &p_era
     return sliced || line.size() == 0;
 }
 
-Variant LinePen::_scale_data(const Vector2 &p_scale, const Variant &p_current_data)
+void LinePen::_scale_data(const Vector2 &p_scale, const Ref<RSPen> &p_rs_pen)
 {
-    if(p_current_data.get_type() != Variant::PACKED_VECTOR2_ARRAY) return p_current_data;
-    Line line = p_current_data;
+    if(p_rs_pen->data.get_type() != Variant::PACKED_VECTOR2_ARRAY) return;
+    Line line = p_rs_pen->data;
     for(int i = 0; i < line.size(); i++)
     {
         line[i] *= p_scale;
     }
-    return line;
+    p_rs_pen->data = line;
 }
 
-Variant LinePen::_offset_data(const Vector2 &p_offset, const Variant &p_current_data)
+void LinePen::_offset_data(const Vector2 &p_offset, const Ref<RSPen> &p_rs_pen)
 {
-    if(p_current_data.get_type() != Variant::PACKED_VECTOR2_ARRAY) return p_current_data;
-    Line line = p_current_data;
+    if(p_rs_pen->data.get_type() != Variant::PACKED_VECTOR2_ARRAY) return;
+    Line line = p_rs_pen->data;
     for(int i = 0; i < line.size(); i++)
     {
         line[i] += p_offset;
     }
-    return line;
+    p_rs_pen->data = line;
 }
