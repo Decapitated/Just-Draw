@@ -65,6 +65,7 @@ namespace JustDraw
             virtual Variant _update_erase(const Vector2 &p_pen_position, const float &p_eraser_size, const Ref<RSPen> &p_rs_pen) override;
             virtual void _scale_data(const Vector2 &p_scale, const Ref<RSPen> &p_rs_pen) override;
             virtual void _offset_data(const Vector2 &p_offset, const Ref<RSPen> &p_rs_pen) override;
+            virtual void _draw_cursor(CanvasItem* p_canvas_item, const Vector2 &p_pen_position, const float &p_eraser_size, const bool &p_is_eraser) override;
     };
 }
 

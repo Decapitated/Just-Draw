@@ -6,6 +6,9 @@ void Pen::_bind_methods()
 {
     GDVIRTUAL_BIND(_draw, "parent_item", "canvas_item", "index", "data");
     ClassDB::bind_method(D_METHOD("draw", "parent_item", "canvas_item", "index", "data"), &Pen::Draw);
+    
+    GDVIRTUAL_BIND(_draw_cursor, "canvas_item", "pen_position", "eraser_size", "is_eraser");
+    ClassDB::bind_method(D_METHOD("draw_cursor", "canvas_item", "pen_position", "eraser_size", "is_eraser"), &Pen::DrawCursor);
 
     GDVIRTUAL_BIND(_start_draw, "pen_position", "rs_pen");
     GDVIRTUAL_BIND(_update_draw, "pen_position", "cam_scale", "rs_pen");
@@ -81,5 +84,13 @@ void Pen::OffsetData(const Vector2 &p_offset, const Ref<RSPen> &p_rs_pen)
     if(!GDVIRTUAL_CALL(_offset_data, p_offset, p_rs_pen))
     {
         _offset_data(p_offset, p_rs_pen);
+    }
+}
+
+void Pen::DrawCursor(CanvasItem* p_canvas_item, const Vector2 &p_pen_position, const float &p_eraser_size, const bool &p_is_eraser)
+{
+    if(!GDVIRTUAL_CALL(_draw_cursor, p_canvas_item, p_pen_position, p_eraser_size, p_is_eraser))
+    {
+        _draw_cursor(p_canvas_item, p_pen_position, p_eraser_size, p_is_eraser);
     }
 }

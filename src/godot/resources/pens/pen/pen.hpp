@@ -1,6 +1,7 @@
 #ifndef RESOURCE_PEN_H
 #define RESOURCE_PEN_H
 
+#include <godot_cpp/classes/canvas_item.hpp>
 #include <godot_cpp/classes/rendering_server.hpp>
 #include <godot_cpp/classes/resource.hpp>
 
@@ -58,6 +59,10 @@ namespace JustDraw
             GDVIRTUAL2(_offset_data, Vector2, Ref<RSPen>);
             virtual void _offset_data(const Vector2 &p_offset, const Ref<RSPen> &p_rs_pen) {}
             void OffsetData(const Vector2 &p_offset, const Ref<RSPen> &p_rs_pen);
+
+            GDVIRTUAL4(_draw_cursor, CanvasItem*, Vector2, float, bool);
+            virtual void _draw_cursor(CanvasItem* p_canvas_item, const Vector2 &p_pen_position, const float &p_eraser_size, const bool &p_is_eraser) {}
+            void DrawCursor(CanvasItem* p_canvas_item, const Vector2 &p_pen_position, const float &p_eraser_size, const bool &p_is_eraser);
     };
 
 }

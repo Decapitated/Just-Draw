@@ -198,3 +198,11 @@ void LinePen::_offset_data(const Vector2 &p_offset, const Ref<RSPen> &p_rs_pen)
     }
     p_rs_pen->data = line;
 }
+
+const Color DARK_GREY = Color(0.662745f, 0.662745f, 0.662745f, 1.0f);
+void LinePen::_draw_cursor(CanvasItem* p_canvas_item, const Vector2 &p_pen_position, const float &p_eraser_size, const bool &p_is_eraser)
+{
+    if(p_canvas_item == nullptr) return;
+    float radius = (p_is_eraser) ? p_eraser_size : width / 2.0f;
+    p_canvas_item->draw_circle(p_pen_position, radius, DARK_GREY, false, 1.0f);
+}
