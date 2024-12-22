@@ -172,7 +172,7 @@ void DrawLayer::StartDraw(Vector2 pen_position)
         Ref<Pen> new_pen = canvas->pen;
         auto new_data = new_pen->StartDraw(pen_position, current_pen);
         if(new_data.get_type() == Variant::NIL) return;
-        new_pen = new_pen->duplicate(true);
+        new_pen = new_pen->DuplicatePen(true);
         Ref<RSPen> new_rs_pen = memnew(RSPen(new_data, new_pen));
         new_rs_pen->Update(get_canvas_item(), pens.size());
         // Add the line to the list.
@@ -208,7 +208,7 @@ void DrawLayer::UpdateDraw(Vector2 pen_position)
                 rs_pen->rect = rs_pen->pen->CalculateRect(rs_pen->data);
                 for(int i = 0; i < new_data.size(); i++)
                 {
-                    auto new_pen = rs_pen->pen->duplicate(true);
+                    auto new_pen = rs_pen->pen->DuplicatePen(true);
                     Ref<RSPen> new_rs_pen = memnew(RSPen(new_data[i], new_pen));
                     pens.push_back(new_rs_pen);
                     if(i != new_data.size() - 1)
@@ -290,7 +290,7 @@ bool DrawLayer::UpdateErase(Vector2 pen_position, DataPens::iterator data_it)
             Array data_array = new_data;
             for(int i = 0; i < data_array.size(); i++)
             {
-                auto new_pen = (*data_it)->pen->duplicate(true);
+                auto new_pen = (*data_it)->pen->DuplicatePen(true);
                 Ref<RSPen> new_rs_line = memnew(RSPen(data_array[i], new_pen));
                 new_rs_line->Update(get_canvas_item(), distance(pens.begin(), data_it));
                 data_it = pens.insert(data_it, new_rs_line);

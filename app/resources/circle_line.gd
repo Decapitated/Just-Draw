@@ -1,7 +1,7 @@
 class_name CircleLine extends LinePen
 
-@export var stencil_position := Vector2.ZERO
-@export var stencil_radius := 100.0
+var stencil_position := Vector2.ZERO
+var stencil_radius := 100.0
 
 var is_moving_stencil := false
 
@@ -48,6 +48,13 @@ func _finish_draw(pen_position: Vector2, rs_pen: RSPen) -> bool:
 
 func _draw_cursor(canvas_item: CanvasItem, pen_position: Vector2, eraser_size: float, is_eraser: bool) -> void:
     var cam := canvas_item.get_viewport().get_camera_2d()
-    canvas_item.draw_circle(stencil_position, stencil_radius, Color(1.0, 1.0, 1.0, 0.5), true)
+    canvas_item.draw_circle(stencil_position, 5.0 * (1.0 / cam.zoom.x), Color.DARK_GRAY)
+    canvas_item.draw_circle(stencil_position, stencil_radius, Color(1.0, 1.0, 1.0, 0.5))
     canvas_item.draw_circle(stencil_position, stencil_radius, Color.DARK_GRAY, false, 2.0 * (1.0 / cam.zoom.x))
     super.draw_cursor(canvas_item, pen_position, eraser_size, is_eraser)
+
+func _duplicate_pen(subresources: bool) -> Pen:
+    var pen := super.duplicate_pen(subresources)
+    pen.stencil_position = stencil_position
+    pen.stencil_radius = stencil_radius
+    return pen

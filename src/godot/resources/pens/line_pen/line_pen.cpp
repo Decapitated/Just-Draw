@@ -23,17 +23,17 @@ void LinePen::_bind_methods()
 
     ClassDB::bind_method(D_METHOD("get_smooth_steps"), &LinePen::get_smooth_steps);
     ClassDB::bind_method(D_METHOD("set_smooth_steps", "p_smooth_steps"), &LinePen::set_smooth_steps);
-    ADD_PROPERTY(PropertyInfo(Variant::INT, "smooth_steps"),
+    ADD_PROPERTY(PropertyInfo(Variant::INT, "smooth_steps", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE),
                  "set_smooth_steps", "get_smooth_steps");
     
     ClassDB::bind_method(D_METHOD("get_smooth_ratio"), &LinePen::get_smooth_ratio);
     ClassDB::bind_method(D_METHOD("set_smooth_ratio", "p_smooth_ratio"), &LinePen::set_smooth_ratio);
-    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "smooth_ratio"),
+    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "smooth_ratio", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE),
                  "set_smooth_ratio", "get_smooth_ratio");
     
     ClassDB::bind_method(D_METHOD("get_smooth_min_distance"), &LinePen::get_smooth_min_distance);
     ClassDB::bind_method(D_METHOD("set_smooth_min_distance", "p_smooth_min_distance"), &LinePen::set_smooth_min_distance);
-    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "smooth_min_distance"),
+    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "smooth_min_distance", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE),
                  "set_smooth_min_distance", "get_smooth_min_distance");
 
     #pragma endregion
@@ -45,6 +45,7 @@ void LinePen::_bind_methods()
     ClassDB::bind_method(D_METHOD("scale_data", "scale", "rs_pen"), &LinePen::scale_data);
     ClassDB::bind_method(D_METHOD("offset_data", "offset", "rs_pen"), &LinePen::offset_data);
     ClassDB::bind_method(D_METHOD("draw_cursor", "canvas_item", "pen_position", "eraser_size", "is_eraser"), &LinePen::draw_cursor);
+    ClassDB::bind_method(D_METHOD("duplicate_pen", "subresources"), &LinePen::duplicate_pen);
 
     ClassDB::bind_method(D_METHOD("smooth_line", "line"), &LinePen::SmoothLine);
     ClassDB::bind_static_method(get_class_static(), D_METHOD("smooth_line_step", "line", "smooth_ratio", "smooth_min_distance"), &LinePen::SmoothLineStep);
@@ -248,4 +249,18 @@ void LinePen::_draw_cursor(CanvasItem* p_canvas_item, const Vector2 &p_pen_posit
 void LinePen::draw_cursor(CanvasItem* p_canvas_item, const Vector2 &p_pen_position, const float &p_eraser_size, const bool &p_is_eraser)
 {
     _draw_cursor(p_canvas_item, p_pen_position, p_eraser_size, p_is_eraser);
+}
+
+Ref<Pen> LinePen::_duplicate_pen(bool p_subresources)
+{
+    Ref<LinePen> pen = this->duplicate(p_subresources);
+    pen->smooth_steps = smooth_steps;
+    pen->smooth_ratio = smooth_ratio;
+    pen->smooth_min_distance = smooth_min_distance;
+    return pen;
+}
+
+Ref<Pen> LinePen::duplicate_pen(bool p_subresources)
+{
+    return _duplicate_pen(p_subresources);
 }

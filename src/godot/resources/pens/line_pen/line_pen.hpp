@@ -79,6 +79,9 @@ namespace JustDraw
             
             virtual void _draw_cursor(CanvasItem* p_canvas_item, const Vector2 &p_pen_position, const float &p_eraser_size, const bool &p_is_eraser) override;
             void draw_cursor(CanvasItem* p_canvas_item, const Vector2 &p_pen_position, const float &p_eraser_size, const bool &p_is_eraser);
+
+            virtual Ref<Pen> _duplicate_pen(bool p_subresources = false);
+            Ref<Pen> duplicate_pen(bool p_subresources = false);
     };
 }
 

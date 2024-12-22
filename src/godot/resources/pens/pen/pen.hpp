@@ -63,6 +63,10 @@ namespace JustDraw
             GDVIRTUAL4(_draw_cursor, CanvasItem*, Vector2, float, bool);
             virtual void _draw_cursor(CanvasItem* p_canvas_item, const Vector2 &p_pen_position, const float &p_eraser_size, const bool &p_is_eraser) {}
             void DrawCursor(CanvasItem* p_canvas_item, const Vector2 &p_pen_position, const float &p_eraser_size, const bool &p_is_eraser);
+
+            GDVIRTUAL1R(Ref<Pen>, _duplicate_pen, bool);
+            virtual Ref<Pen> _duplicate_pen(bool p_subresources = false) { return this->duplicate(p_subresources); }
+            Ref<Pen> DuplicatePen(bool p_subresources = false);
     };
 
 }

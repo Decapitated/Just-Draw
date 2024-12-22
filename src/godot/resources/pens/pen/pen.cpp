@@ -16,6 +16,7 @@ void Pen::_bind_methods()
     GDVIRTUAL_BIND(_update_erase, "pen_position", "eraser_size", "rs_pen");
     GDVIRTUAL_BIND(_scale_data, "scale", "rs_pen");
     GDVIRTUAL_BIND(_offset_data, "offset", "rs_pen");
+    GDVIRTUAL_BIND(_duplicate_pen, "subresources");
 }
 
 void Pen::Draw(const RID &p_parent_item, const RID &p_canvas_item, const int p_index, const Variant &p_data)
@@ -93,4 +94,14 @@ void Pen::DrawCursor(CanvasItem* p_canvas_item, const Vector2 &p_pen_position, c
     {
         _draw_cursor(p_canvas_item, p_pen_position, p_eraser_size, p_is_eraser);
     }
+}
+
+Ref<Pen> Pen::DuplicatePen(bool p_subresources)
+{
+    Ref<Pen> r_return;
+    if(GDVIRTUAL_CALL(_duplicate_pen, p_subresources, r_return))
+    {
+        return r_return;
+    }
+    return _duplicate_pen(p_subresources);
 }
