@@ -38,6 +38,14 @@ void LinePen::_bind_methods()
 
     #pragma endregion
 
+    ClassDB::bind_method(D_METHOD("start_draw", "pen_position", "rs_pen"), &LinePen::start_draw);
+    ClassDB::bind_method(D_METHOD("update_draw", "pen_position", "cam_scale", "rs_pen"), &LinePen::update_draw);
+    ClassDB::bind_method(D_METHOD("finish_draw", "pen_position", "rs_pen"), &LinePen::finish_draw);
+    ClassDB::bind_method(D_METHOD("update_erase", "pen_position", "eraser_size", "rs_pen"), &LinePen::update_erase);
+    ClassDB::bind_method(D_METHOD("scale_data", "scale", "rs_pen"), &LinePen::scale_data);
+    ClassDB::bind_method(D_METHOD("offset_data", "offset", "rs_pen"), &LinePen::offset_data);
+    ClassDB::bind_method(D_METHOD("draw_cursor", "canvas_item", "pen_position", "eraser_size", "is_eraser"), &LinePen::draw_cursor);
+
     ClassDB::bind_method(D_METHOD("smooth_line", "line"), &LinePen::SmoothLine);
     ClassDB::bind_static_method(get_class_static(), D_METHOD("smooth_line_step", "line", "smooth_ratio", "smooth_min_distance"), &LinePen::SmoothLineStep);
 }
@@ -101,6 +109,11 @@ Variant LinePen::_start_draw(const Vector2 &p_pen_position, const Ref<RSPen> &p_
     return new_line;
 }
 
+Variant LinePen::start_draw(const Vector2 &p_pen_position, const Ref<RSPen> &p_rs_pen)
+{
+    return _start_draw(p_pen_position, p_rs_pen);
+}
+
 Array LinePen::_update_draw(const Vector2 &p_pen_position, const float &p_cam_scale, const Ref<RSPen> &p_rs_pen)
 {
     auto new_data = Array();
@@ -132,6 +145,11 @@ Array LinePen::_update_draw(const Vector2 &p_pen_position, const float &p_cam_sc
     return new_data;
 }
 
+Array LinePen::update_draw(const Vector2 &p_pen_position, const float &p_cam_scale, const Ref<RSPen> &p_rs_pen)
+{
+    return _update_draw(p_pen_position, p_cam_scale, p_rs_pen);
+}
+
 bool LinePen::_finish_draw(const Vector2 &p_pen_position, const Ref<RSPen> &p_rs_pen)
 {
     if(p_rs_pen->data.get_type() != Variant::PACKED_VECTOR2_ARRAY) return true;
@@ -139,6 +157,11 @@ bool LinePen::_finish_draw(const Vector2 &p_pen_position, const Ref<RSPen> &p_rs
     if(smoothed_line.size() > 2) smoothed_line = SmoothLine(smoothed_line);
     p_rs_pen->data = smoothed_line;
     return false;
+}
+
+bool LinePen::finish_draw(const Vector2 &p_pen_position, const Ref<RSPen> &p_rs_pen)
+{
+    return _finish_draw(p_pen_position, p_rs_pen);
 }
 
 Variant LinePen::_update_erase(const Vector2 &p_pen_position, const float &p_eraser_size, const Ref<RSPen> &p_rs_pen)
@@ -177,6 +200,11 @@ Variant LinePen::_update_erase(const Vector2 &p_pen_position, const float &p_era
     return sliced || line.size() == 0;
 }
 
+Variant LinePen::update_erase(const Vector2 &p_pen_position, const float &p_eraser_size, const Ref<RSPen> &p_rs_pen)
+{
+    return _update_erase(p_pen_position, p_eraser_size, p_rs_pen);
+}
+
 void LinePen::_scale_data(const Vector2 &p_scale, const Ref<RSPen> &p_rs_pen)
 {
     if(p_rs_pen->data.get_type() != Variant::PACKED_VECTOR2_ARRAY) return;
@@ -186,6 +214,11 @@ void LinePen::_scale_data(const Vector2 &p_scale, const Ref<RSPen> &p_rs_pen)
         line[i] *= p_scale;
     }
     p_rs_pen->data = line;
+}
+
+void LinePen::scale_data(const Vector2 &p_scale, const Ref<RSPen> &p_rs_pen)
+{
+    _scale_data(p_scale, p_rs_pen);
 }
 
 void LinePen::_offset_data(const Vector2 &p_offset, const Ref<RSPen> &p_rs_pen)
@@ -199,10 +232,20 @@ void LinePen::_offset_data(const Vector2 &p_offset, const Ref<RSPen> &p_rs_pen)
     p_rs_pen->data = line;
 }
 
+void LinePen::offset_data(const Vector2 &p_offset, const Ref<RSPen> &p_rs_pen)
+{
+    _offset_data(p_offset, p_rs_pen);
+}
+
 const Color DARK_GREY = Color(0.662745f, 0.662745f, 0.662745f, 1.0f);
 void LinePen::_draw_cursor(CanvasItem* p_canvas_item, const Vector2 &p_pen_position, const float &p_eraser_size, const bool &p_is_eraser)
 {
     if(p_canvas_item == nullptr) return;
     float radius = (p_is_eraser) ? p_eraser_size : width / 2.0f;
     p_canvas_item->draw_circle(p_pen_position, radius, DARK_GREY, false, 1.0f);
+}
+
+void LinePen::draw_cursor(CanvasItem* p_canvas_item, const Vector2 &p_pen_position, const float &p_eraser_size, const bool &p_is_eraser)
+{
+    _draw_cursor(p_canvas_item, p_pen_position, p_eraser_size, p_is_eraser);
 }

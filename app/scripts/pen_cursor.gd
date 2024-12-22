@@ -1,4 +1,5 @@
-extends CanvasItem
+@tool
+extends Control
 
 @export var draw_canvas: DrawCanvas
 
@@ -11,6 +12,7 @@ func _ready():
 
 func _process(_delta):
     if draw_canvas:
+        custom_minimum_size = draw_canvas.size
         queue_redraw()
 
 func _unhandled_input(event):

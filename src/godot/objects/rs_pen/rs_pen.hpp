@@ -23,6 +23,7 @@ namespace JustDraw
             Variant data;
             Ref<Pen> pen;
             Rect2 rect;
+            bool is_finished = false;
 
             RSPen() {}
             RSPen(const Variant &p_data, const Ref<Pen> &p_pen);

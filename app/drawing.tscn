@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://b1fwia5qj8s06"]
+[gd_scene load_steps=9 format=3 uid="uid://b1fwia5qj8s06"]
 
 [ext_resource type="Script" path="res://scripts/draw_cam.gd" id="1_hampg"]
 [ext_resource type="Script" path="res://scripts/pen_cursor.gd" id="2_3c6d4"]
@@ -8,8 +8,6 @@
 [ext_resource type="PackedScene" uid="uid://cpmpcpcbtb3jj" path="res://controls/Canvas/canvas_control.tscn" id="6_b64ae"]
 [ext_resource type="PackedScene" uid="uid://bogyjl2smag1s" path="res://controls/modals/CanvasSize/canvas_size.tscn" id="7_6lv80"]
 [ext_resource type="PackedScene" uid="uid://co8kevc7p1lup" path="res://controls/modals/ImageSize/image_size.tscn" id="8_8b6um"]
-
-[sub_resource type="LinePen" id="LinePen_o5wkp"]
 
 [node name="Control" type="Control"]
 layout_mode = 3
@@ -53,14 +51,16 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="DrawCanvas" type="DrawCanvas" parent="Canvas/CenterContainer"]
-pen = SubResource("LinePen_o5wkp")
 minimum_draw_distance = 10.0
 custom_minimum_size = Vector2(500, 500)
 layout_mode = 2
 
-[node name="PenCursor" type="Node2D" parent="Canvas" node_paths=PackedStringArray("draw_canvas")]
+[node name="PenCursor" type="Control" parent="Canvas/CenterContainer" node_paths=PackedStringArray("draw_canvas")]
+custom_minimum_size = Vector2(500, 500)
+layout_mode = 2
+mouse_filter = 2
 script = ExtResource("2_3c6d4")
-draw_canvas = NodePath("../CenterContainer/DrawCanvas")
+draw_canvas = NodePath("../DrawCanvas")
 
 [node name="Controls" type="CanvasLayer" parent="."]
 layer = 2
