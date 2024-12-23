@@ -42,9 +42,9 @@ namespace JustDraw
             Array UpdateDraw(const Vector2 &p_pen_position, const float &p_cam_scale, const Ref<RSPen> &p_rs_pen);
 
             // Returns whether to delete this pen/data.
-            GDVIRTUAL2R(bool, _finish_draw, Vector2, Ref<RSPen>);
-            virtual bool _finish_draw(const Vector2 &p_pen_position, const Ref<RSPen> &p_rs_pen) { return false; }
-            bool FinishDraw(const Vector2 &p_pen_position, const Ref<RSPen> &p_rs_pen);
+            GDVIRTUAL1(_finish_draw, Ref<RSPen>);
+            virtual void _finish_draw(const Ref<RSPen> &p_rs_pen) {}
+            void FinishDraw(const Ref<RSPen> &p_rs_pen);
 
             // Returns either a bool or an array of new data.
             // True = Erase current pen/data. False = Do nothing. Array[Variant] = Erase current; Add new data/pens.

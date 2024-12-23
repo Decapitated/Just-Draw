@@ -40,7 +40,7 @@ void LinePen::_bind_methods()
 
     ClassDB::bind_method(D_METHOD("start_draw", "pen_position", "rs_pen"), &LinePen::start_draw);
     ClassDB::bind_method(D_METHOD("update_draw", "pen_position", "cam_scale", "rs_pen"), &LinePen::update_draw);
-    ClassDB::bind_method(D_METHOD("finish_draw", "pen_position", "rs_pen"), &LinePen::finish_draw);
+    ClassDB::bind_method(D_METHOD("finish_draw", "rs_pen"), &LinePen::finish_draw);
     ClassDB::bind_method(D_METHOD("update_erase", "pen_position", "eraser_size", "rs_pen"), &LinePen::update_erase);
     ClassDB::bind_method(D_METHOD("scale_data", "scale", "rs_pen"), &LinePen::scale_data);
     ClassDB::bind_method(D_METHOD("offset_data", "offset", "rs_pen"), &LinePen::offset_data);
@@ -151,18 +151,17 @@ Array LinePen::update_draw(const Vector2 &p_pen_position, const float &p_cam_sca
     return _update_draw(p_pen_position, p_cam_scale, p_rs_pen);
 }
 
-bool LinePen::_finish_draw(const Vector2 &p_pen_position, const Ref<RSPen> &p_rs_pen)
+void LinePen::_finish_draw(const Ref<RSPen> &p_rs_pen)
 {
-    if(p_rs_pen->data.get_type() != Variant::PACKED_VECTOR2_ARRAY) return true;
+    if(p_rs_pen->data.get_type() != Variant::PACKED_VECTOR2_ARRAY) return;
     Line smoothed_line = p_rs_pen->data;
     if(smoothed_line.size() > 2) smoothed_line = SmoothLine(smoothed_line);
     p_rs_pen->data = smoothed_line;
-    return false;
 }
 
-bool LinePen::finish_draw(const Vector2 &p_pen_position, const Ref<RSPen> &p_rs_pen)
+void LinePen::finish_draw(const Ref<RSPen> &p_rs_pen)
 {
-    return _finish_draw(p_pen_position, p_rs_pen);
+    _finish_draw(p_rs_pen);
 }
 
 Variant LinePen::_update_erase(const Vector2 &p_pen_position, const float &p_eraser_size, const Ref<RSPen> &p_rs_pen)
@@ -243,7 +242,7 @@ void LinePen::_draw_cursor(CanvasItem* p_canvas_item, const Vector2 &p_pen_posit
 {
     if(p_canvas_item == nullptr) return;
     float radius = (p_is_eraser) ? p_eraser_size : width / 2.0f;
-    p_canvas_item->draw_circle(p_pen_position, radius, DARK_GREY, false, 1.0f);
+    p_canvas_item->draw_circle(p_pen_position, radius, DARK_GREY, false, min(width / 2.0f, 1.0f));
 }
 
 void LinePen::draw_cursor(CanvasItem* p_canvas_item, const Vector2 &p_pen_position, const float &p_eraser_size, const bool &p_is_eraser)

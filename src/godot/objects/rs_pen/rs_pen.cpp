@@ -20,6 +20,9 @@ void RSPen::_bind_methods()
     ClassDB::bind_method(D_METHOD("get_rect"), &RSPen::get_rect);
     ADD_PROPERTY(PropertyInfo(Variant::RECT2, "rect"), "set_rect", "get_rect");
 
+    ClassDB::bind_method(D_METHOD("get_is_finished"), &RSPen::get_is_finished);
+    ADD_PROPERTY(PropertyInfo(Variant::BOOL, "is_finished"), "", "get_is_finished");
+
     #pragma endregion
 }
 

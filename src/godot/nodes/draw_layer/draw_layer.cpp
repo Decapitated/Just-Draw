@@ -104,7 +104,7 @@ void DrawLayer::HandleMouseButton(const InputEventMouseButton &event)
         if(mode == DRAW)
         {
             mode = NONE;
-            FinishDraw(event.get_position());
+            FinishDraw();
         }
         else if(mode == ERASE)
         {
@@ -154,7 +154,7 @@ void DrawLayer::HandleMouseMotion(const InputEventMouseMotion &event)
         else if(mode == DRAW)
         {
             mode = NONE;
-            FinishDraw(pen_position);
+            FinishDraw();
         }
     }
 }
@@ -195,16 +195,11 @@ void DrawLayer::UpdateDraw(Vector2 pen_position)
         Ref<RSPen> rs_pen = (pens.size() > 0) ? pens.back() : Ref<RSPen>();
         if(rs_pen.is_valid() && !rs_pen->is_finished)
         {
-            bool should_delete = false;
             Array new_data = rs_pen->pen->UpdateDraw(pen_position, 1.0f / cam->get_zoom().x, rs_pen);
             int current_pen_index = pens.size() - 1;
             if(new_data.size() > 0)
             {
-                should_delete = rs_pen->pen->FinishDraw(pen_position, rs_pen);
-                if(should_delete)    
-                {
-                    pens.pop_back();
-                }
+                rs_pen->pen->FinishDraw(rs_pen);
                 rs_pen->rect = rs_pen->pen->CalculateRect(rs_pen->data);
                 for(int i = 0; i < new_data.size(); i++)
                 {
@@ -213,16 +208,13 @@ void DrawLayer::UpdateDraw(Vector2 pen_position)
                     pens.push_back(new_rs_pen);
                     if(i != new_data.size() - 1)
                     {
-                        new_rs_pen->pen->FinishDraw(pen_position, new_rs_pen);
+                        new_rs_pen->pen->FinishDraw(new_rs_pen);
                         new_rs_pen->rect = new_rs_pen->pen->CalculateRect(new_rs_pen->data);
                         new_rs_pen->Redraw(get_canvas_item(), pens.size() - 1);
                     }
                 }
             }
-            if(!should_delete)
-            {
-                rs_pen->Redraw(get_canvas_item(), current_pen_index);
-            }
+            rs_pen->Redraw(get_canvas_item(), current_pen_index);
         }
         else
         {
@@ -301,13 +293,13 @@ bool DrawLayer::UpdateErase(Vector2 pen_position, DataPens::iterator data_it)
     return false;
 }
 
-void DrawLayer::FinishDraw(Vector2 pen_position)
+void DrawLayer::FinishDraw()
 {
     Ref<RSPen> rs_pen = (pens.size() > 0) ? pens.back() : Ref<RSPen>();
     if(rs_pen.is_valid() && !rs_pen->is_finished)
     {
+        rs_pen->pen->FinishDraw(rs_pen);
         rs_pen->is_finished = true;
-        rs_pen->pen->FinishDraw(pen_position, rs_pen);
         rs_pen->Redraw(get_canvas_item(), pens.size() - 1);
         emit_signal(UPDATED_SIGNAL);
     }
@@ -316,7 +308,7 @@ void DrawLayer::FinishDraw(Vector2 pen_position)
         auto canvas = dynamic_cast<DrawCanvas*>(get_parent_control());
         if(canvas != nullptr)
         {
-            canvas->pen->FinishDraw(pen_position, rs_pen);
+            canvas->pen->FinishDraw(rs_pen);
         }
     }
 }

@@ -40,6 +40,8 @@ namespace JustDraw
             Rect2 get_rect() const { return rect; }
             void set_rect(const Rect2 &p_rect) { rect = p_rect; }
 
+            bool get_is_finished() const { return is_finished; }
+
             #pragma endregion
 
             void Clear() const;

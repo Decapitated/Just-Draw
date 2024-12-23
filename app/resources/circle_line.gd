@@ -12,7 +12,7 @@ func _start_draw(pen_position: Vector2, rs_pen: RSPen) -> Variant:
     if is_near_center:
         is_moving_stencil = true
     else:
-        var is_near_edge := absf(mouse_dist_sqr - pow(stencil_radius, 2.0)) <= pow(20.0, 2.0)
+        var is_near_edge := absf(mouse_dist_sqr - pow(stencil_radius, 2.0)) <= pow(10.0, 2.0)
         if is_near_edge:
             return super.start_draw(pen_position, rs_pen)
     return null
@@ -39,22 +39,21 @@ func _update_draw(pen_position: Vector2, cam_scale: float, rs_pen: RSPen) -> Arr
         return new_data
     return []
 
-func _finish_draw(pen_position: Vector2, rs_pen: RSPen) -> bool:
+func _finish_draw(rs_pen: RSPen) -> void:
     if is_moving_stencil:
         is_moving_stencil = false
-    elif rs_pen:
-        return super.finish_draw(pen_position, rs_pen)
-    return false
+    elif rs_pen and !rs_pen.is_finished:
+        super.finish_draw(rs_pen)
 
 func _draw_cursor(canvas_item: CanvasItem, pen_position: Vector2, eraser_size: float, is_eraser: bool) -> void:
     var cam := canvas_item.get_viewport().get_camera_2d()
-    canvas_item.draw_circle(stencil_position, 5.0 * (1.0 / cam.zoom.x), Color.DARK_GRAY)
     canvas_item.draw_circle(stencil_position, stencil_radius, Color(1.0, 1.0, 1.0, 0.5))
+    canvas_item.draw_circle(stencil_position, 2.5 * (1.0 / cam.zoom.x), Color.DARK_GRAY)
     canvas_item.draw_circle(stencil_position, stencil_radius, Color.DARK_GRAY, false, 2.0 * (1.0 / cam.zoom.x))
     super.draw_cursor(canvas_item, pen_position, eraser_size, is_eraser)
 
 func _duplicate_pen(subresources: bool) -> Pen:
-    var pen := super.duplicate_pen(subresources)
+    var pen := super.duplicate_pen(subresources) as CircleLine
     pen.stencil_position = stencil_position
     pen.stencil_radius = stencil_radius
     return pen

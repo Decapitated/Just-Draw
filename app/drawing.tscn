@@ -1,8 +1,7 @@
-[gd_scene load_steps=11 format=3 uid="uid://b1fwia5qj8s06"]
+[gd_scene load_steps=10 format=3 uid="uid://b1fwia5qj8s06"]
 
 [ext_resource type="Script" path="res://scripts/draw_cam.gd" id="1_hampg"]
 [ext_resource type="Script" path="res://scripts/pen_cursor.gd" id="2_3c6d4"]
-[ext_resource type="Script" path="res://resources/circle_line.gd" id="4_fy3bj"]
 [ext_resource type="Script" path="res://scripts/canvas_viewport.gd" id="4_ojijs"]
 [ext_resource type="Script" path="res://scripts/copy_canvas.gd" id="5_lrsg0"]
 [ext_resource type="PackedScene" uid="uid://dlsmwh7px182s" path="res://controls/Toolbar/toolbar.tscn" id="5_try7y"]
@@ -10,8 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://bogyjl2smag1s" path="res://controls/modals/CanvasSize/canvas_size.tscn" id="7_6lv80"]
 [ext_resource type="PackedScene" uid="uid://co8kevc7p1lup" path="res://controls/modals/ImageSize/image_size.tscn" id="8_8b6um"]
 
-[sub_resource type="LinePen" id="LinePen_bytum"]
-script = ExtResource("4_fy3bj")
+[sub_resource type="LinePen" id="LinePen_bckvv"]
 
 [node name="Control" type="Control"]
 layout_mode = 3
@@ -55,7 +53,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="DrawCanvas" type="DrawCanvas" parent="Canvas/CenterContainer"]
-pen = SubResource("LinePen_bytum")
+pen = SubResource("LinePen_bckvv")
 minimum_draw_distance = 10.0
 custom_minimum_size = Vector2(500, 500)
 layout_mode = 2
