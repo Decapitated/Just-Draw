@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://c35g57mkpr31f"]
+
+[ext_resource type="Texture2D" uid="uid://b3psigv706yae" path="res://icon.svg" id="1_p7qob"]
+[ext_resource type="Script" uid="uid://bua33j3e3owpx" path="res://controls/Canvas/PenSettings/pen_selector/pen_button/pen_button.gd" id="2_j8rfb"]
+
+[node name="PenButton" type="Button"]
+custom_minimum_size = Vector2(64, 64)
+offset_right = 64.0
+offset_bottom = 64.0
+icon = ExtResource("1_p7qob")
+expand_icon = true
+script = ExtResource("2_j8rfb")
