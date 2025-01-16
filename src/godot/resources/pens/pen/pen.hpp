@@ -36,12 +36,12 @@ namespace JustDraw
             virtual Variant _start_draw(const Vector2 &p_pen_position, const Ref<RSPen> &p_rs_pen) { return Variant(); }
             Variant StartDraw(const Vector2 &p_pen_position, const Ref<RSPen> &p_rs_pen);
 
-            // Return an array of new data/pens to add.
+            // Update data directly using provided RSPen. Return an array of new data/pens to add if any.
             GDVIRTUAL3R(Array, _update_draw, Vector2, float, Ref<RSPen>);
             virtual Array _update_draw(const Vector2 &p_pen_position, const float &p_cam_scale, const Ref<RSPen> &p_rs_pen) { return Array(); }
             Array UpdateDraw(const Vector2 &p_pen_position, const float &p_cam_scale, const Ref<RSPen> &p_rs_pen);
 
-            // Returns whether to delete this pen/data.
+            // Do any Post-Process/Cleanup on data here.
             GDVIRTUAL1(_finish_draw, Ref<RSPen>);
             virtual void _finish_draw(const Ref<RSPen> &p_rs_pen) {}
             void FinishDraw(const Ref<RSPen> &p_rs_pen);
