@@ -12,7 +12,8 @@ func _start_draw(pen_position: Vector2, rs_pen: RSPen) -> Variant:
     if is_near_center:
         is_moving_stencil = true
     else:
-        var is_near_edge := absf(mouse_dist_sqr - pow(stencil_radius, 2.0)) <= pow(10.0, 2.0)
+        var mouse_dist := sqrt(mouse_dist_sqr)
+        var is_near_edge := absf(mouse_dist - stencil_radius) <= 10.0
         if is_near_edge:
             return super.start_draw(pen_position, rs_pen)
     return null
