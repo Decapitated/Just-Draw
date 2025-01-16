@@ -138,7 +138,7 @@ void DrawCanvas::scale_layers(Vector2 p_scale)
 {
     CallOnLayers([p_scale](DrawLayer* draw_layer)
     {
-        draw_layer->scale_lines(p_scale);
+        draw_layer->scale_data(p_scale);
         return false;
     });
 }
@@ -147,7 +147,7 @@ void DrawCanvas::offset_layers(Vector2 p_offset)
 {
     CallOnLayers([p_offset](DrawLayer* draw_layer)
     {
-        draw_layer->offset_lines(p_offset);
+        draw_layer->offset_data(p_offset);
         return false;
     });
 }

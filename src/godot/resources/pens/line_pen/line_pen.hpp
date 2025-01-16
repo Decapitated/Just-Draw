@@ -10,6 +10,8 @@ using namespace godot;
 
 namespace JustDraw
 {
+    using Line = PackedVector2Array;
+
     class LinePen : public Pen
     {
         GDCLASS(LinePen, Pen);
@@ -55,8 +57,31 @@ namespace JustDraw
             Line SmoothLine(Line p_line);
             static Line SmoothLineStep(Line p_line, float p_smooth_ratio, float p_smooth_min_distance);
 
-            virtual void _draw(const RID &p_parent_item, const RID &p_canvas_item, const int p_index, const Line &p_line) override;
-            virtual Line _finish_draw(const Line &p_line) override;
+            virtual void _draw(const RID &p_parent_item, const RID &p_canvas_item, const int p_index, const Variant &p_data) override;
+            
+            virtual Variant _start_draw(const Vector2 &p_pen_position, const Ref<RSPen> &p_rs_pen) override;
+            Variant start_draw(const Vector2 &p_pen_position, const Ref<RSPen> &p_rs_pen);
+
+            virtual Array _update_draw(const Vector2 &p_pen_position, const float &p_cam_scale, const Ref<RSPen> &p_rs_pen);
+            Array update_draw(const Vector2 &p_pen_position, const float &p_cam_scale, const Ref<RSPen> &p_rs_pen);
+
+            virtual void _finish_draw(const Ref<RSPen> &p_rs_pen) override;
+            void finish_draw(const Ref<RSPen> &p_rs_pen);
+
+            virtual Variant _update_erase(const Vector2 &p_pen_position, const float &p_eraser_size, const Ref<RSPen> &p_rs_pen) override;
+            Variant update_erase(const Vector2 &p_pen_position, const float &p_eraser_size, const Ref<RSPen> &p_rs_pen);
+
+            virtual void _scale_data(const Vector2 &p_scale, const Ref<RSPen> &p_rs_pen) override;
+            void scale_data(const Vector2 &p_scale, const Ref<RSPen> &p_rs_pen);
+
+            virtual void _offset_data(const Vector2 &p_offset, const Ref<RSPen> &p_rs_pen) override;
+            void offset_data(const Vector2 &p_offset, const Ref<RSPen> &p_rs_pen);
+            
+            virtual void _draw_cursor(CanvasItem* p_canvas_item, const Vector2 &p_pen_position, const float &p_eraser_size, const bool &p_is_eraser) override;
+            void draw_cursor(CanvasItem* p_canvas_item, const Vector2 &p_pen_position, const float &p_eraser_size, const bool &p_is_eraser);
+
+            virtual Ref<Pen> _duplicate_pen(bool p_subresources = false);
+            Ref<Pen> duplicate_pen(bool p_subresources = false);
     };
 }
 

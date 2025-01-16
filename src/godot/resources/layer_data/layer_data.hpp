@@ -11,8 +11,8 @@ namespace JustDraw
     {
         GDCLASS(LayerData, Resource);
         private:
-            using Lines = TypedArray<Line>;
-            Lines lines = Lines();
+            using Data = Array;
+            Data data = Data();
 
             using Pens = TypedArray<Pen>;
             Pens pens = Pens();
@@ -22,14 +22,14 @@ namespace JustDraw
 
         public:
             LayerData() {}
-            LayerData(Lines p_lines, Pens p_pens)
-                : lines(p_lines), pens(p_pens) {}
+            LayerData(Data p_data, Pens p_pens)
+                : data(p_data), pens(p_pens) {}
             ~LayerData() {}
 
             #pragma region Getters and Setters
 
-            Lines get_lines() { return lines; };
-            void set_lines(Lines p_lines) { lines = p_lines; };
+            Data get_data() { return data; };
+            void set_data(Data p_data) { data = p_data; };
 
             Pens get_pens() { return pens; };
             void set_pens(Pens p_pens) { pens = p_pens; };

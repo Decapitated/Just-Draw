@@ -1,4 +1,5 @@
-extends CanvasItem
+@tool
+extends Control
 
 @export var draw_canvas: DrawCanvas
 
@@ -11,6 +12,7 @@ func _ready():
 
 func _process(_delta):
     if draw_canvas:
+        custom_minimum_size = draw_canvas.size
         queue_redraw()
 
 func _unhandled_input(event):
@@ -20,17 +22,10 @@ func _unhandled_input(event):
         pen_position = event.position
 
 func _draw():
-    if draw_canvas and draw_canvas.pen is LinePen:
-        var line_pen: LinePen = draw_canvas.pen
+    if draw_canvas:
         var active_layer = draw_canvas.get_active_layer()
-        # Only show eraser cursor if the active layer is erasing. Otherwise, show the draw cursor as default.
-        if is_eraser or (active_layer and active_layer.get_pen_mode() == DrawLayer.ERASE):
-            draw_cursor(draw_canvas.eraser_size)
-        else:
-            draw_cursor(line_pen.width / 2.0)
-
-func draw_cursor(radius: float, width: float = -1.0):
-    draw_circle(pen_position, radius + max(width, 0.0) / 2.0, Color.DARK_GRAY, false, width)
+        var p_is_eraser = is_eraser or (active_layer and active_layer.get_pen_mode() == DrawLayer.ERASE)
+        draw_canvas.pen.draw_cursor(self, pen_position, draw_canvas.eraser_size, p_is_eraser)
 
 func _mouse_entered_canvas():
     Input.mouse_mode = Input.MOUSE_MODE_HIDDEN

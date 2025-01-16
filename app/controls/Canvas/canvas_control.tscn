@@ -1,9 +1,9 @@
 [gd_scene load_steps=5 format=3 uid="uid://cpmpcpcbtb3jj"]
 
-[ext_resource type="Script" path="res://controls/Canvas/canvas_controls.gd" id="1_uliih"]
-[ext_resource type="PackedScene" uid="uid://d0w1xovp835nv" path="res://controls/Canvas/PenSettings/pen_control.tscn" id="2_cad3o"]
+[ext_resource type="Script" uid="uid://0gk6fxapsq1t" path="res://controls/Canvas/canvas_controls.gd" id="1_uliih"]
 [ext_resource type="PackedScene" uid="uid://cgf8cuhalbgj1" path="res://controls/Canvas/Layers/layer_container.tscn" id="3_l4fky"]
 [ext_resource type="PackedScene" uid="uid://d34b0l3di3bon" path="res://controls/Canvas/Zoom/zoom_control.tscn" id="4_l6g57"]
+[ext_resource type="PackedScene" uid="uid://cjrslniwn7ofu" path="res://controls/Canvas/PenSettings/pen_selector/pen_selector.tscn" id="4_yeanv"]
 
 [node name="CanvasControls" type="MarginContainer"]
 anchors_preset = 15
@@ -24,16 +24,6 @@ script = ExtResource("1_uliih")
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
-
-[node name="PenControl" parent="Control" node_paths=PackedStringArray("canvas_controls") instance=ExtResource("2_cad3o")]
-layout_mode = 1
-anchors_preset = 4
-anchor_top = 0.5
-anchor_bottom = 0.5
-offset_top = -72.5
-offset_bottom = 72.5
-grow_vertical = 2
-canvas_controls = NodePath("../..")
 
 [node name="LayerContainer" parent="Control" node_paths=PackedStringArray("canvas_controls") instance=ExtResource("3_l4fky")]
 layout_mode = 1
@@ -64,3 +54,15 @@ offset_bottom = 0.0
 grow_horizontal = 0
 grow_vertical = 0
 canvas_controls = NodePath("../..")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+grow_vertical = 2
+
+[node name="PenSelector" parent="Control/VBoxContainer" node_paths=PackedStringArray("canvas_controls") instance=ExtResource("4_yeanv")]
+layout_mode = 2
+size_flags_horizontal = 4
+canvas_controls = NodePath("../../..")

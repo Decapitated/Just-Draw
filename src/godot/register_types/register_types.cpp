@@ -2,6 +2,8 @@
 
 #include <godot_cpp/classes/engine.hpp>
 
+#include "godot/objects/rs_pen/rs_pen.hpp"
+
 #include "godot/resources/pens/pen/pen.hpp"
 #include "godot/resources/pens/line_pen/line_pen.hpp"
 
@@ -17,8 +19,9 @@ void initialize_justdraw_module(ModuleInitializationLevel p_level) {
 	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
 		return;
 	}
+    GDREGISTER_ABSTRACT_CLASS(JustDraw::RSPen);
 
-    GDREGISTER_ABSTRACT_CLASS(JustDraw::Pen);
+    GDREGISTER_CLASS(JustDraw::Pen);
     GDREGISTER_CLASS(JustDraw::LinePen);
 
     GDREGISTER_CLASS(JustDraw::CanvasData);
