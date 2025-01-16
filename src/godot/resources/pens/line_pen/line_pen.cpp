@@ -123,7 +123,7 @@ Array LinePen::_update_draw(const Vector2 &p_pen_position, const float &p_cam_sc
     auto prev_pos = line[line.size() - 1];
     auto dist = prev_pos.distance_squared_to(p_pen_position);
     const float min_dist = 10.0f * p_cam_scale; // ALERT: Update to use min_dist property.
-    if(dist >= powf(min_dist, 2.0))
+    if(dist >= powf(min_dist, 2.0f) && dist <= powf(5.0f * min_dist, 2.0f))
     {
         // Clamp the angle between the line and the pen.
         if(line.size() >= 2)
