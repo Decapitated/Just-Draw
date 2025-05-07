@@ -79,8 +79,8 @@ body {
         $GODOT_HEAD_INCLUDE
         <script>
             (() => {
-                var lastFileBuffer = null;
-                var loadFileCallback = null;
+                let lastFileBuffer = null;
+                let loadFileCallback = null;
 
                 window.setupOpenFile = (callback) => {
                     loadFileCallback = callback;
@@ -88,7 +88,7 @@ body {
                     openFileInput.type = 'file';
                     openFileInput.accept = '.res';
                     openFileInput.onchange = (e) => {
-                        var file = e.target.files[0];
+                        let file = e.target.files[0];
                         file.arrayBuffer().then((buffer) => {
                             lastFileBuffer = buffer;
                             if(loadFileCallback) {
@@ -119,7 +119,7 @@ body {
                         e.stopPropagation();
                         e.preventDefault();
 
-                        var file = e.dataTransfer.files[0];
+                        let file = e.dataTransfer.files[0];
                         file.arrayBuffer().then((buffer) => {
                             lastFileBuffer = buffer;
                             if(loadFileCallback) {
@@ -133,11 +133,11 @@ body {
             (() => {
                 // Function to download data to a file
                 function download(data, filename, type) {
-                    var file = new Blob([data], {type: type});
+                    let file = new Blob([data], {type: type});
                     if (window.navigator.msSaveOrOpenBlob) // IE10+
                         window.navigator.msSaveOrOpenBlob(file, filename);
                     else { // Others
-                        var a = document.createElement("a"),
+                        let a = document.createElement("a"),
                             url = URL.createObjectURL(file);
                         a.href = url;
                         a.download = filename;
@@ -151,9 +151,9 @@ body {
                 }
 
                 function base64ToArrayBuffer(base64) {
-                    var binaryString = atob(base64);
-                    var bytes = new Uint8Array(binaryString.length);
-                    for (var i = 0; i < binaryString.length; i++) {
+                    let binaryString = atob(base64);
+                    let bytes = new Uint8Array(binaryString.length);
+                    for (let i = 0; i < binaryString.length; i++) {
                         bytes[i] = binaryString.charCodeAt(i);
                     }
                     return bytes.buffer;
